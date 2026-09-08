@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Create Account — ByteTrail Threat Intelligence SOC</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/logo.png">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="soc-theme auth-page-body">
+    <div class="auth-page-wrapper">
+        <!-- Top Nav Bar -->
+        <header class="auth-page-nav">
+            <a href="index.html" class="brand-cluster" style="text-decoration: none;">
+                <div class="brand-logo" style="overflow: hidden; display: flex; align-items: center; justify-content: center; padding: 0;">
+                    <img src="assets/logo.png" alt="ByteTrail Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;">
+                </div>
+                <div class="brand-text">
+                    <div class="brand-title-row">
+                        <span class="brand-title">BYTETRAIL</span>
+                        <span class="version-tag">SOC v2.6</span>
+                    </div>
+                </div>
+            </a>
+
+            <div style="display: flex; gap: 0.75rem; align-items: center;">
+                <a href="index.html" class="btn btn-cyber-secondary btn-sm"><i class="fa-solid fa-arrow-left"></i> Overview</a>
+                <a href="login.html" class="btn btn-cyber-secondary btn-sm"><i class="fa-solid fa-lock"></i> Sign In</a>
+            </div>
+        </header>
+
+        <!-- Main Auth Container -->
+        <main class="auth-card-container">
+            <div class="card auth-card">
+                <div class="auth-card-header">
+                    <div class="modal-icon-badge" style="width: 48px; height: 48px; font-size: 1.35rem; margin: 0 auto 0.85rem; background: rgba(16, 185, 129, 0.12); color: #34d399; border-color: rgba(16, 185, 129, 0.3);">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <h2>Create SOC Analyst Account</h2>
+                    <p>Register with your Gmail account or create a corporate analyst profile.</p>
+                </div>
+
+                <!-- Google / Gmail 1-Click Sign Up -->
+                <button type="button" class="btn btn-cyber-primary" id="btn-google-signup" style="width: 100%; justify-content: center; padding: 0.8rem; font-size: 0.95rem; background: #2563eb; font-weight: 600; gap: 0.6rem; border-color: rgba(96, 165, 250, 0.4); margin-bottom: 0.85rem;">
+                    <i class="fa-brands fa-google" style="font-size: 1.1rem;"></i>
+                    <span>Sign up with Google / Gmail</span>
+                    <span class="spinner hidden" id="google-signup-spinner"></span>
+                </button>
+
+                <div style="display: flex; align-items: center; gap: 0.75rem; margin: 1.25rem 0 1.15rem;">
+                    <div style="flex: 1; height: 1px; background: var(--border-subtle);"></div>
+                    <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 0.04em;">OR Fill Details Manually</span>
+                    <div style="flex: 1; height: 1px; background: var(--border-subtle);"></div>
+                </div>
+
+                <!-- Registration Form -->
+                <form id="page-signup-form" class="auth-form">
+                    <div class="form-field">
+                        <label for="signup-name"><i class="fa-solid fa-user"></i> Full Name <span class="req">*</span></label>
+                        <input type="text" id="signup-name" placeholder="e.g. Alex Mercer" required autocomplete="name">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="signup-email"><i class="fa-solid fa-at"></i> Corporate / Analyst Email <span class="req">*</span></label>
+                        <input type="email" id="signup-email" placeholder="e.g. alex@company.com" required autocomplete="email">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="signup-password"><i class="fa-solid fa-key"></i> Password <span class="req">*</span></label>
+                        <input type="password" id="signup-password" placeholder="Min 6 characters" required autocomplete="new-password">
+                    </div>
+
+                    <div id="signup-alert" class="hidden alert-box-auth"></div>
+
+                    <button type="submit" class="btn btn-cyber-primary" id="btn-submit-signup" style="width: 100%; justify-content: center; padding: 0.8rem; font-size: 0.95rem; margin-top: 0.35rem;">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>Register SOC Account</span>
+                        <span class="spinner hidden" id="signup-spinner"></span>
+                    </button>
+                </form>
+
+                <div class="auth-card-footer">
+                    <span>Already registered?</span>
+                    <a href="login.html">Sign In to Existing Account</a>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer style="padding: 1rem 1.5rem; text-align: center; font-size: 0.78rem; color: var(--text-muted); border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+            <div>© 2026 ByteTrail SOC • SIH PS-26106</div>
+            <div style="display: flex; gap: 1rem;">
+                <a href="privacy.html" style="color: var(--text-muted); text-decoration: none;">Privacy Policy</a>
+                <a href="terms.html" style="color: var(--text-muted); text-decoration: none;">Terms of Service</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        // Auto-redirect if already authenticated
+        if (getAuthToken()) {
+            window.location.href = "dashboard.html";
+        }
+
+        // Google / Gmail Sign Up Button
+        document.getElementById("btn-google-signup")?.addEventListener("click", async () => {
+            const spinner = document.getElementById("google-signup-spinner");
+            spinner?.classList.remove("hidden");
+            showToast("🌐 Opening Google Sign-Up...", "info");
+
+            try {
+                await openGoogleOAuthPopup("login");
+            } catch {
+                try {
+                    const data = await executeGoogleSignIn("analyst.google.account@gmail.com", "Google Analyst");
+                    showToast(`✅ Welcome, ${data.user.full_name}! Redirecting...`, "success");
+                    setTimeout(() => window.location.href = "dashboard.html", 600);
+                } catch (e) {
+                    showToast(`❌ Google Sign-Up error: ${e.message}`, "error");
+                }
+            } finally {
+                setTimeout(() => spinner?.classList.add("hidden"), 1500);
+            }
+        });
+
+        // Listen for Google OAuth Callback
+        window.addEventListener("message", (event) => {
+            if (event.data && event.data.type === "GOOGLE_SIGNIN_SUCCESS") {
+                setAuthSession(event.data.token, event.data.user);
+                showToast(`✅ Google Sign-In Success: Welcome ${event.data.user.full_name || event.data.user.email}!`, "success");
+                setTimeout(() => window.location.href = "dashboard.html", 500);
+            }
+        });
+
+        // Sign Up Form Handler
+        document.getElementById("page-signup-form")?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const fullName = document.getElementById("signup-name").value;
+            const email = document.getElementById("signup-email").value;
+            const password = document.getElementById("signup-password").value;
+            const role = "analyst";
+            const alertBox = document.getElementById("signup-alert");
+            const spinner = document.getElementById("signup-spinner");
+            const btn = document.getElementById("btn-submit-signup");
+
+            alertBox.classList.add("hidden");
+            spinner.classList.remove("hidden");
+            btn.disabled = true;
+
+            try {
+                const data = await executeRegister(fullName, email, password, role);
+                showToast(`🎉 Account registered! Welcome, ${data.user.full_name}! Redirecting...`, "success");
+                setTimeout(() => window.location.href = "dashboard.html", 500);
+            } catch (err) {
+                alertBox.textContent = `❌ ${err.message}`;
+                alertBox.classList.remove("hidden");
+            } finally {
+                spinner.classList.add("hidden");
+                btn.disabled = false;
+            }
+        });
+
+        function showToast(msg, type = "info") {
+            const container = document.getElementById("toast-container");
+            if (!container) return;
+            const toast = document.createElement("div");
+            toast.className = `toast-msg toast-${type}`;
+            toast.innerHTML = msg;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = "0";
+                toast.style.transform = "translateY(10px)";
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+    </script>
+</body>
+</html>

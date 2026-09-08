@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ByteTrail — Enterprise Threat Intelligence & Email Forensics</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/logo.png">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="soc-theme">
+    <div class="app-wrapper">
+        <!-- Top Executive Navbar -->
+        <header class="top-nav">
+            <a href="index.html" class="brand-cluster" style="text-decoration: none;">
+                <div class="brand-logo" style="overflow: hidden; display: flex; align-items: center; justify-content: center; padding: 0;">
+                    <img src="assets/logo.png" alt="ByteTrail Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;">
+                </div>
+                <div class="brand-text">
+                    <div class="brand-title-row">
+                        <span class="brand-title">BYTETRAIL</span>
+                        <span class="version-tag">SOC v2.6</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Central Nav Links -->
+            <nav class="nav-tabs landing-nav-links">
+                <a href="#vectors" class="nav-tab"><i class="fa-solid fa-brain"></i> <span>4-Vector Engine</span></a>
+                <a href="#privacy" class="nav-tab"><i class="fa-solid fa-shield-halved"></i> <span>Privacy & Security</span></a>
+                <a href="#capabilities" class="nav-tab"><i class="fa-solid fa-satellite-dish"></i> <span>SOC Modules</span></a>
+                <a href="#tech-stack" class="nav-tab"><i class="fa-solid fa-microchip"></i> <span>Architecture</span></a>
+            </nav>
+
+            <!-- Nav Actions & User Profile Area -->
+            <div class="nav-right">
+                <a href="login.html" class="btn btn-cyber-primary btn-sm" id="btn-landing-main-cta">
+                    <i class="fa-solid fa-lock"></i>
+                    <span id="label-landing-cta">Sign In / Register</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Product Showcase Landing Section -->
+        <section class="landing-page">
+            <!-- Hero Section -->
+            <div class="hero-container">
+                <div class="hero-badge">
+                    <i class="fa-solid fa-shield-cat"></i>
+                    <span>SIH PS-26106 • Next-Gen AI Email Threat Intelligence & Forensic Platform</span>
+                </div>
+                <h1 class="hero-title">
+                    Stop Email Fraud, Phishing & BEC<br/>
+                    <span class="text-gradient">With Multi-Vector Forensic AI</span>
+                </h1>
+                <p class="hero-subtitle">
+                    ByteTrail autonomously inspects inbound email payloads across 4 intelligence vectors: NLP deceptive linguistics, RFC 822 cryptographic authentication, relay origin geolocation, and ISO/IEC 27037 compliant tamper-proof evidence custody.
+                </p>
+                <div class="hero-cta-row">
+                    <a href="dashboard.html" class="btn btn-hero-primary">
+                        <i class="fa-solid fa-microscope"></i>
+                        <span>Launch Live SOC Console</span>
+                    </a>
+                    <a href="login.html" class="btn btn-hero-ghost">
+                        <i class="fa-brands fa-google" style="color: #60a5fa;"></i>
+                        <span>Sign In with Google</span>
+                    </a>
+                </div>
+
+                <!-- High-Impact Telemetry Metrics Bar -->
+                <div class="hero-metrics-grid">
+                    <div class="hero-metric-card">
+                        <div class="hero-metric-num">4-Vector</div>
+                        <div class="hero-metric-label">Concurrent Forensic Signal Analysis Engine</div>
+                    </div>
+                    <div class="hero-metric-card">
+                        <div class="hero-metric-num">Multi-Layer</div>
+                        <div class="hero-metric-label">NLP + Header + GeoIP + Hash Pipeline</div>
+                    </div>
+                    <div class="hero-metric-card">
+                        <div class="hero-metric-num">ISO 27037</div>
+                        <div class="hero-metric-label">Evidence Integrity Standard Alignment</div>
+                    </div>
+                    <div class="hero-metric-card">
+                        <div class="hero-metric-num">0%</div>
+                        <div class="hero-metric-label">Plaintext Exposure • Zero Data Selling</div>
+                    </div>
+                </div>
+
+                <!-- Core Product Story Lifecycle Banner (SIH PS-26106) -->
+                <div style="margin-top: 2.25rem; background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-subtle); border-radius: 0.75rem; padding: 1rem 1.5rem; text-align: center; max-width: 980px; margin-left: auto; margin-right: auto;">
+                    <div style="font-size: 0.7rem; font-family: var(--font-mono); color: #60a5fa; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.65rem; font-weight: 700;">
+                        <i class="fa-solid fa-route"></i> End-to-End Investigation Lifecycle (PS-26106)
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap; font-size: 0.82rem; font-family: var(--font-mono);">
+                        <span style="color: #60a5fa; background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.3); padding: 0.3rem 0.65rem; border-radius: 4px; font-weight: 600;">Detect</span>
+                        <i class="fa-solid fa-chevron-right" style="color: #64748b; font-size: 0.7rem;"></i>
+                        <span style="color: #a78bfa; background: rgba(167, 139, 250, 0.12); border: 1px solid rgba(167, 139, 250, 0.3); padding: 0.3rem 0.65rem; border-radius: 4px; font-weight: 600;">Authenticate</span>
+                        <i class="fa-solid fa-chevron-right" style="color: #64748b; font-size: 0.7rem;"></i>
+                        <span style="color: #f472b6; background: rgba(244, 114, 182, 0.12); border: 1px solid rgba(244, 114, 182, 0.3); padding: 0.3rem 0.65rem; border-radius: 4px; font-weight: 600;">Trace</span>
+                        <i class="fa-solid fa-chevron-right" style="color: #64748b; font-size: 0.7rem;"></i>
+                        <span style="color: #38bdf8; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.3); padding: 0.3rem 0.65rem; border-radius: 4px; font-weight: 600;">Correlate</span>
+                        <i class="fa-solid fa-chevron-right" style="color: #64748b; font-size: 0.7rem;"></i>
+                        <span style="color: #fbbf24; background: rgba(251, 191, 36, 0.12); border: 1px solid rgba(251, 191, 36, 0.3); padding: 0.3rem 0.65rem; border-radius: 4px; font-weight: 600;">Attribute</span>
+                        <i class="fa-solid fa-chevron-right" style="color: #64748b; font-size: 0.7rem;"></i>
+                        <span style="color: #f87171; background: rgba(248, 113, 113, 0.12); border: 1px solid rgba(248, 113, 113, 0.3); padding: 0.3rem 0.65rem; border-radius: 4px; font-weight: 600;">Investigate</span>
+                        <i class="fa-solid fa-chevron-right" style="color: #64748b; font-size: 0.7rem;"></i>
+                        <span style="color: #34d399; background: rgba(52, 211, 153, 0.12); border: 1px solid rgba(52, 211, 153, 0.3); padding: 0.3rem 0.65rem; border-radius: 4px; font-weight: 600;">Report</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4-Vector Intelligence Engine Grid -->
+            <div class="showcase-section" id="vectors">
+                <div class="section-header-center">
+                    <span class="section-pill">Core Intelligence Pipeline</span>
+                    <h2 class="section-title">The 4-Vector Cybersecurity Analysis Engine</h2>
+                    <p class="section-desc">Every inbound email payload traverses our synchronized four-tier threat correlation pipeline.</p>
+                </div>
+
+                <div class="engine-vectors-grid">
+                    <div class="vector-card">
+                        <div class="vector-icon-badge" style="background: rgba(239, 68, 68, 0.12); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3);">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                        <div class="vector-step-tag">Vector 1</div>
+                        <h3>NLP Phishing & Fraud Heuristics</h3>
+                        <p>Evaluates psychological urgency triggers, credential harvesting lures, lookalike typosquat domains, and CEO BEC wire fraud indicators using fine-tuned NLP heuristics.</p>
+                    </div>
+
+                    <div class="vector-card">
+                        <div class="vector-icon-badge" style="background: rgba(139, 92, 246, 0.12); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.3);">
+                            <i class="fa-solid fa-key"></i>
+                        </div>
+                        <div class="vector-step-tag">Vector 2</div>
+                        <h3>RFC 822 Header & Signature Forensics</h3>
+                        <p>Validates SPF records, DKIM digital signatures, and DMARC alignment. Detects domain spoofing and From vs. Reply-To sender mismatches.</p>
+                    </div>
+
+                    <div class="vector-card">
+                        <div class="vector-icon-badge" style="background: rgba(245, 158, 11, 0.12); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3);">
+                            <i class="fa-solid fa-earth-americas"></i>
+                        </div>
+                        <div class="vector-step-tag">Vector 3</div>
+                        <h3>Origin GeoIP & Infrastructure Intel</h3>
+                        <p>Traces mail relay hops to observed countries, autonomous system networks (ASN), Tor exit relays, VPN anonymizers, and known malicious relay infrastructure patterns.</p>
+                    </div>
+
+                    <div class="vector-card">
+                        <div class="vector-icon-badge" style="background: rgba(16, 185, 129, 0.12); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3);">
+                            <i class="fa-solid fa-gauge-high"></i>
+                        </div>
+                        <div class="vector-step-tag">Vector 4</div>
+                        <h3>Composite Risk Index & Scoring</h3>
+                        <p>Aggregates multi-vector threat signals into a calibrated 0.0 to 100.0 risk score, categorizing incidents into Benign (Low), Suspicious (Medium), or Critical (High).</p>
+                    </div>
+                </div>
+
+                <!-- SIH PS-26106 Architecture Visual Flow -->
+                <div style="margin-top: 3rem; background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 0.75rem; padding: 2rem 1.5rem;">
+                    <div style="text-align: center; margin-bottom: 1.5rem;">
+                        <span class="section-pill" style="color: #60a5fa; border-color: rgba(96, 165, 250, 0.3); background: rgba(96, 165, 250, 0.08);">
+                            <i class="fa-solid fa-network-wired"></i> Problem Statement 26106 Architecture
+                        </span>
+                        <h3 style="font-size: 1.25rem; font-weight: 700; color: #fff; margin-top: 0.5rem;">Synchronized Pipeline Architecture</h3>
+                        <p style="font-size: 0.82rem; color: var(--text-muted); max-width: 600px; margin: 0.25rem auto 0;">From raw mail stream ingestion to graph correlation and evidence-integrity reporting.</p>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 0.65rem; max-width: 780px; margin: 0 auto; font-family: var(--font-mono); font-size: 0.78rem;">
+                        <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); padding: 0.65rem 1rem; border-radius: 6px; display: flex; align-items: center; justify-content: space-between;">
+                            <span style="color: #60a5fa; font-weight: 700;">1. RAW EMAIL / MAIL STREAM</span>
+                            <span style="color: var(--text-muted); font-size: 0.7rem;">OAuth 2.0 / IMAP TLS / Webhook Ingestion</span>
+                        </div>
+                        <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem;"><i class="fa-solid fa-arrow-down"></i></div>
+                        <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: 0.65rem 1rem; border-radius: 6px; display: flex; align-items: center; justify-content: space-between;">
+                            <span style="color: #f87171; font-weight: 700;">2. CONTENT + AI/ML ANALYSIS</span>
+                            <span style="color: var(--text-muted); font-size: 0.7rem;">NLP Heuristics, Phishing, BEC, Impersonation</span>
+                        </div>
+                        <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem;"><i class="fa-solid fa-arrow-down"></i></div>
+                        <div style="background: rgba(167, 139, 250, 0.1); border: 1px solid rgba(167, 139, 250, 0.3); padding: 0.65rem 1rem; border-radius: 6px; display: flex; align-items: center; justify-content: space-between;">
+                            <span style="color: #c4b5fd; font-weight: 700;">3. HEADER & PROTOCOL FORENSICS</span>
+                            <span style="color: var(--text-muted); font-size: 0.7rem;">Return-Path, Received, Message-ID, Reply-To, SPF, DKIM, DMARC</span>
+                        </div>
+                        <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem;"><i class="fa-solid fa-arrow-down"></i></div>
+                        <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); padding: 0.65rem 1rem; border-radius: 6px; display: flex; align-items: center; justify-content: space-between;">
+                            <span style="color: #7dd3fc; font-weight: 700;">4. IoC EXTRACTION</span>
+                            <span style="color: var(--text-muted); font-size: 0.7rem;">IPs, Domains, URLs, Attachments, Sender Aliases</span>
+                        </div>
+                        <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem;"><i class="fa-solid fa-arrow-down"></i></div>
+                        <div style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); padding: 0.65rem 1rem; border-radius: 6px; display: flex; align-items: center; justify-content: space-between;">
+                            <span style="color: #fde047; font-weight: 700;">5. IP + DOMAIN INTELLIGENCE</span>
+                            <span style="color: var(--text-muted); font-size: 0.7rem;">Reputation, GeoIP, ASN, VPN/Tor/Proxy, DNS, MX Alignment, Hosting</span>
+                        </div>
+                        <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem;"><i class="fa-solid fa-arrow-down"></i></div>
+                        <div style="background: rgba(236, 72, 153, 0.1); border: 1px solid rgba(236, 72, 153, 0.3); padding: 0.65rem 1rem; border-radius: 6px; display: flex; align-items: center; justify-content: space-between;">
+                            <span style="color: #f472b6; font-weight: 700;">6. GRAPH-BASED EVIDENCE CORRELATION</span>
+                            <span style="color: var(--text-muted); font-size: 0.7rem;">Relay Graph, Shared Infra Clusters, Campaign Nodes</span>
+                        </div>
+                        <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem;"><i class="fa-solid fa-arrow-down"></i></div>
+                        <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); padding: 0.65rem 1rem; border-radius: 6px; display: flex; align-items: center; justify-content: space-between;">
+                            <span style="color: #fbbf24; font-weight: 700;">7. THREAT RISK + ATTRIBUTION CONFIDENCE</span>
+                            <span style="color: var(--text-muted); font-size: 0.7rem;">Separated Threat Score (0-100) & Probabilistic Attribution %</span>
+                        </div>
+                        <div style="text-align: center; color: var(--text-muted); font-size: 0.75rem;"><i class="fa-solid fa-arrow-down"></i></div>
+                        <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); padding: 0.65rem 1rem; border-radius: 6px; display: flex; align-items: center; justify-content: space-between;">
+                            <span style="color: #34d399; font-weight: 700;">8. ALERTS + CASE MANAGEMENT + FORENSIC REPORT</span>
+                            <span style="color: var(--text-muted); font-size: 0.7rem;">SOC Incident HUD, ISO 27037 Tamper-Sealed PDF Report</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- "How Your Email Is Handled & Protected" Privacy Architecture -->
+            <div class="showcase-section" id="privacy" style="background: var(--bg-surface); border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle);">
+                <div class="section-header-center">
+                    <span class="section-pill" style="color: #34d399; border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.08);">
+                        <i class="fa-solid fa-lock"></i> Privacy-First Architecture
+                    </span>
+                    <h2 class="section-title">How Your Email Is Processed & Protected</h2>
+                    <p class="section-desc">ByteTrail operates on Zero-Trust and Zero-Data-Selling privacy principles. Here is the step-by-step lifecycle of every message.</p>
+                </div>
+
+                <div class="privacy-steps-grid">
+                    <div class="privacy-step-box">
+                        <div class="step-num-badge">01</div>
+                        <h4>1. Isolated Ingestion</h4>
+                        <p>Emails arrive via official Google OAuth 2.0, encrypted IMAP (TLS 1.3), or authenticated REST webhooks directly into ephemeral memory.</p>
+                        <div class="step-badge-tag"><i class="fa-solid fa-shield"></i> In-Memory Only</div>
+                    </div>
+
+                    <div class="privacy-step-box">
+                        <div class="step-num-badge">02</div>
+                        <h4>2. Technical Artifact Extraction</h4>
+                        <p>The forensic parser extracts technical metadata (relay IPs, SPF/DKIM flags, domain signatures) without harvesting private conversational content.</p>
+                        <div class="step-badge-tag"><i class="fa-solid fa-code"></i> Metadata Extraction</div>
+                    </div>
+
+                    <div class="privacy-step-box">
+                        <div class="step-num-badge">03</div>
+                        <h4>3. Zero Data Selling or LLM Training</h4>
+                        <p>Your emails are <strong>never</strong> shared with 3rd parties, advertisers, or used to train public LLM foundation models. Enterprise boundaries are strictly respected.</p>
+                        <div class="step-badge-tag"><i class="fa-solid fa-user-shield"></i> Zero Model Training</div>
+                    </div>
+
+                    <div class="privacy-step-box">
+                        <div class="step-num-badge">04</div>
+                        <h4>4. SHA-256 Tamper-Proof Evidence</h4>
+                        <p>A digital fingerprint is generated following ISO/IEC 27037 standards, producing forensic-grade PDF incident reports with SHA-256 chain-of-custody sealing.</p>
+                        <div class="step-badge-tag"><i class="fa-solid fa-fingerprint"></i> ISO/IEC 27037</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Platform Capabilities Showcase -->
+            <div class="showcase-section" id="capabilities">
+                <div class="section-header-center">
+                    <span class="section-pill">Interactive SOC Modules</span>
+                    <h2 class="section-title">Complete SOC Forensic Command Suite</h2>
+                    <p class="section-desc">Six unified tools purpose-built for threat hunters, security analysts, and enterprise incident response teams.</p>
+                </div>
+
+                <div class="capabilities-grid">
+                    <a href="dashboard.html" class="capability-card" style="text-decoration: none;">
+                        <div class="cap-icon"><i class="fa-solid fa-satellite-dish"></i></div>
+                        <div class="cap-info">
+                            <h4>Global Threat Radar Map</h4>
+                            <p>Real-time Leaflet map visualizes observed relay infrastructure locations with severity-coded pins and live incident telemetry tickers.</p>
+                        </div>
+                    </a>
+
+                    <a href="dashboard.html" class="capability-card" style="text-decoration: none;">
+                        <div class="cap-icon"><i class="fa-solid fa-vial-virus"></i></div>
+                        <div class="cap-info">
+                            <h4>Threat Ingestion Lab & Testbench</h4>
+                            <p>Drag & drop raw .EML files, test real-world attack scenarios (PayPal Phish, CEO BEC, M365 credential lures), and inspect headers.</p>
+                        </div>
+                    </a>
+
+                    <a href="dashboard.html" class="capability-card" style="text-decoration: none;">
+                        <div class="cap-icon"><i class="fa-solid fa-inbox"></i></div>
+                        <div class="cap-info">
+                            <h4>Live Mailbox Continuous Polling</h4>
+                            <p>Connect Google Gmail via OAuth 2.0 or corporate IMAP mailboxes for continuous automated background threat detection.</p>
+                        </div>
+                    </a>
+
+                    <a href="dashboard.html" class="capability-card" style="text-decoration: none;">
+                        <div class="cap-icon"><i class="fa-solid fa-database"></i></div>
+                        <div class="cap-info">
+                            <h4>Forensic Audit Feed & PDF Reports</h4>
+                            <p>Searchable relational incident log with SHA-256 evidence integrity hashes and one-click forensic-grade PDF incident report downloads (ISO/IEC 27037-aligned).</p>
+                        </div>
+                    </a>
+
+                    <a href="dashboard.html" class="capability-card" style="text-decoration: none;">
+                        <div class="cap-icon"><i class="fa-solid fa-diagram-project"></i></div>
+                        <div class="cap-info">
+                            <h4>Campaign Graph & Correlation</h4>
+                            <p>Graph-theory correlation clusters shared relay IPs, suspicious domains, and coordinated adversary infrastructure patterns — evidence-based, not attributed.</p>
+                        </div>
+                    </a>
+
+                    <a href="dashboard.html" class="capability-card" style="text-decoration: none;">
+                        <div class="cap-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                        <div class="cap-info">
+                            <h4>Threat Matrix & Compliance Stats</h4>
+                            <p>Attack vector distribution percentages, top threat origin geographies, and SPF/DKIM/DMARC protocol compliance meters.</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Enterprise Tech Stack Banner -->
+            <div class="showcase-section" id="tech-stack" style="padding-top: 1rem;">
+                <div class="tech-stack-card">
+                    <div class="tech-stack-title"><i class="fa-solid fa-microchip"></i> Enterprise Technology Standards & Architecture</div>
+                    <div class="tech-badges-list">
+                        <span class="tech-badge"><i class="fa-brands fa-python"></i> Python 3.9+ & FastAPI</span>
+                        <span class="tech-badge"><i class="fa-solid fa-database"></i> MySQL / TiDB Enterprise (SSL)</span>
+                        <span class="tech-badge"><i class="fa-solid fa-map-location-dot"></i> Leaflet.js Geolocation</span>
+                        <span class="tech-badge"><i class="fa-solid fa-key"></i> DKIM-py & DNS Cryptography</span>
+                        <span class="tech-badge"><i class="fa-solid fa-file-pdf"></i> ReportLab ISO/IEC 27037 PDF</span>
+                        <span class="tech-badge"><i class="fa-solid fa-shield-virus"></i> MaxMind GeoIP2 Threat Feeds</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom CTA Banner -->
+            <div class="showcase-section" style="padding-bottom: 4rem;">
+                <div class="cta-banner">
+                    <h2 style="font-size: 1.8rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem;">Ready to Inspect & Secure Your Email Perimeter?</h2>
+                    <p style="color: var(--text-secondary); max-width: 620px; margin: 0 auto 1.5rem; font-size: 0.92rem;">
+                        Join security analysts using ByteTrail to detect sophisticated social engineering, verify cryptographic signatures, and generate structured forensic evidence reports.
+                    </p>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <a href="dashboard.html" class="btn btn-hero-primary">
+                            <i class="fa-solid fa-microscope"></i>
+                            <span>Access SOC Console</span>
+                        </a>
+                        <a href="register.html" class="btn btn-cyber-secondary" style="padding: 0.75rem 1.5rem; font-size: 0.95rem; text-decoration: none;">
+                            <i class="fa-solid fa-user-plus"></i>
+                            <span>Create Analyst Account</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Global SOC Footer -->
+        <footer style="margin-top: auto; padding: 1rem 1.75rem; border-top: 1px solid var(--border-subtle); background: var(--bg-nav); display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-muted); flex-wrap: wrap; gap: 0.75rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <img src="assets/logo.png" alt="ByteTrail" style="width: 18px; height: 18px; border-radius: 4px; object-fit: cover;">
+                <span style="font-weight: 600; color: var(--text-secondary);">ByteTrail SOC</span>
+                <span>— Enterprise Threat Intelligence & Forensic Analysis (SIH PS-26106)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 1.25rem;">
+                <a href="privacy.html" target="_blank" style="color: var(--text-muted); text-decoration: none;">Privacy Policy</a>
+                <span style="color: var(--border-subtle);">•</span>
+                <a href="terms.html" target="_blank" style="color: var(--text-muted); text-decoration: none;">Terms of Service</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
+    <script>
+        // Update navbar CTA if already logged in
+        const token = getAuthToken();
+        const user = getAuthUser();
+        if (token && user) {
+            const ctaBtn = document.getElementById("btn-landing-main-cta");
+            const ctaLabel = document.getElementById("label-landing-cta");
+            if (ctaBtn) {
+                ctaBtn.href = "dashboard.html";
+                ctaBtn.className = "btn btn-cyber-primary btn-sm";
+            }
+            if (ctaLabel) {
+                ctaLabel.textContent = `Console (${user.full_name.split(" ")[0]})`;
+            }
+        }
+
+        function showToast(msg, type = "info") {
+            const container = document.getElementById("toast-container");
+            if (!container) return;
+            const toast = document.createElement("div");
+            toast.className = `toast-msg toast-${type}`;
+            toast.innerHTML = msg;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = "0";
+                toast.style.transform = "translateY(10px)";
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+    </script>
+</body>
+</html>

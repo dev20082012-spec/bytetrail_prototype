@@ -1,0 +1,19 @@
+{
+  "name": "bytetrail-frontend",
+  "version": "2.6.0",
+  "description": "ByteTrail SOC Threat Intelligence Frontend Platform",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "bytetrail",
+    "soc",
+    "threat-intelligence",
+    "forensics",
+    "phishing"
+  ],
+  "author": "ByteTrail Team",
+  "license": "MIT"
+}

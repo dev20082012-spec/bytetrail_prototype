@@ -1,0 +1,17 @@
+{
+  "watch": [
+    "server.js",
+    "index.html",
+    "dashboard.html",
+    "login.html",
+    "register.html",
+    "privacy.html",
+    "terms.html",
+    "styles.css",
+    "app.js",
+    "auth.js",
+    "config.js"
+  ],
+  "ext": "html,css,js,json",
+  "exec": "node server.js"
+}
