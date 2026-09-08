@@ -1,8 +1,13 @@
 /**
  * ByteTrail Cloud Deployment Configuration
  * 
- * Instructions for Vercel:
- * Set your deployed Render backend URL below:
- * e.g. window.BYTETRAIL_BACKEND_URL = "https://bytetrail.onrender.com";
+ * Auto-detects local backend vs cloud deployment.
  */
-window.BYTETRAIL_BACKEND_URL = "https://bytetrail.onrender.com";
+if (typeof window !== "undefined") {
+    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:") {
+        window.BYTETRAIL_BACKEND_URL = "http://127.0.0.1:8000";
+    } else {
+        window.BYTETRAIL_BACKEND_URL = "https://bytetrail.onrender.com";
+    }
+}
+
