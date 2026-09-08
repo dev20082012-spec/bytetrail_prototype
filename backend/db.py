@@ -15,13 +15,14 @@ DB_USER = os.getenv("DB_USER", "root")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "")
 DB_NAME = os.getenv("DB_NAME", "bytetrail_db")
 ENABLE_SQLITE_FALLBACK = os.getenv("ENABLE_SQLITE_FALLBACK", "True").lower() in ("true", "1", "yes")
+DB_ENGINE = os.getenv("DB_ENGINE", "").strip().lower()
 
 SQLITE_DB_PATH = Path(__file__).resolve().parent / "bytetrail_dev.db"
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("bytetrail.db")
 
-ACTIVE_ENGINE = "mysql"
+ACTIVE_ENGINE = "sqlite" if DB_ENGINE == "sqlite" else "mysql"
 _DB_INITIALIZED = False
 
 
@@ -67,13 +68,25 @@ def try_mysql_connection():
 def get_connection(ensure_init: bool = True):
     """Get active database connection (MySQL or fallback SQLite)."""
     global ACTIVE_ENGINE, _DB_INITIALIZED
+
+    # 1. Direct SQLite mode
+    if DB_ENGINE == "sqlite" or ACTIVE_ENGINE == "sqlite":
+        ACTIVE_ENGINE = "sqlite"
+        conn = sqlite3.connect(str(SQLITE_DB_PATH))
+        conn.row_factory = sqlite3.Row
+        if ensure_init and not _DB_INITIALIZED:
+            _DB_INITIALIZED = True
+            init_db(conn=conn)
+        return conn
+
+    # 2. Try MySQL connection
     try:
         conn = try_mysql_connection()
         ACTIVE_ENGINE = "mysql"
     except Exception as exc:
         if ENABLE_SQLITE_FALLBACK:
-            logger.warning(
-                "Could not connect to MySQL (%s). Falling back to SQLite (%s).",
+            logger.info(
+                "MySQL not reachable (%s). Switched to SQLite database engine (%s).",
                 exc,
                 SQLITE_DB_PATH,
             )
