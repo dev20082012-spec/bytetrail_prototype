@@ -1,0 +1,21 @@
+From: security-alerts@paypal-security-update.com
+To: analyst@bytetrail.io
+Subject: URGENT: Account Suspension Notice - Identity Verification Required
+Date: Sun, 23 Aug 2026 14:30:00 +0000
+Message-ID: <992837198237@paypal-security-update.com>
+Received: from mail.attack-relay-server.ru (185.220.101.5) by mx.google.com
+Authentication-Results: mx.google.com; spf=fail smtp.mailfrom=paypal-security-update.com; dkim=fail; dmarc=fail
+Content-Type: text/plain; charset=UTF-8
+
+Dear Customer,
+
+We detected unauthorized suspicious login attempts on your account from IP address 185.220.101.5 (Moscow, Russia).
+
+To prevent permanent deactivation of your account and funds freeze, you must immediately confirm your banking credentials and security questions at the following secure portal within 24 hours:
+
+http://paypal-security-update.com/secure-login/verify.php
+
+Failure to complete this verification will result in permanent account termination.
+
+Regards,
+PayPal Fraud Prevention Team
