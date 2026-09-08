@@ -180,14 +180,24 @@ DEMO_EMAILS = [
 ]
 
 
+def safe_print(msg: str):
+    try:
+        print(msg)
+    except Exception:
+        try:
+            print(msg.encode("ascii", errors="replace").decode("ascii"))
+        except Exception:
+            pass
+
+
 def seed_database():
     """Ingest, analyze, and generate forensic reports for sample emails."""
-    print("🚀 Initializing ByteTrail Database and Intelligence Pipeline...")
+    safe_print("[*] Initializing ByteTrail Database and Intelligence Pipeline...")
     init_db()
 
-    print(f"📦 Seeding {len(DEMO_EMAILS)} realistic threat & forensic scenarios...\n")
-    print(f"{'ID':<4} | {'Threat Level':<12} | {'Score':<6} | {'Sender':<35} | {'Origin Location':<25}")
-    print("-" * 90)
+    safe_print(f"[*] Seeding {len(DEMO_EMAILS)} realistic threat & forensic scenarios...\n")
+    safe_print(f"{'ID':<4} | {'Threat Level':<12} | {'Score':<6} | {'Sender':<35} | {'Origin Location':<25}")
+    safe_print("-" * 90)
 
     for item in DEMO_EMAILS:
         # 1. Insert Email
@@ -253,9 +263,10 @@ def seed_database():
                 print(f"Warning: PDF gen error for #{email_id}: {e}")
 
         loc_str = f"{country}, {city}"
-        print(f"#{email_id:<3} | {risk_level.upper():<12} | {final_score:<6} | {item['sender'][:33]:<35} | {loc_str[:24]:<25}")
+        safe_print(f"#{email_id:<3} | {risk_level.upper():<12} | {final_score:<6} | {item['sender'][:33]:<35} | {loc_str[:24]:<25}")
 
-    print("\n✅ Seed dataset generated and forensic reports compiled in reports/!")
+    safe_print("\n[+] Seed dataset generated and forensic reports compiled in reports/!")
+
 
 
 if __name__ == "__main__":

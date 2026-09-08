@@ -6,6 +6,7 @@ from datetime import timedelta
 from fastapi import FastAPI, HTTPException, UploadFile, File, Request, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from db import (
     init_db,
@@ -86,7 +87,16 @@ async def lifespan(app: FastAPI):
     except Exception:
         pass
 
-    # 3. Register pipeline runner and start automated background mailbox polling daemon
+    # 3. Seed demo forensic threat scenarios if database is empty
+    try:
+        existing_cases = get_all_emails_enriched()
+        if len(existing_cases) == 0:
+            from seed_data import seed_database
+            seed_database()
+    except Exception:
+        pass
+
+    # 4. Register pipeline runner and start automated background mailbox polling daemon
     mailbox_manager.register_pipeline_runner(run_intelligence_pipeline)
     mailbox_manager.start_background_poller(interval_seconds=60)
 
@@ -1060,3 +1070,61 @@ def get_campaign_graph():
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Graph generation error: {str(exc)}",
         )
+
+
+# ==============================================================================
+# Frontend Static Asset & Page Routes (Unified Single-Service Deployment)
+# ==============================================================================
+FRONTEND_DIR = None
+for candidate in [
+    Path(__file__).resolve().parent / "frontend",          # /app/frontend or backend/frontend
+    Path(__file__).resolve().parent.parent / "frontend",   # repo_root/frontend
+    Path("/app/frontend"),                                 # Container root
+]:
+    if candidate.exists() and candidate.is_dir() and (candidate / "index.html").exists():
+        FRONTEND_DIR = candidate
+        break
+
+if FRONTEND_DIR:
+    @app.get("/dashboard", include_in_schema=False)
+    @app.get("/dashboard.html", include_in_schema=False)
+    def serve_dashboard():
+        dash_path = FRONTEND_DIR / "dashboard.html"
+        if dash_path.exists():
+            return FileResponse(dash_path)
+        raise HTTPException(status_code=404, detail="Dashboard not found")
+
+    @app.get("/login", include_in_schema=False)
+    @app.get("/login.html", include_in_schema=False)
+    def serve_login():
+        login_path = FRONTEND_DIR / "login.html"
+        if login_path.exists():
+            return FileResponse(login_path)
+        raise HTTPException(status_code=404, detail="Login page not found")
+
+    @app.get("/register", include_in_schema=False)
+    @app.get("/register.html", include_in_schema=False)
+    def serve_register():
+        reg_path = FRONTEND_DIR / "register.html"
+        if reg_path.exists():
+            return FileResponse(reg_path)
+        raise HTTPException(status_code=404, detail="Register page not found")
+
+    @app.get("/privacy", include_in_schema=False)
+    @app.get("/privacy.html", include_in_schema=False)
+    def serve_privacy():
+        priv_path = FRONTEND_DIR / "privacy.html"
+        if priv_path.exists():
+            return FileResponse(priv_path)
+        raise HTTPException(status_code=404, detail="Privacy page not found")
+
+    @app.get("/terms", include_in_schema=False)
+    @app.get("/terms.html", include_in_schema=False)
+    def serve_terms():
+        terms_path = FRONTEND_DIR / "terms.html"
+        if terms_path.exists():
+            return FileResponse(terms_path)
+        raise HTTPException(status_code=404, detail="Terms page not found")
+
+    # Mount static assets at root (so /, /styles.css, /app.js, /logo.png all work)
+    app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend_static")

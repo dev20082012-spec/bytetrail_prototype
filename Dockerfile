@@ -17,6 +17,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend source files
 COPY backend/ .
 
+# Copy frontend web assets (HTML, CSS, JS, images)
+COPY frontend/ ./frontend
+
+
 # Expose default port
 EXPOSE 8000
 
