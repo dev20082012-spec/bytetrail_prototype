@@ -409,6 +409,27 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <!-- Full Email Message Body & Raw RFC 822 Headers Preview (PS-26106) -->
+                                    <div style="margin-top: 1rem; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 0.85rem;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.4rem;">
+                                            <span style="font-size: 0.78rem; font-weight: 700; color: #f1f5f9;"><i class="fa-solid fa-envelope-open-text" style="color: var(--primary); margin-right: 0.35rem;"></i> Ingested Email Message Body Content</span>
+                                            <button type="button" class="btn btn-sm btn-cyber-secondary" id="btn-copy-ws-body" style="font-size: 0.68rem; padding: 0.2rem 0.55rem;">
+                                                <i class="fa-solid fa-copy"></i> <span>Copy Body Text</span>
+                                            </button>
+                                        </div>
+                                        <div id="ws-email-body-preview" style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: 0.45rem; padding: 0.85rem; font-family: var(--font-mono); font-size: 0.76rem; color: #e2e8f0; max-height: 220px; overflow-y: auto; white-space: pre-wrap; line-height: 1.55; word-break: break-word;">
+                                            (Loading email body content...)
+                                        </div>
+
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.85rem; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.4rem;">
+                                            <span style="font-size: 0.78rem; font-weight: 700; color: #f1f5f9;"><i class="fa-solid fa-code" style="color: #38bdf8; margin-right: 0.35rem;"></i> Raw RFC 822 Inbound Headers</span>
+                                            <button type="button" class="btn btn-sm btn-cyber-secondary" id="btn-copy-ws-headers" style="font-size: 0.68rem; padding: 0.2rem 0.55rem;">
+                                                <i class="fa-solid fa-copy"></i> <span>Copy Headers</span>
+                                            </button>
+                                        </div>
+                                        <pre id="ws-email-headers-preview" class="hud-code-snippet" style="max-height: 180px; margin: 0; font-size: 0.72rem; color: #94a3b8; background: #080c14;">(Loading raw network headers...)</pre>
+                                    </div>
                                 </div>
                             </div>
 
@@ -1446,7 +1467,7 @@
                 </div>
             </div>
 
-            <div style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
+            <div class="modal-body-cyber" id="pipeline-modal-scrollable-body" style="padding: 1.25rem 1.4rem; display: flex; flex-direction: column; gap: 1rem; overflow-y: auto; flex: 1 1 auto; min-height: 0; max-height: calc(88vh - 135px);">
                 <!-- Target Payload Meta Pill -->
                 <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle); border-radius: 0.5rem; padding: 0.65rem 0.9rem; font-size: 0.78rem; display: flex; align-items: center; justify-content: space-between;" id="pipeline-target-pill">
                     <span style="color: var(--text-muted);"><i class="fa-solid fa-envelope" style="color: var(--primary); margin-right: 0.3rem;"></i> Target Email: <strong id="pipeline-target-sender" style="color: #ffffff;">Analyzing Payload...</strong></span>
@@ -1526,17 +1547,22 @@
                 </div>
 
                 <!-- Live Pipeline Log Terminal Ticker -->
-                <div style="background: #09090b; border: 1px solid var(--border-subtle); border-radius: 0.5rem; padding: 0.75rem; font-family: var(--font-mono); font-size: 0.72rem; color: #a1a1aa; height: 85px; overflow-y: auto;" id="pipeline-live-terminal">
+                <div style="background: #09090b; border: 1px solid var(--border-subtle); border-radius: 0.5rem; padding: 0.75rem; font-family: var(--font-mono); font-size: 0.72rem; color: #a1a1aa; height: 80px; overflow-y: auto;" id="pipeline-live-terminal">
                     <div style="color: #a78bfa;">[INIT] Threat Forensic Pipeline initialized. Ready for ingestion...</div>
                 </div>
+            </div>
 
-                <!-- Phase Progression Confirmation Action Button -->
-                <div style="margin-top: 0.35rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                    <button class="btn btn-cyber-primary" id="btn-pipeline-proceed" style="flex: 1; min-width: 220px; justify-content: center; font-size: 0.88rem; font-weight: 600; padding: 0.65rem 0.9rem; border-radius: 0.5rem; background: linear-gradient(135deg, #10b981, #059669); border-color: #34d399; color: #ffffff; display: none; box-shadow: 0 0 15px rgba(16, 185, 129, 0.35);">
-                        <span>OK: View Deep Forensic Inspection</span> <i class="fa-solid fa-arrow-right" style="margin-left: 0.4rem;"></i>
-                    </button>
-                    <button class="btn btn-cyber-secondary" id="btn-pipeline-view-ws" style="justify-content: center; font-size: 0.88rem; font-weight: 600; padding: 0.65rem 0.9rem; border-radius: 0.5rem; display: none;">
+            <!-- Pinned Bottom Action Footer (Always 100% Visible, Never Cut Off) -->
+            <div class="modal-footer-cyber" style="padding: 0.75rem 1.4rem; background: var(--bg-surface); border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
+                <button type="button" class="btn btn-sm btn-cyber-secondary" id="btn-pipeline-skip-now" title="Skip animation and display full case info immediately" style="font-size: 0.76rem;">
+                    <i class="fa-solid fa-forward"></i> <span>Skip Animation</span>
+                </button>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <button type="button" class="btn btn-sm btn-cyber-secondary" id="btn-pipeline-view-ws" style="display: none;">
                         <i class="fa-solid fa-folder-open"></i> <span>Open in Workspace</span>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-cyber-primary" id="btn-pipeline-proceed" style="background: linear-gradient(135deg, #10b981, #059669); border-color: #34d399; color: #ffffff; display: none;">
+                        <i class="fa-solid fa-magnifying-glass-chart"></i> <span>View Full Mail Forensic Info</span>
                     </button>
                 </div>
             </div>

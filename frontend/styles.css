@@ -1497,12 +1497,18 @@ textarea:focus {
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 1.25rem 1rem;
+    overscroll-behavior: contain;
 }
 
 .modal-backdrop {
-    position: absolute;
+    position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+    z-index: 0;
 }
 
 .modal-dialog {
@@ -1510,32 +1516,45 @@ textarea:focus {
     background: var(--bg-card);
     border: 1px solid var(--border-card);
     border-radius: 0.65rem;
-    width: 90%;
-    max-width: 860px;
-    max-height: 90vh;
+    width: 92%;
+    max-width: 880px;
+    max-height: 88vh;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-    z-index: 1001;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
+    z-index: 1;
     overflow: hidden;
+    margin: auto;
 }
 
 @media (max-width: 768px) {
     .modal-dialog {
-        width: 95vw;
-        max-height: 94vh;
-        margin: 0.5rem;
+        width: 96vw;
+        max-height: 92vh;
+        margin: auto;
         border-radius: 0.5rem;
     }
 }
 
 .modal-header-cyber {
-    padding: 1.15rem 1.6rem;
+    padding: 1rem 1.4rem;
     background: var(--bg-surface);
     border-bottom: 1px solid var(--border-subtle);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
+}
+
+.modal-footer-cyber {
+    padding: 0.75rem 1.4rem;
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 0.65rem;
 }
 
 @media (max-width: 640px) {
@@ -1613,12 +1632,35 @@ textarea:focus {
 }
 
 .modal-body-cyber {
-    padding: 1.5rem;
+    padding: 1.25rem 1.4rem;
     overflow-y: auto;
+    flex: 1 1 auto;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     gap: 1.15rem;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(167, 139, 250, 0.45) rgba(0, 0, 0, 0.25);
+}
+
+.modal-body-cyber::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-body-cyber::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 4px;
+}
+
+.modal-body-cyber::-webkit-scrollbar-thumb {
+    background: rgba(167, 139, 250, 0.4);
+    border-radius: 4px;
+}
+
+.modal-body-cyber::-webkit-scrollbar-thumb:hover {
+    background: rgba(167, 139, 250, 0.7);
 }
 
 @media (max-width: 640px) {

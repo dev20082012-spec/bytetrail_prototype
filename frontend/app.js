@@ -920,6 +920,30 @@ function renderInvestigationWorkspace(caseId) {
     const detRelay = document.getElementById("ws-det-relay");
     if (detRelay) detRelay.textContent = c.contentAnalysis.deterministic.suspiciousRelay;
 
+    // Section 3: Full Ingested Message Body & Raw Headers Preview
+    const bodyPreview = document.getElementById("ws-email-body-preview");
+    if (bodyPreview) {
+        bodyPreview.textContent = c.body_text || "(No plaintext body found in .EML payload)";
+    }
+    const headersPreview = document.getElementById("ws-email-headers-preview");
+    if (headersPreview) {
+        headersPreview.textContent = c.raw_headers || "(No raw headers provided)";
+    }
+    const btnCopyBody = document.getElementById("btn-copy-ws-body");
+    if (btnCopyBody) {
+        btnCopyBody.onclick = () => {
+            navigator.clipboard.writeText(c.body_text || "");
+            showToast("📋 Email body text copied to clipboard!", "success");
+        };
+    }
+    const btnCopyHeaders = document.getElementById("btn-copy-ws-headers");
+    if (btnCopyHeaders) {
+        btnCopyHeaders.onclick = () => {
+            navigator.clipboard.writeText(c.raw_headers || "");
+            showToast("📋 Raw RFC 822 headers copied to clipboard!", "success");
+        };
+    }
+
     // Section 4: Header & Authentication Forensics
     const authSpf = document.getElementById("ws-auth-spf");
     if (authSpf) {
@@ -3374,14 +3398,24 @@ async function handleIngestSubmit(e) {
     }
 }
 
+let activePipelineId = 0;
+
 // Sequential 4-Vector Pipeline Progress HUD Visualizer (Modern Drop-Down Architecture)
 async function runSequential4VectorPipeline(emailResult) {
+    const currentRunId = ++activePipelineId;
+    let isCancelled = false;
+
     const modal = document.getElementById("modal-pipeline-progress");
     const fill = document.getElementById("pipeline-progress-bar-fill");
     const pctLabel = document.getElementById("pipeline-pct-label");
     const statusBadge = document.getElementById("pipeline-status-badge");
     const terminal = document.getElementById("pipeline-live-terminal");
     const proceedBtn = document.getElementById("btn-pipeline-proceed");
+    const skipBtn = document.getElementById("btn-pipeline-skip-now");
+    const viewWsBtn = document.getElementById("btn-pipeline-view-ws");
+    const closeBtn = document.getElementById("btn-close-pipeline-modal");
+    const backdrop = document.getElementById("pipeline-modal-backdrop");
+    const scrollBody = document.getElementById("pipeline-modal-scrollable-body");
 
     const senderLabel = document.getElementById("pipeline-target-sender");
     const caseLabel = document.getElementById("pipeline-target-case");
@@ -3393,7 +3427,14 @@ async function runSequential4VectorPipeline(emailResult) {
 
     if (senderLabel) senderLabel.textContent = emailResult.sender || "Unknown Sender";
     if (caseLabel) caseLabel.textContent = `Case #${emailResult.id}`;
+
+    // Reset button display states
     if (proceedBtn) proceedBtn.style.display = "none";
+    if (viewWsBtn) viewWsBtn.style.display = "none";
+    if (skipBtn) {
+        skipBtn.style.display = "inline-flex";
+        skipBtn.innerHTML = `<i class="fa-solid fa-forward"></i> <span>Skip Animation</span>`;
+    }
 
     const resetStepCard = (id, detailDefault, badgeDefault) => {
         const card = document.getElementById(id);
@@ -3437,8 +3478,121 @@ async function runSequential4VectorPipeline(emailResult) {
     appendLog(`[INIT] Executing 4-Vector Threat Forensic Pipeline for Case #${emailResult.id}...`, "#a78bfa");
 
     modal.classList.remove("hidden");
+    if (scrollBody) scrollBody.scrollTop = 0;
 
-    const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
+    const completeAllCardsInstantly = () => {
+        const fraudPct = Math.round((emailResult.fraud_score || 0) * 100);
+        const spf = (emailResult.spf_result || "none").toUpperCase();
+        const dkim = (emailResult.dkim_result || "none").toUpperCase();
+        const dmarc = (emailResult.dmarc_result || "none").toUpperCase();
+        const headerValid = emailResult.header_valid;
+        const ip = emailResult.ip_address || "127.0.0.1";
+        const geoLoc = `${emailResult.city || "Unknown City"}, ${emailResult.country || "Unknown Country"}`;
+        const isp = emailResult.isp_asn || "Standard Relays";
+        const isTor = emailResult.is_vpn_tor;
+        const hashSnippet = emailResult.sha256_hash ? emailResult.sha256_hash.substring(0, 16) + "..." : "SEALED";
+        const riskLevel = (emailResult.risk_level || "low").toLowerCase();
+        const finalScore = emailResult.final_score || 0;
+
+        // V1
+        const cardV1 = document.getElementById("step-v1");
+        const badgeV1 = document.getElementById("step-v1-badge");
+        const detailV1 = document.getElementById("step-v1-detail");
+        if (cardV1) cardV1.classList.add("active");
+        if (detailV1) detailV1.textContent = `Fraud Score: ${fraudPct}% | Deceptive Language Analyzed`;
+        if (badgeV1) {
+            badgeV1.textContent = fraudPct >= 50 ? `FLAGGED (${fraudPct}%)` : `CLEAN (${fraudPct}%)`;
+            badgeV1.className = `badge-risk-pill ${fraudPct >= 50 ? "high" : "low"}`;
+        }
+
+        // V2
+        const cardV2 = document.getElementById("step-v2");
+        const badgeV2 = document.getElementById("step-v2-badge");
+        const detailV2 = document.getElementById("step-v2-detail");
+        if (cardV2) cardV2.classList.add("active");
+        if (detailV2) detailV2.textContent = `SPF: ${spf} | DKIM: ${dkim} | DMARC: ${dmarc}`;
+        if (badgeV2) {
+            badgeV2.textContent = (!headerValid || spf === "FAIL" || dkim === "FAIL") ? `HEADER FAIL (${spf}/${dkim})` : `VERIFIED (${spf}/${dkim})`;
+            badgeV2.className = `badge-risk-pill ${(!headerValid || spf === "FAIL" || dkim === "FAIL") ? "high" : "low"}`;
+        }
+
+        // V3
+        const cardV3 = document.getElementById("step-v3");
+        const badgeV3 = document.getElementById("step-v3-badge");
+        const detailV3 = document.getElementById("step-v3-detail");
+        if (cardV3) cardV3.classList.add("active");
+        if (detailV3) detailV3.textContent = `Relay IP: ${ip} (${geoLoc}) | ASN: ${isp}`;
+        if (badgeV3) {
+            badgeV3.textContent = isTor ? `TOR / VPN DETECTED` : `GEO RESOLVED (${emailResult.country || "IP"})`;
+            badgeV3.className = `badge-risk-pill ${isTor ? "high" : "low"}`;
+        }
+
+        // V4
+        const cardV4 = document.getElementById("step-v4");
+        const badgeV4 = document.getElementById("step-v4-badge");
+        const detailV4 = document.getElementById("step-v4-detail");
+        if (cardV4) cardV4.classList.add("active");
+        if (detailV4) detailV4.textContent = `SHA-256: ${hashSnippet} | Composite Risk Score: ${finalScore}/100`;
+        if (badgeV4) {
+            badgeV4.textContent = `${riskLevel.toUpperCase()} THREAT (${finalScore}/100)`;
+            badgeV4.className = `badge-risk-pill ${riskLevel}`;
+        }
+
+        if (fill) fill.style.width = "100%";
+        if (pctLabel) pctLabel.textContent = "100%";
+        if (statusBadge) {
+            statusBadge.textContent = "VERIFICATION COMPLETE";
+            statusBadge.style.color = "#34d399";
+        }
+    };
+
+    const showFinishedButtons = () => {
+        if (skipBtn) skipBtn.style.display = "none";
+        if (proceedBtn) {
+            proceedBtn.style.display = "inline-flex";
+            proceedBtn.onclick = () => {
+                modal.classList.add("hidden");
+                openForensicModal(emailResult.id);
+            };
+        }
+        if (viewWsBtn) {
+            viewWsBtn.style.display = "inline-flex";
+            viewWsBtn.onclick = () => {
+                modal.classList.add("hidden");
+                const wsTab = document.querySelector(`.nav-tab[data-tab="workspace"]`);
+                if (wsTab) wsTab.click();
+                renderInvestigationWorkspace(emailResult.id);
+            };
+        }
+    };
+
+    const closePipelineModal = () => {
+        isCancelled = true;
+        modal.classList.add("hidden");
+    };
+
+    if (closeBtn) closeBtn.onclick = closePipelineModal;
+    if (backdrop) backdrop.onclick = closePipelineModal;
+
+    if (skipBtn) {
+        skipBtn.onclick = () => {
+            isCancelled = true;
+            completeAllCardsInstantly();
+            modal.classList.add("hidden");
+            openForensicModal(emailResult.id);
+        };
+    }
+
+    const sleep = (ms) => new Promise((res) => {
+        const timeout = setTimeout(() => res(true), ms);
+        const checkInterval = setInterval(() => {
+            if (isCancelled || currentRunId !== activePipelineId) {
+                clearTimeout(timeout);
+                clearInterval(checkInterval);
+                res(false);
+            }
+        }, 40);
+    });
 
     // ==========================================
     // STEP 1: Vector 1 - Deceptive NLP Heuristics Drop
@@ -3453,7 +3607,7 @@ async function runSequential4VectorPipeline(emailResult) {
         badgeV1.style.color = "#60a5fa";
     }
     appendLog(`[VECTOR-1] Inspecting deceptive linguistics, NLP phishing indicators & urgency keywords...`, "#60a5fa");
-    await sleep(400);
+    if (!(await sleep(400))) return;
 
     const fraudPct = Math.round((emailResult.fraud_score || 0) * 100);
     if (detailV1) detailV1.textContent = `Fraud Score: ${fraudPct}% | Deceptive Language Analyzed`;
@@ -3473,7 +3627,7 @@ async function runSequential4VectorPipeline(emailResult) {
     // ==========================================
     // STEP 2: Vector 2 - RFC 822 Forensic Headers Drop
     // ==========================================
-    await sleep(350);
+    if (!(await sleep(350))) return;
     const cardV2 = document.getElementById("step-v2");
     const badgeV2 = document.getElementById("step-v2-badge");
     const detailV2 = document.getElementById("step-v2-detail");
@@ -3484,7 +3638,7 @@ async function runSequential4VectorPipeline(emailResult) {
         badgeV2.style.color = "#a78bfa";
     }
     appendLog(`[VECTOR-2] Auditing RFC 822 headers for SPF, DKIM signature & DMARC alignment...`, "#a78bfa");
-    await sleep(400);
+    if (!(await sleep(400))) return;
 
     const spf = (emailResult.spf_result || "none").toUpperCase();
     const dkim = (emailResult.dkim_result || "none").toUpperCase();
@@ -3508,7 +3662,7 @@ async function runSequential4VectorPipeline(emailResult) {
     // ==========================================
     // STEP 3: Vector 3 - Origin GeoIP & Threat Intel Drop
     // ==========================================
-    await sleep(350);
+    if (!(await sleep(350))) return;
     const cardV3 = document.getElementById("step-v3");
     const badgeV3 = document.getElementById("step-v3-badge");
     const detailV3 = document.getElementById("step-v3-detail");
@@ -3520,7 +3674,7 @@ async function runSequential4VectorPipeline(emailResult) {
     }
     const ip = emailResult.ip_address || "127.0.0.1";
     appendLog(`[VECTOR-3] Querying GeoIP database & threat intel for relay node ${ip}...`, "#f472b6");
-    await sleep(400);
+    if (!(await sleep(400))) return;
 
     const geoLoc = `${emailResult.city || "Unknown City"}, ${emailResult.country || "Unknown Country"}`;
     const isp = emailResult.isp_asn || "Standard Relays";
@@ -3543,7 +3697,7 @@ async function runSequential4VectorPipeline(emailResult) {
     // ==========================================
     // STEP 4: Vector 4 - ISO 27037 Evidence Hash & Risk Rating Drop
     // ==========================================
-    await sleep(350);
+    if (!(await sleep(350))) return;
     const cardV4 = document.getElementById("step-v4");
     const badgeV4 = document.getElementById("step-v4-badge");
     const detailV4 = document.getElementById("step-v4-detail");
@@ -3554,7 +3708,7 @@ async function runSequential4VectorPipeline(emailResult) {
         badgeV4.style.color = "#34d399";
     }
     appendLog(`[VECTOR-4] Generating SHA-256 chain-of-custody fingerprint & multi-factor risk score...`, "#34d399");
-    await sleep(400);
+    if (!(await sleep(400))) return;
 
     const hashSnippet = emailResult.sha256_hash ? emailResult.sha256_hash.substring(0, 16) + "..." : "SEALED";
     const riskLevel = (emailResult.risk_level || "low").toLowerCase();
@@ -3573,34 +3727,8 @@ async function runSequential4VectorPipeline(emailResult) {
     }
     appendLog(`[VECTOR-4 COMPLETE] SHA-256 Sealed. Aggregated Rating: ${riskLevel.toUpperCase()} (${finalScore}/100)`, "#34d399");
 
-    // Display Phase Progression Confirmation Button (OK: Proceed to Forensic Incident Inspection Report)
-    const closeBtn = document.getElementById("btn-close-pipeline-modal");
-    const backdrop = document.getElementById("pipeline-modal-backdrop");
-    const viewWsBtn = document.getElementById("btn-pipeline-view-ws");
-
-    const closePipelineModal = () => {
-        modal.classList.add("hidden");
-    };
-
-    if (closeBtn) closeBtn.onclick = closePipelineModal;
-    if (backdrop) backdrop.onclick = closePipelineModal;
-
-    if (proceedBtn) {
-        proceedBtn.style.display = "flex";
-        proceedBtn.onclick = () => {
-            modal.classList.add("hidden");
-            openForensicModal(emailResult.id);
-        };
-    }
-    if (viewWsBtn) {
-        viewWsBtn.style.display = "inline-flex";
-        viewWsBtn.onclick = () => {
-            modal.classList.add("hidden");
-            const wsTab = document.querySelector(`.nav-tab[data-tab="workspace"]`);
-            if (wsTab) wsTab.click();
-            renderInvestigationWorkspace(emailResult.id);
-        };
-    }
+    // Display Phase Progression Confirmation Buttons
+    showFinishedButtons();
 }
 
 // Open Forensic Inspection HUD Modal
@@ -3731,6 +3859,44 @@ function openForensicModal(id) {
                 <div style="font-size: 0.72rem; color: ${email.header_valid ? 'var(--threat-low)' : 'var(--threat-high)'}; margin-top: 0.35rem;">
                     ${email.header_valid ? '✅ Signatures Validated' : '⚠️ Signatures Failed'}
                 </div>
+            </div>
+        </div>
+
+        <!-- Primary Email Envelope & Full Message Body Card (Instant Access) -->
+        <div class="hud-detail-card" style="border: 1px solid rgba(167, 139, 250, 0.4); background: rgba(167, 139, 250, 0.05);">
+            <div class="hud-detail-label" style="display: flex; justify-content: space-between; align-items: center;">
+                <span><i class="fa-solid fa-envelope-open-text" style="color: var(--primary);"></i> Ingested Email Payload &amp; Envelope Details ${signalBadge("[Observed Evidence]", "#34d399")}</span>
+                <span style="font-family: var(--font-mono); font-size: 0.72rem; color: #a78bfa; font-weight: 700;">Case #${email.id}</span>
+            </div>
+            
+            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: 0.45rem; padding: 0.85rem 1rem; display: flex; flex-direction: column; gap: 0.45rem; font-size: 0.82rem; margin-bottom: 0.75rem;">
+                <div><span style="color: var(--text-muted); width: 85px; display: inline-block;">Subject:</span> <strong style="color: #f8fafc;">${escapeHtml(email.subject)}</strong></div>
+                <div><span style="color: var(--text-muted); width: 85px; display: inline-block;">Sender:</span> <span style="font-family: var(--font-mono); color: #a78bfa;">${escapeHtml(email.sender)}</span></div>
+                <div><span style="color: var(--text-muted); width: 85px; display: inline-block;">Relay IP:</span> <code style="color: #38bdf8; background: rgba(255,255,255,0.06); padding: 0.15rem 0.4rem; border-radius: 3px;">${escapeHtml(email.ip_address || "N/A")}</code> <span style="color: var(--text-muted); font-size: 0.74rem;">(${escapeHtml(email.city || "Unknown")}, ${escapeHtml(email.country || "Unknown")})</span></div>
+                <div><span style="color: var(--text-muted); width: 85px; display: inline-block;">Ingested At:</span> <span style="color: var(--text-muted);">${formatTimestamp(email.received_at)}</span></div>
+            </div>
+
+            <!-- Full Message Body Content Excerpt -->
+            <div style="margin-bottom: 0.65rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                    <span style="font-size: 0.74rem; font-weight: 700; color: #cbd5e1;"><i class="fa-solid fa-align-left" style="color: var(--primary);"></i> Message Body Text (Clean View)</span>
+                    <button type="button" class="btn btn-sm btn-cyber-secondary" onclick="navigator.clipboard.writeText(document.getElementById('modal-raw-body-snippet')?.textContent || ''); showToast('📋 Body text copied to clipboard!', 'success');" style="font-size: 0.68rem; padding: 0.15rem 0.5rem;">
+                        <i class="fa-solid fa-copy"></i> Copy Body
+                    </button>
+                </div>
+                <pre class="hud-code-snippet" id="modal-raw-body-snippet" style="max-height: 220px; font-size: 0.78rem; line-height: 1.5; color: #f1f5f9; background: #0b0f19;">${escapeHtml(email.body_text || "(No plaintext body found in .EML payload)")}</pre>
+            </div>
+
+            <!-- Raw Network Headers (Collapsible / Preview) -->
+            <div>
+                <details style="background: rgba(0,0,0,0.25); border: 1px solid var(--border-subtle); border-radius: 0.4rem; padding: 0.45rem 0.75rem;">
+                    <summary style="font-size: 0.74rem; font-weight: 700; color: #38bdf8; cursor: pointer; user-select: none;">
+                        <i class="fa-solid fa-code"></i> View Full Raw RFC 822 Network Inbound Headers (${(email.raw_headers || "").length} bytes)
+                    </summary>
+                    <div style="margin-top: 0.5rem;">
+                        <pre class="hud-code-snippet" style="max-height: 180px; font-size: 0.7rem; color: #94a3b8; background: #060910;">${email.raw_headers ? escapeHtml(email.raw_headers) : '(No raw headers provided)'}</pre>
+                    </div>
+                </details>
             </div>
         </div>
 
@@ -3906,25 +4072,14 @@ function openForensicModal(id) {
             </div>
         </div>
 
-        <!-- Envelope Info -->
-        <div class="hud-detail-card">
-            <div class="hud-detail-label"><i class="fa-solid fa-envelope"></i> Envelope Metadata ${signalBadge("[Observed Evidence]", "#34d399")}</div>
-            <div style="display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.83rem;">
-                <div><span style="color: var(--text-muted); width: 80px; display: inline-block;">Sender:</span> <span style="font-family: var(--font-mono); color: #a78bfa;">${escapeHtml(email.sender)}</span></div>
-                <div><span style="color: var(--text-muted); width: 80px; display: inline-block;">Subject:</span> <strong>${escapeHtml(email.subject)}</strong></div>
-            </div>
-        </div>
-
-        <!-- Raw RFC 822 Headers -->
-        <div class="hud-detail-card">
-            <div class="hud-detail-label"><i class="fa-solid fa-code"></i> Raw RFC 822 Network Headers ${signalBadge("[Observed Evidence]", "#34d399")}</div>
-            <pre class="hud-code-snippet">${email.raw_headers ? escapeHtml(email.raw_headers) : '<span style="color: var(--text-muted);">(No raw headers provided)</span>'}</pre>
-        </div>
-
-        <!-- Body Content -->
-        <div class="hud-detail-card">
-            <div class="hud-detail-label"><i class="fa-solid fa-align-left"></i> Message Body Excerpt ${signalBadge("[Observed Evidence]", "#34d399")}</div>
-            <pre class="hud-code-snippet">${escapeHtml(email.body_text || "")}</pre>
+        <!-- Action Row at Bottom of Modal -->
+        <div style="display: flex; gap: 0.65rem; justify-content: flex-end; margin-top: 0.5rem; flex-wrap: wrap;">
+            <button type="button" class="btn btn-cyber-secondary" onclick="closeForensicModal(); const wsTab = document.querySelector('.nav-tab[data-tab=\\'workspace\\']'); if (wsTab) wsTab.click(); renderInvestigationWorkspace(${email.id});">
+                <i class="fa-solid fa-folder-open"></i> <span>Open in Investigation Workspace</span>
+            </button>
+            <button type="button" class="btn btn-cyber-primary" onclick="downloadReport(${email.id});">
+                <i class="fa-solid fa-file-pdf"></i> <span>Download Forensic Report</span>
+            </button>
         </div>
     `;
 
