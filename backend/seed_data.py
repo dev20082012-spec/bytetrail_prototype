@@ -1,8 +1,7 @@
-import os
+﻿import os
 import sys
 from pathlib import Path
 
-# Add backend directory to sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from db import (
@@ -18,7 +17,6 @@ from header_analysis import analyze_headers
 from geo_lookup import resolve_geo_for_headers
 from risk_scoring import calculate_risk_score
 from report_generator import generate_forensic_report
-
 
 DEMO_EMAILS = [
     {
@@ -179,7 +177,6 @@ DEMO_EMAILS = [
     },
 ]
 
-
 def safe_print(msg: str):
     try:
         print(msg)
@@ -188,7 +185,6 @@ def safe_print(msg: str):
             print(msg.encode("ascii", errors="replace").decode("ascii"))
         except Exception:
             pass
-
 
 def seed_database():
     """Ingest, analyze, and generate forensic reports for sample emails."""
@@ -200,7 +196,6 @@ def seed_database():
     safe_print("-" * 90)
 
     for item in DEMO_EMAILS:
-        # 1. Insert Email
         email_id = insert_email(
             sender=item["sender"],
             subject=item["subject"],
@@ -208,7 +203,6 @@ def seed_database():
             body_text=item["body_text"],
         )
 
-        # 2. Intelligence Pipeline
         fraud_analysis = scan_email_content(item["subject"], item["body_text"])
         fraud_score = fraud_analysis["fraud_score"]
 
@@ -236,7 +230,6 @@ def seed_database():
             country=country,
         )
 
-        # 3. Save Analysis
         save_analysis_results(
             email_id=email_id,
             fraud_score=fraud_score,
@@ -253,7 +246,6 @@ def seed_database():
             risk_level=risk_level,
         )
 
-        # 4. Generate PDF Report
         record = get_email_details(email_id)
         if record:
             try:
@@ -266,8 +258,6 @@ def seed_database():
         safe_print(f"#{email_id:<3} | {risk_level.upper():<12} | {final_score:<6} | {item['sender'][:33]:<35} | {loc_str[:24]:<25}")
 
     safe_print("\n[+] Seed dataset generated and forensic reports compiled in reports/!")
-
-
 
 if __name__ == "__main__":
     seed_database()

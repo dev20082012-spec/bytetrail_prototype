@@ -1,4 +1,4 @@
-import os
+﻿import os
 import shutil
 import logging
 from pathlib import Path
@@ -10,12 +10,10 @@ logger = logging.getLogger("bytetrail.watcher")
 WATCH_DIR = Path(__file__).resolve().parent / "inbound_emails"
 PROCESSED_DIR = WATCH_DIR / "processed"
 
-
 def init_watch_directories():
     """Ensure the inbound watch directory structure exists."""
     WATCH_DIR.mkdir(parents=True, exist_ok=True)
     PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
-
 
 def scan_and_ingest_directory(pipeline_runner_func) -> List[Dict]:
     """
@@ -41,7 +39,6 @@ def scan_and_ingest_directory(pipeline_runner_func) -> List[Dict]:
                 )
                 ingested_records.append(record)
 
-                # Move to processed archive
                 target_dest = PROCESSED_DIR / file_path.name
                 shutil.move(str(file_path), str(target_dest))
                 logger.info("Auto-ingested and archived file: %s -> %s", file_path.name, target_dest)

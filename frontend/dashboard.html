@@ -1,34 +1,28 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>SOC Command Console — ByteTrail Threat Intelligence</title>
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="assets/logo.png">
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="icon" type="image/png" href="assets/logo.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Leaflet.js CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="styles.css">
-    
-    <!-- Auto-Initialized Analyst Session -->
-    <script src="auth.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<link rel="stylesheet" href="styles.css">
+
+<script src="auth.js"></script>
 </head>
 <body class="soc-theme">
-    <!-- App Container -->
+    
     <div class="app-wrapper">
-        <!-- Top Executive Navbar -->
+        
         <header class="top-nav">
             <div class="brand-cluster">
                 <a href="index.html" class="brand-logo" style="overflow: hidden; display: flex; align-items: center; justify-content: center; padding: 0; text-decoration: none;" title="View Product Guide">
@@ -42,8 +36,7 @@
                 </div>
             </div>
 
-            <!-- Central View Switcher Tabs -->
-            <nav class="nav-tabs">
+<nav class="nav-tabs">
                 <button class="nav-tab active" data-tab="investigation" id="nav-tab-investigation">
                     <i class="fa-solid fa-magnifying-glass-chart"></i>
                     <span>Investigation Workspace</span>
@@ -77,8 +70,7 @@
                 </button>
             </nav>
 
-            <!-- Nav Actions & User Profile Area -->
-            <div class="nav-right">
+<div class="nav-right">
                 <div class="status-chip" id="backend-status-chip">
                     <span class="pulse-dot"></span>
                     <span id="backend-status-label">Connecting...</span>
@@ -89,8 +81,7 @@
                     <span>Connect Inbox</span>
                 </button>
 
-                <!-- User Profile Dropdown Pill -->
-                <div class="user-profile-pill" id="user-profile-pill">
+<div class="user-profile-pill" id="user-profile-pill">
                     <div class="user-avatar-circle" id="user-avatar-initials">SA</div>
                     <div class="user-profile-info">
                         <span class="user-profile-name" id="user-display-name">Analyst</span>
@@ -103,8 +94,7 @@
             </div>
         </header>
 
-        <!-- Quick Detection Action Strip -->
-        <section class="quick-action-strip">
+<section class="quick-action-strip">
             <div class="quick-action-content">
                 <div class="quick-action-greeting">
                     <span class="pulse-dot" style="background: #34d399; box-shadow: 0 0 8px rgba(52, 211, 153, 0.6);"></span>
@@ -123,8 +113,7 @@
             </div>
         </section>
 
-        <!-- Real-Time Inspection Workflow Banner (PS-26106 Demo/Simulation) -->
-        <section class="workflow-banner" style="margin: 0 1.5rem 0.75rem 1.5rem; background: rgba(15, 23, 42, 0.75); border: 1px solid var(--border-subtle); border-radius: 0.5rem; padding: 0.65rem 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+<section class="workflow-banner" style="margin: 0 1.5rem 0.75rem 1.5rem; background: rgba(15, 23, 42, 0.75); border: 1px solid var(--border-subtle); border-radius: 0.5rem; padding: 0.65rem 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
             <div style="display: flex; align-items: center; gap: 0.6rem;">
                 <span style="font-size: 0.68rem; font-family: var(--font-mono); font-weight: 700; color: #60a5fa; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); padding: 0.2rem 0.5rem; border-radius: 4px;">
                     <i class="fa-solid fa-bolt"></i> REAL-TIME WORKFLOW [DEMO / SIMULATION]
@@ -144,8 +133,7 @@
             </div>
         </section>
 
-        <!-- Evidence Governance & Privacy Controls Status Bar -->
-        <section class="privacy-controls-bar" style="margin: 0 1.5rem 1rem 1.5rem; display: flex; align-items: center; gap: 0.85rem; flex-wrap: wrap; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 0.5rem; padding: 0.5rem 1rem; font-size: 0.72rem;">
+<section class="privacy-controls-bar" style="margin: 0 1.5rem 1rem 1.5rem; display: flex; align-items: center; gap: 0.85rem; flex-wrap: wrap; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 0.5rem; padding: 0.5rem 1rem; font-size: 0.72rem;">
             <span style="font-family: var(--font-mono); font-weight: 700; color: #34d399; display: flex; align-items: center; gap: 0.4rem;">
                 <i class="fa-solid fa-shield-halved"></i> EVIDENCE & PRIVACY CONTROLS:
             </span>
@@ -160,8 +148,7 @@
             <span style="color: var(--text-secondary);"><i class="fa-solid fa-file-shield" style="color: #f472b6;"></i> Audit Log: <strong style="color: #34d399;">Immutable Append-Only</strong></span>
         </section>
 
-        <!-- Threat Telemetry Stats Bar -->
-        <section class="telemetry-bar">
+<section class="telemetry-bar">
             <div class="telemetry-card card-total">
                 <div class="telemetry-header">
                     <span class="telemetry-title">Total Ingested Events</span>
@@ -207,12 +194,11 @@
             </div>
         </section>
 
-        <!-- Main Tab Content Views -->
-        <main class="main-content">
-            <!-- TAB 0: UNIFIED INVESTIGATION WORKSPACE (SIH PS-26106) -->
+<main class="main-content">
+            
             <section class="tab-pane active" id="pane-investigation">
                 <div class="investigation-workspace">
-                    <!-- Top Workspace Bar & Case Switcher -->
+                    
                     <div class="workspace-top-bar">
                         <div class="workspace-title-cluster">
                             <span class="workspace-case-tag" id="ws-case-tag">
@@ -246,10 +232,9 @@
                         </div>
                     </div>
 
-                    <!-- Active Populated Case Content -->
-                    <div id="workspace-loaded-case">
+<div id="workspace-loaded-case">
                         <div class="workspace-grid">
-                            <!-- Section 1: Case ID + Severity Metadata -->
+                            
                             <div class="ws-card">
                                 <div class="ws-card-header">
                                     <div class="ws-card-title-wrap">
@@ -290,8 +275,7 @@
                                 </div>
                             </div>
 
-                            <!-- Section 2: Threat/Fraud Risk + Attribution Confidence (Separated Concepts) -->
-                            <div class="ws-card">
+<div class="ws-card">
                                 <div class="ws-card-header">
                                     <div class="ws-card-title-wrap">
                                         <i class="fa-solid fa-scale-balanced"></i>
@@ -303,7 +287,7 @@
                                 </div>
                                 <div class="ws-card-body">
                                     <div class="ws-metric-split">
-                                        <!-- Threat / Fraud Risk Box -->
+                                        
                                         <div class="ws-score-box">
                                             <div class="ws-score-title">
                                                 <span>Threat / Fraud Risk</span>
@@ -321,8 +305,7 @@
                                             </p>
                                         </div>
 
-                                        <!-- Attribution Confidence Box -->
-                                        <div class="ws-score-box">
+<div class="ws-score-box">
                                             <div class="ws-score-title">
                                                 <span>Attribution Confidence</span>
                                                 <span class="badge-evidence badge-evidence-inferred" style="font-size: 0.6rem;">Infrastructure Match</span>
@@ -342,8 +325,7 @@
                                 </div>
                             </div>
 
-                            <!-- Section 3: Email / Content Analysis (Dual Signal: ML vs Deterministic) -->
-                            <div class="ws-card">
+<div class="ws-card">
                                 <div class="ws-card-header">
                                     <div class="ws-card-title-wrap">
                                         <i class="fa-solid fa-envelope-circle-check"></i>
@@ -361,7 +343,7 @@
                                     </div>
 
                                     <div class="ws-dual-signal-grid">
-                                        <!-- Column 1: AI/ML Predictive Signals -->
+                                        
                                         <div class="signal-sub-col">
                                             <div class="signal-sub-header">
                                                 <span><i class="fa-solid fa-brain" style="color: #c4b5fd;"></i> AI/ML Predictive Signals</span>
@@ -385,8 +367,7 @@
                                             </div>
                                         </div>
 
-                                        <!-- Column 2: Deterministic Forensic Evidence -->
-                                        <div class="signal-sub-col">
+<div class="signal-sub-col">
                                             <div class="signal-sub-header">
                                                 <span><i class="fa-solid fa-stamp" style="color: #34d399;"></i> Deterministic Evidence</span>
                                                 <span class="badge-evidence badge-evidence-deterministic" style="font-size: 0.58rem;">Verified Rule</span>
@@ -410,8 +391,7 @@
                                         </div>
                                     </div>
 
-                                    <!-- Full Email Message Body & Raw RFC 822 Headers Preview (PS-26106) -->
-                                    <div style="margin-top: 1rem; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 0.85rem;">
+<div style="margin-top: 1rem; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 0.85rem;">
                                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.4rem;">
                                             <span style="font-size: 0.78rem; font-weight: 700; color: #f1f5f9;"><i class="fa-solid fa-envelope-open-text" style="color: var(--primary); margin-right: 0.35rem;"></i> Ingested Email Message Body Content</span>
                                             <button type="button" class="btn btn-sm btn-cyber-secondary" id="btn-copy-ws-body" style="font-size: 0.68rem; padding: 0.2rem 0.55rem;">
@@ -433,8 +413,7 @@
                                 </div>
                             </div>
 
-                            <!-- Section 4: Header & Authentication Forensics -->
-                            <div class="ws-card">
+<div class="ws-card">
                                 <div class="ws-card-header">
                                     <div class="ws-card-title-wrap">
                                         <i class="fa-solid fa-stamp"></i>
@@ -475,8 +454,7 @@
                                 </div>
                             </div>
 
-                            <!-- Section 5: Indicators of Compromise (IoCs) -->
-                            <div class="ws-card">
+<div class="ws-card">
                                 <div class="ws-card-header">
                                     <div class="ws-card-title-wrap">
                                         <i class="fa-solid fa-skull"></i>
@@ -532,8 +510,7 @@
                                 </div>
                             </div>
 
-                            <!-- Section 6: URL / Redirect Intelligence -->
-                            <div class="ws-card">
+<div class="ws-card">
                                 <div class="ws-card-header">
                                     <div class="ws-card-title-wrap">
                                         <i class="fa-solid fa-link"></i>
@@ -578,8 +555,7 @@
                                 </div>
                             </div>
 
-                            <!-- Section 7: Attachment Intelligence -->
-                            <div class="ws-card">
+<div class="ws-card">
                                 <div class="ws-card-header">
                                     <div class="ws-card-title-wrap">
                                         <i class="fa-solid fa-paperclip"></i>
@@ -619,8 +595,7 @@
                                 </div>
                             </div>
 
-                            <!-- Section 8: Domain Intelligence -->
-                            <div class="ws-card">
+<div class="ws-card">
                                 <div class="ws-card-header">
                                     <div class="ws-card-title-wrap">
                                         <i class="fa-solid fa-globe"></i>
@@ -668,8 +643,7 @@
                                 </div>
                             </div>
 
-                            <!-- Section 9: Relay Trace + Infrastructure Geolocation -->
-                            <div class="ws-card">
+<div class="ws-card">
                                 <div class="ws-card-header">
                                     <div class="ws-card-title-wrap">
                                         <i class="fa-solid fa-satellite"></i>
@@ -691,8 +665,7 @@
                                         </div>
                                     </div>
 
-                                    <!-- Mandatory Technical Disclaimer -->
-                                    <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 0.4rem; padding: 0.55rem 0.75rem; font-size: 0.72rem; color: #fbbf24; line-height: 1.4;">
+<div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 0.4rem; padding: 0.55rem 0.75rem; font-size: 0.72rem; color: #fbbf24; line-height: 1.4;">
                                         <i class="fa-solid fa-triangle-exclamation"></i>
                                         <strong>Technically Safe Origin Note:</strong> Geolocation coordinates represent <em>observed network infrastructure</em> (e.g. Tor exit relay or bulletproof proxy) and may not represent the sender's physical location.
                                     </div>
@@ -720,8 +693,7 @@
                                 </div>
                             </div>
 
-                            <!-- Section 10: Threat Intelligence Correlation -->
-                            <div class="ws-card">
+<div class="ws-card">
                                 <div class="ws-card-header">
                                     <div class="ws-card-title-wrap">
                                         <i class="fa-solid fa-shield-cat"></i>
@@ -756,8 +728,7 @@
                                 </div>
                             </div>
 
-                            <!-- Section 11: PS-Required Origin Assessment (4 Likelihoods) -->
-                            <div class="ws-card">
+<div class="ws-card">
                                 <div class="ws-card-header">
                                     <div class="ws-card-title-wrap">
                                         <i class="fa-solid fa-compass-drafting"></i>
@@ -769,7 +740,7 @@
                                 </div>
                                 <div class="ws-card-body">
                                     <div class="origin-assessment-list">
-                                        <!-- Vector 1: Compromised Account -->
+                                        
                                         <div class="origin-vector-item">
                                             <div class="origin-vector-header">
                                                 <span>1. Compromised Account</span>
@@ -781,8 +752,7 @@
                                             <span class="origin-vector-rationale" id="ws-origin-comp-rat">Low likelihood. Inbound payload originated from unauthenticated external server, not internal employee token.</span>
                                         </div>
 
-                                        <!-- Vector 2: Spoofed Domain -->
-                                        <div class="origin-vector-item">
+<div class="origin-vector-item">
                                             <div class="origin-vector-header">
                                                 <span>2. Spoofed Domain</span>
                                                 <span class="origin-vector-pct" id="ws-origin-spoof-pct" style="color: #f59e0b;">78%</span>
@@ -793,8 +763,7 @@
                                             <span class="origin-vector-rationale" id="ws-origin-spoof-rat">High likelihood. From header mimics PayPal Support while SPF/DKIM authentication fails completely.</span>
                                         </div>
 
-                                        <!-- Vector 3: Anonymized Infrastructure -->
-                                        <div class="origin-vector-item">
+<div class="origin-vector-item">
                                             <div class="origin-vector-header">
                                                 <span>3. Anonymized Infrastructure</span>
                                                 <span class="origin-vector-pct" id="ws-origin-anon-pct" style="color: #ef4444;">92%</span>
@@ -805,8 +774,7 @@
                                             <span class="origin-vector-rationale" id="ws-origin-anon-rat">Very High likelihood. First observed hop transits directly through confirmed AS44146 Tor exit relay.</span>
                                         </div>
 
-                                        <!-- Vector 4: Direct Malicious Environment -->
-                                        <div class="origin-vector-item">
+<div class="origin-vector-item">
                                             <div class="origin-vector-header">
                                                 <span>4. Direct Malicious Environment</span>
                                                 <span class="origin-vector-pct" id="ws-origin-mal-pct" style="color: #ef4444;">85%</span>
@@ -820,8 +788,7 @@
                                 </div>
                             </div>
 
-                            <!-- Section 12: Campaign / Infrastructure Correlation Graph -->
-                            <div class="ws-card">
+<div class="ws-card">
                                 <div class="ws-card-header">
                                     <div class="ws-card-title-wrap">
                                         <i class="fa-solid fa-diagram-project"></i>
@@ -848,8 +815,7 @@
                                 </div>
                             </div>
 
-                            <!-- Section 13: Evidence Timeline & ISO/IEC 27037 Integrity -->
-                            <div class="ws-card">
+<div class="ws-card">
                                 <div class="ws-card-header">
                                     <div class="ws-card-title-wrap">
                                         <i class="fa-solid fa-timeline"></i>
@@ -894,8 +860,7 @@
                                 </div>
                             </div>
 
-                            <!-- Section 14: Structured Forensic Report Generation -->
-                            <div class="ws-card workspace-grid-full">
+<div class="ws-card workspace-grid-full">
                                 <div class="ws-card-header">
                                     <div class="ws-card-title-wrap">
                                         <i class="fa-solid fa-file-contract"></i>
@@ -933,8 +898,7 @@
                         </div>
                     </div>
 
-                    <!-- Blank / New Analysis State Container -->
-                    <div id="workspace-blank-state" class="hidden">
+<div id="workspace-blank-state" class="hidden">
                         <div class="ws-blank-state">
                             <div class="blank-icon-circle">
                                 <i class="fa-solid fa-magnifying-glass"></i>
@@ -966,10 +930,9 @@
                 </div>
             </section>
 
-            <!-- TAB 1: THREAT RADAR & MAP -->
-            <section class="tab-pane" id="pane-radar">
+<section class="tab-pane" id="pane-radar">
                 <div class="radar-grid">
-                    <!-- Left: Interactive World Threat Map -->
+                    
                     <div class="radar-map-panel card">
                         <div class="panel-header">
                             <div class="panel-title-cluster">
@@ -988,8 +951,7 @@
                         <div id="radar-map" class="map-view"></div>
                     </div>
 
-                    <!-- Right: Live Threat Alert Stream -->
-                    <div class="radar-stream-panel card">
+<div class="radar-stream-panel card">
                         <div class="panel-header">
                             <div class="panel-title-cluster">
                                 <h3><i class="fa-solid fa-tower-broadcast"></i> Live Threat Stream</h3>
@@ -1004,10 +966,9 @@
                 </div>
             </section>
 
-            <!-- TAB 2: THREAT INGESTION LAB -->
-            <section class="tab-pane" id="pane-ingest">
+<section class="tab-pane" id="pane-ingest">
                 <div class="ingest-grid">
-                    <!-- Left: Form Input -->
+                    
                     <div class="ingest-form-card card">
                         <div class="panel-header">
                             <div class="panel-title-cluster">
@@ -1016,8 +977,7 @@
                             </div>
                         </div>
 
-                        <!-- EML File Drag and Drop Zone -->
-                        <div class="eml-dropzone" id="eml-dropzone">
+<div class="eml-dropzone" id="eml-dropzone">
                             <input type="file" id="eml-file-input" accept=".eml,.msg,.txt" style="display: none;">
                             <div class="dropzone-inner">
                                 <i class="fa-solid fa-cloud-arrow-up dropzone-icon"></i>
@@ -1075,8 +1035,7 @@
                         </form>
                     </div>
 
-                    <!-- Right: Quick Scenario Testbench Cards -->
-                    <div class="ingest-scenarios-card card">
+<div class="ingest-scenarios-card card">
                         <div class="panel-header">
                             <div class="panel-title-cluster">
                                 <h3><i class="fa-solid fa-flask"></i> Quick Threat Scenarios Testbench</h3>
@@ -1085,7 +1044,7 @@
                         </div>
 
                         <div class="scenario-cards-list">
-                            <!-- Scenario 1: PayPal Phish -->
+                            
                             <div class="scenario-card card-threat-high" data-scenario="paypal">
                                 <div class="scenario-badge-row">
                                     <span class="badge-risk-pill high">🔴 Phishing & Credential Harvest</span>
@@ -1096,8 +1055,7 @@
                                 <button class="btn btn-sm btn-cyber-secondary scenario-trigger-btn"><i class="fa-solid fa-play"></i> Load Scenario</button>
                             </div>
 
-                            <!-- Scenario 2: CEO Wire BEC -->
-                            <div class="scenario-card card-threat-high" data-scenario="ceo_bec">
+<div class="scenario-card card-threat-high" data-scenario="ceo_bec">
                                 <div class="scenario-badge-row">
                                     <span class="badge-risk-pill high">🔴 CEO Fraud / BEC Wire Scam</span>
                                     <span class="scenario-geo"><i class="fa-solid fa-location-dot"></i> Frankfurt, Germany</span>
@@ -1107,8 +1065,7 @@
                                 <button class="btn btn-sm btn-cyber-secondary scenario-trigger-btn"><i class="fa-solid fa-play"></i> Load Scenario</button>
                             </div>
 
-                            <!-- Scenario 3: M365 MFA Fatigue -->
-                            <div class="scenario-card card-threat-high" data-scenario="m365">
+<div class="scenario-card card-threat-high" data-scenario="m365">
                                 <div class="scenario-badge-row">
                                     <span class="badge-risk-pill high">🔴 Account Takeover / M365</span>
                                     <span class="scenario-geo"><i class="fa-solid fa-location-dot"></i> Lagos, Nigeria</span>
@@ -1118,8 +1075,7 @@
                                 <button class="btn btn-sm btn-cyber-secondary scenario-trigger-btn"><i class="fa-solid fa-play"></i> Load Scenario</button>
                             </div>
 
-                            <!-- Scenario 4: Amazon Parcel Scam -->
-                            <div class="scenario-card card-threat-med" data-scenario="amazon">
+<div class="scenario-card card-threat-med" data-scenario="amazon">
                                 <div class="scenario-badge-row">
                                     <span class="badge-risk-pill medium">🟡 Social Engineering</span>
                                     <span class="scenario-geo"><i class="fa-solid fa-location-dot"></i> Amsterdam, Netherlands</span>
@@ -1129,8 +1085,7 @@
                                 <button class="btn btn-sm btn-cyber-secondary scenario-trigger-btn"><i class="fa-solid fa-play"></i> Load Scenario</button>
                             </div>
 
-                            <!-- Scenario 5: Legitimate GitHub Advisory -->
-                            <div class="scenario-card card-threat-low" data-scenario="github_safe">
+<div class="scenario-card card-threat-low" data-scenario="github_safe">
                                 <div class="scenario-badge-row">
                                     <span class="badge-risk-pill low">🟢 Verified Benign / Low Risk</span>
                                     <span class="scenario-geo"><i class="fa-solid fa-location-dot"></i> San Francisco, USA</span>
@@ -1141,8 +1096,7 @@
                             </div>
                         </div>
 
-                        <!-- Automated Gateway Integrations Mini-Panel -->
-                        <div class="gateway-integrations-panel">
+<div class="gateway-integrations-panel">
                             <div class="gateway-integrations-title">
                                 <i class="fa-solid fa-robot" style="color: var(--primary);"></i> Live Automated Ingestion Pipelines
                             </div>
@@ -1161,8 +1115,7 @@
                 </div>
             </section>
 
-            <!-- TAB 3: LIVE CONNECTED MAILBOXES -->
-            <section class="tab-pane" id="pane-mailboxes">
+<section class="tab-pane" id="pane-mailboxes">
                 <div class="card mailboxes-card-container">
                     <div class="panel-header">
                         <div class="panel-title-cluster">
@@ -1177,14 +1130,13 @@
 
                     <div class="mailboxes-body-padding">
                         <div class="mailboxes-grid-list" id="mailboxes-grid-list">
-                            <!-- Injected via JavaScript -->
+                            
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- TAB 4: FORENSIC FEED & AUDIT LOG -->
-            <section class="tab-pane" id="pane-feed">
+<section class="tab-pane" id="pane-feed">
                 <div class="feed-panel card">
                     <div class="panel-header">
                         <div class="panel-title-cluster">
@@ -1237,8 +1189,7 @@
                 </div>
             </section>
 
-            <!-- TAB 5: CAMPAIGN CORRELATION GRAPH -->
-            <section class="tab-pane" id="pane-graph">
+<section class="tab-pane" id="pane-graph">
                 <div class="graph-panel card">
                     <div class="panel-header">
                         <div class="panel-title-cluster">
@@ -1262,10 +1213,9 @@
                 </div>
             </section>
 
-            <!-- TAB 6: THREAT MATRIX & ANALYTICS -->
-            <section class="tab-pane" id="pane-analytics">
+<section class="tab-pane" id="pane-analytics">
                 <div class="analytics-grid">
-                    <!-- Phishing Attack Vectors Card -->
+                    
                     <div class="analytics-card card">
                         <div class="panel-header">
                             <div class="panel-title-cluster">
@@ -1305,8 +1255,7 @@
                         </div>
                     </div>
 
-                    <!-- Top Origin Threat Countries -->
-                    <div class="analytics-card card">
+<div class="analytics-card card">
                         <div class="panel-header">
                             <div class="panel-title-cluster">
                                 <h3><i class="fa-solid fa-globe"></i> Top Threat Origin Geographies</h3>
@@ -1314,12 +1263,11 @@
                             </div>
                         </div>
                         <div class="country-rank-list" id="country-rank-list">
-                            <!-- Populated dynamically via JS -->
+                            
                         </div>
                     </div>
 
-                    <!-- Authentication Compliance Matrix -->
-                    <div class="analytics-card card card-full-span">
+<div class="analytics-card card card-full-span">
                         <div class="panel-header">
                             <div class="panel-title-cluster">
                                 <h3><i class="fa-solid fa-key"></i> Cryptographic Email Authentication Compliance</h3>
@@ -1359,8 +1307,7 @@
             </section>
         </main>
 
-        <!-- Global SOC Footer -->
-        <footer style="margin-top: auto; padding: 1rem 1.75rem; border-top: 1px solid var(--border-subtle); background: var(--bg-nav); display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-muted); flex-wrap: wrap; gap: 0.75rem;">
+<footer style="margin-top: auto; padding: 1rem 1.75rem; border-top: 1px solid var(--border-subtle); background: var(--bg-nav); display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-muted); flex-wrap: wrap; gap: 0.75rem;">
             <div style="display: flex; align-items: center; gap: 0.5rem;">
                 <img src="assets/logo.png" alt="ByteTrail" style="width: 18px; height: 18px; border-radius: 4px; object-fit: cover;">
                 <span style="font-weight: 600; color: var(--text-secondary);">ByteTrail SOC</span>
@@ -1374,8 +1321,7 @@
         </footer>
     </div>
 
-    <!-- Connect Mailbox Modal -->
-    <div class="modal-overlay hidden" id="connect-mailbox-modal">
+<div class="modal-overlay hidden" id="connect-mailbox-modal">
         <div class="modal-backdrop" id="connect-modal-backdrop"></div>
         <div class="modal-dialog" style="max-width: 540px;">
             <div class="modal-header-cyber">
@@ -1444,8 +1390,7 @@
         </div>
     </div>
 
-    <!-- Sequential 4-Vector Forensic Pipeline Progress Modal -->
-    <div class="modal-overlay hidden" id="modal-pipeline-progress">
+<div class="modal-overlay hidden" id="modal-pipeline-progress">
         <div class="modal-backdrop" id="pipeline-modal-backdrop"></div>
         <div class="modal-dialog" style="max-width: 650px;">
             <div class="modal-header-cyber" style="border-bottom: 1px solid rgba(167, 139, 250, 0.25); display: flex; justify-content: space-between; align-items: center;">
@@ -1468,14 +1413,13 @@
             </div>
 
             <div class="modal-body-cyber" id="pipeline-modal-scrollable-body" style="padding: 1.25rem 1.4rem; display: flex; flex-direction: column; gap: 1rem; overflow-y: auto; flex: 1 1 auto; min-height: 0; max-height: calc(88vh - 135px);">
-                <!-- Target Payload Meta Pill -->
+                
                 <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle); border-radius: 0.5rem; padding: 0.65rem 0.9rem; font-size: 0.78rem; display: flex; align-items: center; justify-content: space-between;" id="pipeline-target-pill">
                     <span style="color: var(--text-muted);"><i class="fa-solid fa-envelope" style="color: var(--primary); margin-right: 0.3rem;"></i> Target Email: <strong id="pipeline-target-sender" style="color: #ffffff;">Analyzing Payload...</strong></span>
                     <span style="color: var(--text-muted); font-family: var(--font-mono);" id="pipeline-target-case">Case #--</span>
                 </div>
 
-                <!-- Overall Progress Bar -->
-                <div>
+<div>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; font-size: 0.78rem;">
                         <span style="color: var(--text-muted); font-family: var(--font-mono); letter-spacing: 0.05em;">CASCADING VERIFICATION PROGRESS</span>
                         <span style="color: var(--primary); font-weight: 700; font-family: var(--font-mono);" id="pipeline-pct-label">0%</span>
@@ -1485,12 +1429,10 @@
                     </div>
                 </div>
 
-                <!-- Modern 4-Vector Drop-Down Timeline -->
-                <div class="pipeline-drop-container">
+<div class="pipeline-drop-container">
                     <div class="pipeline-drop-line"></div>
 
-                    <!-- Vector 1 Drop Card -->
-                    <div class="pipeline-step-card-modern step-1" id="step-v1">
+<div class="pipeline-step-card-modern step-1" id="step-v1">
                         <div style="display: flex; align-items: center; gap: 1rem;">
                             <div class="step-drop-node" id="step-v1-node">1</div>
                             <div>
@@ -1503,8 +1445,7 @@
                         <span class="badge-risk-pill" id="step-v1-badge" style="background: rgba(255, 255, 255, 0.06); color: var(--text-muted);">PENDING</span>
                     </div>
 
-                    <!-- Vector 2 Drop Card -->
-                    <div class="pipeline-step-card-modern step-2" id="step-v2">
+<div class="pipeline-step-card-modern step-2" id="step-v2">
                         <div style="display: flex; align-items: center; gap: 1rem;">
                             <div class="step-drop-node" id="step-v2-node">2</div>
                             <div>
@@ -1517,8 +1458,7 @@
                         <span class="badge-risk-pill" id="step-v2-badge" style="background: rgba(255, 255, 255, 0.06); color: var(--text-muted);">PENDING</span>
                     </div>
 
-                    <!-- Vector 3 Drop Card -->
-                    <div class="pipeline-step-card-modern step-3" id="step-v3">
+<div class="pipeline-step-card-modern step-3" id="step-v3">
                         <div style="display: flex; align-items: center; gap: 1rem;">
                             <div class="step-drop-node" id="step-v3-node">3</div>
                             <div>
@@ -1531,8 +1471,7 @@
                         <span class="badge-risk-pill" id="step-v3-badge" style="background: rgba(255, 255, 255, 0.06); color: var(--text-muted);">PENDING</span>
                     </div>
 
-                    <!-- Vector 4 Drop Card -->
-                    <div class="pipeline-step-card-modern step-4" id="step-v4">
+<div class="pipeline-step-card-modern step-4" id="step-v4">
                         <div style="display: flex; align-items: center; gap: 1rem;">
                             <div class="step-drop-node" id="step-v4-node">4</div>
                             <div>
@@ -1546,14 +1485,12 @@
                     </div>
                 </div>
 
-                <!-- Live Pipeline Log Terminal Ticker -->
-                <div style="background: #09090b; border: 1px solid var(--border-subtle); border-radius: 0.5rem; padding: 0.75rem; font-family: var(--font-mono); font-size: 0.72rem; color: #a1a1aa; height: 80px; overflow-y: auto;" id="pipeline-live-terminal">
+<div style="background: #09090b; border: 1px solid var(--border-subtle); border-radius: 0.5rem; padding: 0.75rem; font-family: var(--font-mono); font-size: 0.72rem; color: #a1a1aa; height: 80px; overflow-y: auto;" id="pipeline-live-terminal">
                     <div style="color: #a78bfa;">[INIT] Threat Forensic Pipeline initialized. Ready for ingestion...</div>
                 </div>
             </div>
 
-            <!-- Pinned Bottom Action Footer (Always 100% Visible, Never Cut Off) -->
-            <div class="modal-footer-cyber" style="padding: 0.75rem 1.4rem; background: var(--bg-surface); border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
+<div class="modal-footer-cyber" style="padding: 0.75rem 1.4rem; background: var(--bg-surface); border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
                 <button type="button" class="btn btn-sm btn-cyber-secondary" id="btn-pipeline-skip-now" title="Skip animation and display full case info immediately" style="font-size: 0.76rem;">
                     <i class="fa-solid fa-forward"></i> <span>Skip Animation</span>
                 </button>
@@ -1569,8 +1506,7 @@
         </div>
     </div>
 
-    <!-- Forensic Deep Inspection Modal -->
-    <div class="modal-overlay hidden" id="forensic-modal">
+<div class="modal-overlay hidden" id="forensic-modal">
         <div class="modal-backdrop" id="modal-backdrop"></div>
         <div class="modal-dialog">
             <div class="modal-header-cyber">
@@ -1591,17 +1527,15 @@
             </div>
 
             <div class="modal-body-cyber" id="modal-body-content">
-                <!-- Injected via JavaScript -->
+                
             </div>
         </div>
     </div>
 
-    <!-- Toast Notification Container -->
-    <div class="toast-container" id="toast-container"></div>
+<div class="toast-container" id="toast-container"></div>
 
-    <!-- Leaflet.js JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <!-- Cloud Configuration & App Logic -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
     <script src="config.js"></script>
     <script src="app.js"></script>
 </body>

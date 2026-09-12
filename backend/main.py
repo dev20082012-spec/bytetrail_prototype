@@ -1,4 +1,4 @@
-import os
+﻿import os
 from contextlib import asynccontextmanager
 from typing import List, Optional, Dict
 from pathlib import Path
@@ -67,14 +67,11 @@ from google_oauth import (
     is_google_oauth_configured,
 )
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # 1. Initialize database tables & inbound directories on startup
     init_db()
     init_watch_directories()
 
-    # 2. Seed default administrator user accounts
     try:
         admin_email = "krishnayadav770694@gmail.com"
         if not get_user_by_email(admin_email):
@@ -87,7 +84,6 @@ async def lifespan(app: FastAPI):
     except Exception:
         pass
 
-    # 3. Seed demo forensic threat scenarios if database is empty
     try:
         existing_cases = get_all_emails_enriched()
         if len(existing_cases) == 0:
@@ -96,12 +92,10 @@ async def lifespan(app: FastAPI):
     except Exception:
         pass
 
-    # 4. Register pipeline runner and start automated background mailbox polling daemon
     mailbox_manager.register_pipeline_runner(run_intelligence_pipeline)
     mailbox_manager.start_background_poller(interval_seconds=60)
 
     yield
-
 
 app = FastAPI(
     title="ByteTrail Threat Intelligence API",
@@ -110,7 +104,6 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Enable CORS for frontend and external callers
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -119,13 +112,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 def run_intelligence_pipeline(sender: str, subject: str, raw_headers: Optional[str], body_text: str, user_id: Optional[int] = None) -> dict:
     """Internal helper to execute the 4-vector intelligence pipeline and persist results."""
-    # 1. Chain of Custody SHA-256 Hash
     sha256_hash = calculate_evidence_hash(sender, subject, raw_headers or "", body_text)
 
-    # 2. Insert Base Email (scoped to user_id if authenticated)
     email_id = insert_email(
         sender=sender,
         subject=subject,
@@ -135,11 +125,9 @@ def run_intelligence_pipeline(sender: str, subject: str, raw_headers: Optional[s
         user_id=user_id,
     )
 
-    # 3. Vector 1: Phishing & Fraud NLP Heuristics
     fraud_analysis = scan_email_content(subject, body_text)
     fraud_score = fraud_analysis["fraud_score"]
 
-    # 4. Vector 2: Header & Authentication Forensics (SPF/DKIM/DMARC)
     header_forensics = analyze_headers(raw_headers, sender)
     header_valid = header_forensics["header_valid"]
     spf_result = header_forensics["spf_result"]
@@ -147,7 +135,6 @@ def run_intelligence_pipeline(sender: str, subject: str, raw_headers: Optional[s
     dmarc_result = header_forensics["dmarc_result"]
     domain_mismatch = header_forensics["domain_mismatch"]
 
-    # 5. Vector 3: Origin GeoIP & Threat Intel (ISP/ASN)
     geo_intel = resolve_geo_for_headers(raw_headers, sender=sender)
     ip_address = geo_intel["ip_address"]
     country = geo_intel["country"]
@@ -160,7 +147,6 @@ def run_intelligence_pipeline(sender: str, subject: str, raw_headers: Optional[s
     is_vpn_tor = threat_intel["is_vpn_tor"]
     threat_actor = threat_intel["threat_actor_group"]
 
-    # 6. Vector 4: Multi-Factor Composite Risk Scoring
     final_score, risk_level, threat_summary = calculate_risk_score(
         fraud_score=fraud_score,
         header_valid=header_valid,
@@ -171,7 +157,6 @@ def run_intelligence_pipeline(sender: str, subject: str, raw_headers: Optional[s
         country=country,
     )
 
-    # 7. Persist Pipeline Results into MySQL Tables
     save_analysis_results(
         email_id=email_id,
         fraud_score=fraud_score,
@@ -191,7 +176,6 @@ def run_intelligence_pipeline(sender: str, subject: str, raw_headers: Optional[s
         threat_actor=threat_actor,
     )
 
-    # 8. Fetch complete enriched record
     record = get_email_details(email_id)
     if not record:
         raise HTTPException(
@@ -199,7 +183,6 @@ def run_intelligence_pipeline(sender: str, subject: str, raw_headers: Optional[s
             detail="Failed to retrieve newly created enriched email record.",
         )
 
-    # 9. Generate forensic PDF report
     try:
         pdf_path = generate_forensic_report(record)
         log_forensic_report(email_id, pdf_path)
@@ -208,16 +191,11 @@ def run_intelligence_pipeline(sender: str, subject: str, raw_headers: Optional[s
 
     return record
 
-
 @app.get("/ping", tags=["Health"])
 def ping():
     """Health check endpoint confirming API and system status."""
     return {"status": "ok"}
 
-
-# ==============================================================================
-# Authentication & User Management Endpoints
-# ==============================================================================
 @app.post(
     "/api/auth/register",
     response_model=TokenResponse,
@@ -259,7 +237,6 @@ def register_user(payload: UserRegister):
         "user": user_data,
     }
 
-
 @app.post(
     "/api/auth/login",
     response_model=TokenResponse,
@@ -300,7 +277,6 @@ def login_user(payload: UserLogin):
         "user": user_data,
     }
 
-
 @app.post(
     "/api/auth/demo-login",
     response_model=TokenResponse,
@@ -328,7 +304,6 @@ def demo_login():
         "token_type": "bearer",
         "user": user_data,
     }
-
 
 @app.post(
     "/api/auth/google/signin",
@@ -368,7 +343,6 @@ def google_signin(payload: GoogleSignInRequest):
         "user": user_data,
     }
 
-
 @app.get(
     "/api/auth/me",
     response_model=UserResponse,
@@ -379,8 +353,6 @@ def get_current_user_profile(current_user: dict = Depends(get_current_user)):
     Fetch profile and permissions of the currently authenticated user.
     """
     return current_user
-
-
 
 @app.post(
     "/emails",
@@ -413,7 +385,6 @@ def create_and_analyze_email(
             detail=f"Intelligence pipeline error: {str(exc)}",
         )
 
-
 @app.post(
     "/emails/upload-eml",
     response_model=EmailDetailResponse,
@@ -445,11 +416,6 @@ async def upload_raw_eml_file(
             detail=f"Failed to parse .eml file: {str(exc)}",
         )
 
-
-# ==============================================================================
-# CONNECTED MAILBOXES (LIVE GMAIL / OUTLOOK / CUSTOM IMAP MONITORING)
-# ==============================================================================
-
 @app.post(
     "/api/v1/mailboxes/connect",
     response_model=MailboxResponse,
@@ -467,7 +433,6 @@ def connect_mailbox(
     provider = req.provider.lower() if req.provider else "custom"
     user_id = current_user["id"]
     
-    # Resolve host/port from presets
     if provider in PROVIDER_PRESETS and not req.host:
         host = PROVIDER_PRESETS[provider]["host"]
         port = PROVIDER_PRESETS[provider]["port"]
@@ -477,7 +442,6 @@ def connect_mailbox(
         port = req.port or 993
         use_ssl = req.use_ssl if req.use_ssl is not None else True
 
-    # Test authentication before saving (unless user requested sandbox / skip verification)
     if not req.skip_verification:
         auth_test = test_imap_credentials(
             host=host,
@@ -499,7 +463,6 @@ def connect_mailbox(
                 detail=f"Could not authenticate with {host}: {msg}{hint}",
             )
 
-    # Save to database
     mb_id = add_connected_mailbox(
         email_address=req.email_address,
         host=host,
@@ -518,7 +481,6 @@ def connect_mailbox(
     if not match:
         raise HTTPException(status_code=500, detail="Mailbox registration failed.")
 
-    # If user requested immediate historical scan of existing read + unread emails
     if req.scan_history and not req.skip_verification:
         try:
             ingested = mailbox_manager._poll_single_mailbox(match, include_read=True, limit=50)
@@ -530,7 +492,6 @@ def connect_mailbox(
             pass
 
     return match
-
 
 @app.get(
     "/api/v1/mailboxes",
@@ -546,7 +507,6 @@ def list_connected_mailboxes(current_user: dict = Depends(get_current_user)):
     is_admin = current_user.get("role") == "admin"
     return get_all_connected_mailboxes(user_id=user_id, is_admin=is_admin, user_email=user_email)
 
-
 @app.post(
     "/api/v1/mailboxes/{mailbox_id}/sync",
     tags=["Connected Mailboxes"],
@@ -561,7 +521,6 @@ def _get_owned_mailbox(mailbox_id: int, current_user: dict) -> dict:
     if not match:
         raise HTTPException(status_code=404, detail="Connected mailbox not found.")
     return match
-
 
 def sync_mailbox(mailbox_id: int, current_user: dict = Depends(get_current_user)):
     """
@@ -586,7 +545,6 @@ def sync_mailbox(mailbox_id: int, current_user: dict = Depends(get_current_user)
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Mailbox sync error: {str(exc)}. If using Gmail, make sure you use a 16-character Google App Password with 2FA enabled.",
         )
-
 
 @app.post(
     "/api/v1/mailboxes/{mailbox_id}/deep-scan",
@@ -634,7 +592,6 @@ def deep_scan_mailbox(
             detail=f"Deep scan error: {str(exc)}. If using Gmail, make sure you use a 16-character Google App Password with 2FA enabled.",
         )
 
-
 @app.delete(
     "/api/v1/mailboxes/{mailbox_id}",
     status_code=status.HTTP_204_NO_CONTENT,
@@ -648,24 +605,16 @@ def disconnect_mailbox(mailbox_id: int, current_user: dict = Depends(get_current
     delete_connected_mailbox(mailbox_id)
     return None
 
-
-# ==============================================================================
-# Google OAuth 2.0 & Gmail REST API Ingestion Endpoints
-# ==============================================================================
-
 def resolve_redirect_uri(request: Request, override_uri: Optional[str] = None) -> str:
     if override_uri:
         return override_uri
     env_redirect = os.getenv("GOOGLE_REDIRECT_URI", "").strip()
     host_header = request.headers.get("host", "127.0.0.1:8000")
-    # Keep local development convenient, while never send a deployed user back
-    # to localhost because a checked-in local redirect setting was present.
     is_local_request = host_header.startswith(("localhost", "127.0.0.1"))
     if env_redirect and (is_local_request or "localhost" not in env_redirect):
         return env_redirect
     scheme = "https" if ("https" in str(request.url.scheme) or "onrender.com" in host_header or "vercel.app" in host_header) else "http"
     return f"{scheme}://{host_header}/api/v1/auth/google/callback"
-
 
 @app.get(
     "/api/v1/auth/google/url",
@@ -686,7 +635,6 @@ def get_google_oauth_url_endpoint(
     else:
         if not current_user:
             raise HTTPException(status_code=401, detail="Sign in before connecting a Gmail inbox.")
-        # A short-lived signed state binds the Google callback to this ByteTrail user.
         state = create_access_token(
             {"sub": current_user["id"], "purpose": "gmail_connect"},
             expires_delta=timedelta(minutes=10),
@@ -698,7 +646,6 @@ def get_google_oauth_url_endpoint(
         "redirect_uri": final_redirect,
         "purpose": purpose,
     }
-
 
 @app.get(
     "/api/v1/auth/google/callback",
@@ -722,7 +669,6 @@ def google_oauth_callback(code: str, request: Request, state: Optional[str] = No
         user_email = fetch_user_email(access_token)
 
         if state == "bytetrail_user_login":
-            # User is logging into ByteTrail platform with Google
             clean_email = user_email.strip().lower()
             user_data = get_user_by_email(clean_email)
             if not user_data:
@@ -768,8 +714,6 @@ def google_oauth_callback(code: str, request: Request, state: Optional[str] = No
             """
             return HTMLResponse(content=html)
 
-        # Mailbox connection flow. State is a short-lived signed token generated
-        # while the dashboard user was authenticated, not a user-controlled email.
         state_payload = verify_access_token(state or "")
         if state_payload.get("purpose") != "gmail_connect":
             raise ValueError("Invalid Google mailbox connection state.")
@@ -831,7 +775,6 @@ def google_oauth_callback(code: str, request: Request, state: Optional[str] = No
         """
         return HTMLResponse(content=err_html, status_code=400)
 
-
 @app.post(
     "/api/v1/auth/google/demo-connect",
     tags=["Google OAuth 2.0"],
@@ -874,7 +817,6 @@ async def demo_google_connect(request: Request, email: Optional[str] = None):
         "ingested_cases": ingested_count,
     }
 
-
 @app.post(
     "/api/v1/webhook/inbound",
     response_model=EmailDetailResponse,
@@ -913,7 +855,6 @@ async def inbound_email_webhook(request: Request):
             detail=f"Inbound webhook processing error: {str(exc)}",
         )
 
-
 @app.post(
     "/integrations/watcher/scan",
     tags=["Automated Ingestion"],
@@ -934,7 +875,6 @@ def trigger_directory_scan():
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Directory watcher error: {str(exc)}",
         )
-
 
 @app.get(
     "/integrations/status",
@@ -957,7 +897,6 @@ def get_integrations_status():
         "connected_mailboxes": mailboxes,
     }
 
-
 @app.get(
     "/emails",
     response_model=List[EmailDetailResponse],
@@ -977,7 +916,6 @@ def list_emails(current_user: Optional[dict] = Depends(get_optional_current_user
             detail=f"Database error: {str(exc)}",
         )
 
-
 @app.get(
     "/emails/{email_id}",
     response_model=EmailDetailResponse,
@@ -996,7 +934,6 @@ def get_email(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Email with ID {email_id} not found.",
         )
-    # Strict multi-tenant data isolation check
     if current_user and current_user.get("role") != "admin":
         if record.get("user_id") is not None and record.get("user_id") != current_user["id"]:
             raise HTTPException(
@@ -1004,7 +941,6 @@ def get_email(
                 detail="Access denied. You can only view emails from your own account.",
             )
     return record
-
 
 @app.get(
     "/emails/{email_id}/report",
@@ -1023,7 +959,6 @@ def download_forensic_report(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Email with ID {email_id} not found.",
         )
-    # Strict multi-tenant data isolation check
     if current_user and current_user.get("role") != "admin":
         if record.get("user_id") is not None and record.get("user_id") != current_user["id"]:
             raise HTTPException(
@@ -1052,7 +987,6 @@ def download_forensic_report(
             detail=f"Report generation error: {str(exc)}",
         )
 
-
 @app.get(
     "/campaigns/graph",
     tags=["Campaigns & Graph Attribution"],
@@ -1071,10 +1005,6 @@ def get_campaign_graph():
             detail=f"Graph generation error: {str(exc)}",
         )
 
-
-# ==============================================================================
-# Frontend Static Asset & Page Routes (Unified Single-Service Deployment)
-# ==============================================================================
 FRONTEND_DIR = None
 for candidate in [
     Path(__file__).resolve().parent / "frontend",          # /app/frontend or backend/frontend
@@ -1126,5 +1056,4 @@ if FRONTEND_DIR:
             return FileResponse(terms_path)
         raise HTTPException(status_code=404, detail="Terms page not found")
 
-    # Mount static assets at root (so /, /styles.css, /app.js, /logo.png all work)
     app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend_static")

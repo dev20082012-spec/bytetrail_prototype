@@ -1,4 +1,4 @@
-import os
+﻿import os
 import base64
 import logging
 import urllib.parse
@@ -32,13 +32,11 @@ def get_oauth_scopes() -> List[str]:
         "https://www.googleapis.com/auth/gmail.readonly",
     ]
 
-
 def is_google_oauth_configured() -> bool:
     """Check if Google OAuth Client credentials are set in environment."""
     cid = get_google_client_id()
     sec = get_google_client_secret()
     return bool(cid and sec and cid != "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com")
-
 
 def get_google_auth_url(redirect_uri: str, state: str = "bytetrail_oauth") -> str:
     """
@@ -56,7 +54,6 @@ def get_google_auth_url(redirect_uri: str, state: str = "bytetrail_oauth") -> st
     }
     return f"{GOOGLE_AUTH_ENDPOINT}?{urllib.parse.urlencode(params)}"
 
-
 def exchange_code_for_tokens(code: str, redirect_uri: str) -> Dict:
     """
     Exchange authorization code for access and refresh tokens.
@@ -65,7 +62,6 @@ def exchange_code_for_tokens(code: str, redirect_uri: str) -> Dict:
     client_secret = get_google_client_secret()
 
     if not is_google_oauth_configured():
-        # Demo / Test fallback if developer has not yet added Google Cloud secrets
         return {
             "access_token": f"mock_google_access_token_{code[:12]}",
             "refresh_token": "mock_google_refresh_token",
@@ -93,7 +89,6 @@ def exchange_code_for_tokens(code: str, redirect_uri: str) -> Dict:
             }
         return resp.json()
 
-
 def refresh_google_access_token(refresh_token: str) -> Dict:
     """Get a new Gmail API access token for an already-connected mailbox."""
     if not refresh_token:
@@ -116,7 +111,6 @@ def refresh_google_access_token(refresh_token: str) -> Dict:
         raise ValueError("Google access expired. Reconnect the Gmail inbox to continue live scanning.")
     return response.json()
 
-
 def fetch_user_email(access_token: str) -> str:
     """
     Fetch authenticated user's email address from Google UserInfo API.
@@ -132,7 +126,6 @@ def fetch_user_email(access_token: str) -> str:
             raise ValueError(f"Could not retrieve user info: {resp.text}")
         data = resp.json()
         return data.get("email", "unknown@gmail.com")
-
 
 def fetch_gmail_raw_messages(
     access_token: str,
@@ -160,8 +153,6 @@ def fetch_gmail_raw_messages(
     next_page_token = None
 
     params = {"maxResults": min(max_results, 500)}
-    # Continuous polling should only retrieve newly unread inbox items. A deep
-    # scan explicitly opts out and can inspect historical mail in batches.
     if unread_only:
         params["q"] = "is:unread"
     if page_token:

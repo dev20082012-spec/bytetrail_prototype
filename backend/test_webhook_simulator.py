@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 ByteTrail — Inbound Webhook Simulator Script
 Simulates an Enterprise Email Security Gateway (e.g. SendGrid, Mailgun, Cloudflare, Postfix)
@@ -71,7 +71,6 @@ SAMPLE_WEBHOOK_EVENTS = [
     },
 ]
 
-
 def run_simulation():
     print("=" * 70)
     print("🚀 BYTETRAIL AUTOMATED INBOUND WEBHOOK SIMULATION")
@@ -100,7 +99,6 @@ def run_simulation():
     print("🎉 ALL INBOUND WEBHOOK EVENTS PROCESSED AUTOMATICALLY!")
     print("👉 Open dashboard at http://127.0.0.1:3000 to see live pins & feed.")
     print("=" * 70)
-
 
 if __name__ == "__main__":
     run_simulation()

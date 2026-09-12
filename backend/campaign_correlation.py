@@ -1,6 +1,5 @@
-import networkx as nx
+﻿import networkx as nx
 from typing import Dict, List
-
 
 def build_campaign_attribution_graph(emails_list: List[Dict]) -> Dict:
     """
@@ -24,7 +23,6 @@ def build_campaign_attribution_graph(emails_list: List[Dict]) -> Dict:
 
         domain = sender.split("@")[-1].strip(">").lower() if "@" in sender else "unknown-domain"
 
-        # Email node
         nodes.append({
             "id": email_id,
             "label": email_id,
@@ -34,7 +32,6 @@ def build_campaign_attribution_graph(emails_list: List[Dict]) -> Dict:
             "score": email.get("final_score", 0),
         })
 
-        # Domain node
         domain_node_id = f"DOMAIN:{domain}"
         if domain_node_id not in domains_seen:
             domains_seen[domain_node_id] = True
@@ -50,7 +47,6 @@ def build_campaign_attribution_graph(emails_list: List[Dict]) -> Dict:
             "relation": "SENT_VIA",
         })
 
-        # IP / Geo node
         if ip and ip != "No IP":
             ip_node_id = f"IP:{ip}"
             if ip_node_id not in ips_seen:
@@ -67,7 +63,6 @@ def build_campaign_attribution_graph(emails_list: List[Dict]) -> Dict:
                 "relation": "RELAY_ORIGIN",
             })
 
-            # Connect Domain to IP
             edges.append({
                 "source": domain_node_id,
                 "target": ip_node_id,

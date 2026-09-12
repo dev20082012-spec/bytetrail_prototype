@@ -1,8 +1,4 @@
-/**
- * ByteTrail — Reusable Authentication & Session Management Module
- * Production multi-page support
- */
-
+﻿
 const getApiBaseUrl = () => {
     if (typeof window !== "undefined") {
         if (window.BYTETRAIL_BACKEND_URL && window.BYTETRAIL_BACKEND_URL.startsWith("http")) {
@@ -20,7 +16,6 @@ const getApiBaseUrl = () => {
 
 const AUTH_API_BASE = getApiBaseUrl();
 
-// Token and User Helpers
 const DEFAULT_ANALYST_TOKEN = "bytetrail_analyst_active_token";
 const DEFAULT_ANALYST_USER = {
     id: 1,
@@ -93,7 +88,6 @@ function getAuthHeaders(extraHeaders = {}) {
     return headers;
 }
 
-// Authentication Guards - Direct entry enabled (No Google login barrier)
 function requireAuth(redirectUrl = "login.html") {
     ensureDefaultSession();
     return true;
@@ -103,7 +97,6 @@ function redirectIfAuthenticated(destinationUrl = "dashboard.html") {
     return false;
 }
 
-// Auth API Calls
 async function executeLogin(email, password) {
     try {
         const res = await fetch(`${AUTH_API_BASE}/api/auth/login`, {
@@ -118,7 +111,6 @@ async function executeLogin(email, password) {
         setAuthSession(data.access_token, data.user);
         return data;
     } catch (err) {
-        // Fallback local session if backend auth is offline
         const fallbackUser = { id: 1, email: email.trim(), full_name: email.split("@")[0].toUpperCase(), role: "analyst" };
         setAuthSession(DEFAULT_ANALYST_TOKEN, fallbackUser);
         return { access_token: DEFAULT_ANALYST_TOKEN, user: fallbackUser };
@@ -165,6 +157,4 @@ async function executeDemoLogin() {
     return { access_token: DEFAULT_ANALYST_TOKEN, user: DEFAULT_ANALYST_USER };
 }
 
-// Auto-initialize default analyst session immediately
 ensureDefaultSession();
-

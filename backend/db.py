@@ -1,11 +1,10 @@
-import os
+﻿import os
 import sqlite3
 import logging
 from typing import Optional, List, Dict, Any
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Load environment variables
 env_path = Path(__file__).resolve().parent / ".env"
 load_dotenv(dotenv_path=env_path)
 
@@ -25,7 +24,6 @@ logger = logging.getLogger("bytetrail.db")
 ACTIVE_ENGINE = "sqlite" if DB_ENGINE == "sqlite" else "mysql"
 _DB_INITIALIZED = False
 
-
 def try_mysql_connection():
     """Attempt connection to MySQL or TiDB Cloud server."""
     import mysql.connector
@@ -38,7 +36,6 @@ def try_mysql_connection():
         "autocommit": True,
     }
 
-    # Enable SSL for TiDB Cloud or remote cloud MySQL (port 4000, tidbcloud domain, or DB_USE_SSL)
     use_ssl = (
         os.getenv("DB_USE_SSL", "").lower() in ("true", "1", "yes")
         or DB_PORT == 4000
@@ -50,7 +47,6 @@ def try_mysql_connection():
         connect_kwargs["ssl_verify_cert"] = False
         connect_kwargs["ssl_verify_identity"] = False
 
-    # Try connecting directly to database
     try:
         return mysql.connector.connect(database=DB_NAME, **connect_kwargs)
     except Exception:
@@ -64,12 +60,10 @@ def try_mysql_connection():
             pass
         return mysql.connector.connect(database=DB_NAME, **connect_kwargs)
 
-
 def get_connection(ensure_init: bool = True):
     """Get active database connection (MySQL or fallback SQLite)."""
     global ACTIVE_ENGINE, _DB_INITIALIZED
 
-    # 1. Direct SQLite mode
     if DB_ENGINE == "sqlite" or ACTIVE_ENGINE == "sqlite":
         ACTIVE_ENGINE = "sqlite"
         conn = sqlite3.connect(str(SQLITE_DB_PATH))
@@ -79,7 +73,6 @@ def get_connection(ensure_init: bool = True):
             init_db(conn=conn)
         return conn
 
-    # 2. Try MySQL connection
     try:
         conn = try_mysql_connection()
         ACTIVE_ENGINE = "mysql"
@@ -102,7 +95,6 @@ def get_connection(ensure_init: bool = True):
         init_db(conn=conn)
 
     return conn
-
 
 def init_db(conn=None):
     """Initialize database tables and run automatic migrations."""
@@ -207,7 +199,6 @@ def init_db(conn=None):
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
         """)
 
-        # Run non-destructive column additions if upgrading existing database
         migrations = [
             "ALTER TABLE emails ADD COLUMN sha256_hash VARCHAR(64);",
             "ALTER TABLE emails ADD COLUMN user_id INT;",
@@ -226,7 +217,6 @@ def init_db(conn=None):
                 pass
 
     else:
-        # SQLite schema
         cursor.executescript("""
             CREATE TABLE IF NOT EXISTS emails (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -335,7 +325,6 @@ def init_db(conn=None):
         conn.close()
     logger.info("Database initialized successfully using engine: %s", ACTIVE_ENGINE)
 
-
 def check_email_exists_by_hash(sha256_hash: str, user_id: Optional[int] = None) -> Optional[int]:
     """Check for an existing evidence hash within one user's case feed."""
     if not sha256_hash:
@@ -363,7 +352,6 @@ def check_email_exists_by_hash(sha256_hash: str, user_id: Optional[int] = None) 
             return row[0]
     return None
 
-
 def insert_email(sender: str, subject: str, raw_headers: str = None, body_text: str = None, sha256_hash: str = None, user_id: Optional[int] = None) -> int:
     """Insert a new email record and return its generated ID."""
     conn = get_connection()
@@ -382,7 +370,6 @@ def insert_email(sender: str, subject: str, raw_headers: str = None, body_text: 
     conn.commit()
     conn.close()
     return email_id
-
 
 def save_analysis_results(
     email_id: int,
@@ -455,7 +442,6 @@ def save_analysis_results(
     conn.commit()
     conn.close()
 
-
 def get_all_emails_enriched(user_id: Optional[int] = None, is_admin: bool = False) -> list:
     """Retrieve all emails with their associated intelligence analysis data (strictly scoped to user if not admin)."""
     conn = get_connection()
@@ -517,7 +503,6 @@ def get_all_emails_enriched(user_id: Optional[int] = None, is_admin: bool = Fals
     cursor.close()
     conn.close()
     return results
-
 
 def get_email_details(email_id: int):
     """Retrieve full intelligence details for a single email by ID."""
@@ -582,7 +567,6 @@ def get_email_details(email_id: int):
         rec["longitude"] = float(rec["longitude"])
     return rec
 
-
 def log_forensic_report(email_id: int, report_path: str):
     """Log or update the generated forensic report path in forensic_reports table."""
     conn = get_connection()
@@ -598,7 +582,6 @@ def log_forensic_report(email_id: int, report_path: str):
     cursor.close()
     conn.commit()
     conn.close()
-
 
 def get_forensic_report_log(email_id: int) -> str:
     """Retrieve the stored report path for an email ID if exists."""
@@ -625,11 +608,6 @@ def get_forensic_report_log(email_id: int) -> str:
         return row.get("report_path")
     else:
         return row[0]
-
-
-# ==============================================================================
-# CONNECTED MAILBOX MANAGEMENT (Continuous Live Monitoring)
-# ==============================================================================
 
 def add_connected_mailbox(
     email_address: str,
@@ -666,7 +644,6 @@ def add_connected_mailbox(
     conn.commit()
     conn.close()
     return mb_id
-
 
 def get_all_connected_mailboxes(active_only: bool = False, user_id: Optional[int] = None, is_admin: bool = False, user_email: Optional[str] = None) -> list:
     """Retrieve list of connected mailboxes (strictly scoped to user if not admin)."""
@@ -714,12 +691,10 @@ def get_all_connected_mailboxes(active_only: bool = False, user_id: Optional[int
         if rec.get("is_active") is not None:
             rec["is_active"] = bool(rec["is_active"])
 
-        # Non-admin safety check: do not return mailboxes belonging to a different email address
         if not is_admin and user_email:
             if rec.get("email_address") and rec["email_address"].strip().lower() != user_email.strip().lower():
                 continue
 
-        # Dynamically compute exact real ingested email count for this user from the emails table
         mb_user_id = rec.get("user_id")
         if mb_user_id is not None:
             cursor2 = conn.cursor()
@@ -740,7 +715,6 @@ def get_all_connected_mailboxes(active_only: bool = False, user_id: Optional[int
     conn.close()
     return results
 
-
 def delete_connected_mailbox(mailbox_id: int):
     """Disconnect and remove a connected email mailbox."""
     conn = get_connection()
@@ -754,7 +728,6 @@ def delete_connected_mailbox(mailbox_id: int):
     cursor.close()
     conn.commit()
     conn.close()
-
 
 def update_mailbox_stats(mailbox_id: int, count_increment: int = 1):
     """Update total ingested count and last polled timestamp."""
@@ -783,7 +756,6 @@ def update_mailbox_stats(mailbox_id: int, count_increment: int = 1):
     cursor.close()
     conn.commit()
     conn.close()
-
 
 def upsert_oauth_mailbox(email_address: str, provider: str = "google", access_token: str = "", refresh_token: str = "", user_id: Optional[int] = None) -> int:
     """Register or update an OAuth-authenticated mailbox (e.g. Google OAuth 2.0)."""
@@ -860,7 +832,6 @@ def upsert_oauth_mailbox(email_address: str, provider: str = "google", access_to
     conn.close()
     return mb_id
 
-
 def update_mailbox_tokens(mailbox_id: int, access_token: str, refresh_token: str = None):
     """Update OAuth tokens after token refresh."""
     conn = get_connection()
@@ -879,10 +850,6 @@ def update_mailbox_tokens(mailbox_id: int, access_token: str, refresh_token: str
     conn.commit()
     conn.close()
 
-
-# ==============================================================================
-# User Management & Authentication Helpers
-# ==============================================================================
 def create_user(email: str, full_name: str, password_hash: str, role: str = "analyst") -> int:
     """Create a new registered user in the database."""
     conn = get_connection()
@@ -912,7 +879,6 @@ def create_user(email: str, full_name: str, password_hash: str, role: str = "ana
     conn.commit()
     conn.close()
     return user_id
-
 
 def get_user_by_email(email: str) -> Optional[Dict[str, Any]]:
     """Retrieve user record by email address."""
@@ -961,7 +927,6 @@ def get_user_by_email(email: str) -> Optional[Dict[str, Any]]:
             "last_login": str(row["last_login"]) if (isinstance(row, sqlite3.Row) and row["last_login"]) or (not isinstance(row, sqlite3.Row) and row[7]) else None,
         }
 
-
 def get_user_by_id(user_id: int) -> Optional[Dict[str, Any]]:
     """Retrieve user record by user ID."""
     conn = get_connection()
@@ -1008,7 +973,6 @@ def get_user_by_id(user_id: int) -> Optional[Dict[str, Any]]:
             "last_login": str(row["last_login"]) if (isinstance(row, sqlite3.Row) and row["last_login"]) or (not isinstance(row, sqlite3.Row) and row[7]) else None,
         }
 
-
 def update_user_last_login(user_id: int):
     """Record current timestamp as user's last login."""
     from datetime import datetime
@@ -1024,7 +988,6 @@ def update_user_last_login(user_id: int):
     cursor.close()
     conn.commit()
     conn.close()
-
 
 def count_users() -> int:
     """Return total number of registered users."""

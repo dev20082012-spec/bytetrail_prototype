@@ -1,4 +1,4 @@
-import os
+﻿import os
 from pathlib import Path
 from datetime import datetime
 from typing import Dict
@@ -8,14 +8,12 @@ from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
 
-
 def get_reports_dir() -> Path:
     """Ensure and return the reports directory."""
     project_root = Path(__file__).resolve().parent.parent
     reports_dir = project_root / "reports"
     reports_dir.mkdir(exist_ok=True)
     return reports_dir
-
 
 def generate_forensic_report(email_data: Dict) -> str:
     """
@@ -46,7 +44,6 @@ def generate_forensic_report(email_data: Dict) -> str:
 
     styles = getSampleStyleSheet()
     
-    # Custom Palette
     primary_color = colors.HexColor("#0f172a")     # Dark Slate
     accent_blue = colors.HexColor("#0284c7")       # Cyan Blue
     dark_gray = colors.HexColor("#334155")
@@ -64,7 +61,6 @@ def generate_forensic_report(email_data: Dict) -> str:
         risk_color = colors.HexColor("#16a34a")    # Emerald Green
         risk_bg = colors.HexColor("#dcfce7")
 
-    # Typography Styles
     title_style = ParagraphStyle(
         "DocTitle",
         parent=styles["Heading1"],
@@ -123,7 +119,6 @@ def generate_forensic_report(email_data: Dict) -> str:
 
     story = []
 
-    # 1. Header Banner
     header_data = [
         [
             Paragraph("<b>BYTETRAIL STRUCTURED FORENSIC EVIDENCE REPORT</b>", title_style),
@@ -144,7 +139,6 @@ def generate_forensic_report(email_data: Dict) -> str:
     story.append(Spacer(1, 8))
     story.append(HRFlowable(width="100%", thickness=1.5, color=accent_blue, spaceBefore=2, spaceAfter=8))
 
-    # 2. Executive Threat Summary Box
     final_score = email_data.get("final_score", 0.0)
     fraud_score = email_data.get("fraud_score", 0.0)
     attribution_conf = round(min(88, max(35, final_score * 0.78)))
@@ -168,7 +162,6 @@ def generate_forensic_report(email_data: Dict) -> str:
     story.append(summary_table)
     story.append(Spacer(1, 10))
 
-    # 3. Incident Metadata & GeoLocation Forensics
     story.append(Paragraph("1. Incident Metadata & Observed Infrastructure Geolocation", section_heading))
     story.append(Paragraph("<i>Note: Geolocation represents observed network relay infrastructure (ASNs / Tor hops) and does not identify the sender's physical location.</i>", subtitle_style))
     story.append(Spacer(1, 4))
@@ -204,7 +197,6 @@ def generate_forensic_report(email_data: Dict) -> str:
     story.append(meta_table)
     story.append(Spacer(1, 10))
 
-    # 4. Authentication & Header Forensics Table
     story.append(Paragraph("2. Cryptographic Email Authentication Forensics", section_heading))
     
     spf = (email_data.get("spf_result") or "none").upper()
@@ -252,7 +244,6 @@ def generate_forensic_report(email_data: Dict) -> str:
     story.append(auth_table)
     story.append(Spacer(1, 8))
 
-    # 5. Origin Vector Assessment (PS-26106) & IoCs
     story.append(Paragraph("3. Origin Vector Assessment (PS-26106) & Indicators of Compromise", section_heading))
     sender_domain = sender.split("@")[-1] if "@" in sender else "unknown"
     is_tor_or_vpn = bool(email_data.get("is_vpn_tor") or "tor" in isp_asn.lower() or "vpn" in isp_asn.lower())
@@ -278,7 +269,6 @@ def generate_forensic_report(email_data: Dict) -> str:
     story.append(vector_table)
     story.append(Spacer(1, 8))
 
-    # 6. Raw Evidence & Excerpt
     story.append(Paragraph("4. Forensic Evidence Excerpt", section_heading))
     body_snippet = (email_data.get("body_text") or "No body content provided.")[:400]
     if len(email_data.get("body_text") or "") > 400:
@@ -301,7 +291,6 @@ def generate_forensic_report(email_data: Dict) -> str:
     story.append(evidence_table)
     story.append(Spacer(1, 12))
 
-    # 6. Auditor Certification Footer
     story.append(HRFlowable(width="100%", thickness=0.5, color=border_color, spaceBefore=2, spaceAfter=4))
     footer_text = Paragraph(
         "<b>ByteTrail Automated Forensic Engine</b> | Problem Statement 26106 | "
@@ -310,6 +299,5 @@ def generate_forensic_report(email_data: Dict) -> str:
     )
     story.append(footer_text)
 
-    # Build Document
     doc.build(story)
     return str(report_path)

@@ -1,6 +1,5 @@
-from typing import Optional
+﻿from typing import Optional
 from pydantic import BaseModel, Field
-
 
 class EmailCreate(BaseModel):
     sender: str = Field(
@@ -23,7 +22,6 @@ class EmailCreate(BaseModel):
         description="Optional raw RFC 822 email headers",
     )
 
-
 class EmailResponse(BaseModel):
     id: int
     sender: str
@@ -32,7 +30,6 @@ class EmailResponse(BaseModel):
     body_text: Optional[str] = None
     sha256_hash: Optional[str] = None
     received_at: Optional[str] = None
-
 
 class EmailDetailResponse(EmailResponse):
     fraud_score: Optional[float] = None
@@ -51,7 +48,6 @@ class EmailDetailResponse(EmailResponse):
     risk_level: Optional[str] = None
     threat_actor: Optional[str] = None
 
-
 class MailboxConnectRequest(BaseModel):
     email_address: str = Field(..., description="Email address to monitor (e.g. alerts@gmail.com)")
     password: str = Field(..., description="App Password or account password")
@@ -62,7 +58,6 @@ class MailboxConnectRequest(BaseModel):
     use_ssl: Optional[bool] = Field(True, description="Enable SSL/TLS")
     skip_verification: Optional[bool] = Field(False, description="Allow connection without live IMAP auth check for sandbox/demo mode")
     scan_history: Optional[bool] = Field(False, description="Whether to perform an immediate deep historical scan of read + unread emails")
-
 
 class MailboxResponse(BaseModel):
     id: int
@@ -78,18 +73,15 @@ class MailboxResponse(BaseModel):
     created_at: Optional[str] = None
     last_polled: Optional[str] = None
 
-
 class UserRegister(BaseModel):
     email: str = Field(..., description="Analyst email address")
     password: str = Field(..., min_length=6, description="Password (min 6 characters)")
     full_name: str = Field(..., description="Analyst Full Name")
     role: Optional[str] = Field("analyst", description="Role (admin, analyst, viewer)")
 
-
 class UserLogin(BaseModel):
     email: str = Field(..., description="Registered email address")
     password: str = Field(..., description="Account password")
-
 
 class UserResponse(BaseModel):
     id: int
@@ -100,16 +92,12 @@ class UserResponse(BaseModel):
     created_at: Optional[str] = None
     last_login: Optional[str] = None
 
-
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
     user: UserResponse
 
-
 class GoogleSignInRequest(BaseModel):
     email: Optional[str] = Field(None, description="Google email address")
     full_name: Optional[str] = Field(None, description="Google full name")
     access_token: Optional[str] = Field(None, description="Google OAuth access token")
-
-

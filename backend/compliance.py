@@ -1,7 +1,6 @@
-import hashlib
+﻿import hashlib
 from datetime import datetime
 from typing import Dict
-
 
 def calculate_evidence_hash(sender: str, subject: str, raw_headers: str, body_text: str) -> str:
     """
@@ -10,7 +9,6 @@ def calculate_evidence_hash(sender: str, subject: str, raw_headers: str, body_te
     """
     payload = f"{sender}|{subject}|{raw_headers or ''}|{body_text or ''}".encode("utf-8")
     return hashlib.sha256(payload).hexdigest()
-
 
 def generate_chain_of_custody_log(email_id: int, sha256_hash: str) -> Dict:
     """Produce formal chain-of-custody metadata."""

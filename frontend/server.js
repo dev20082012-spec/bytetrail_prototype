@@ -1,9 +1,4 @@
-/**
- * ByteTrail SOC Frontend Development & Production Server
- * Zero-dependency Node.js HTTP server with auto-MIME detection and routing.
- * Perfect for local development with `nodemon` or `node server.js`.
- */
-
+﻿
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
@@ -34,7 +29,6 @@ const MIME_TYPES = {
 };
 
 const requestHandler = (req, res) => {
-    // Add standard CORS and security headers for local dev
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -48,7 +42,6 @@ const requestHandler = (req, res) => {
     const parsedUrl = new URL(req.url, `http://${req.headers.host || "localhost"}`);
     let pathname = decodeURIComponent(parsedUrl.pathname);
 
-    // Normalize path to prevent directory traversal
     let safePath = path.normalize(path.join(ROOT_DIR, pathname));
     if (!safePath.startsWith(ROOT_DIR)) {
         res.writeHead(403, { "Content-Type": "text/plain" });
@@ -56,19 +49,16 @@ const requestHandler = (req, res) => {
         return;
     }
 
-    // Default route mapping
     if (pathname === "/" || pathname === "") {
         safePath = path.join(ROOT_DIR, "index.html");
     }
 
-    // Check if the requested file exists directly
     fs.stat(safePath, (err, stats) => {
         if (!err && stats.isFile()) {
             serveFile(safePath, res);
             return;
         }
 
-        // If directory, check for index.html inside
         if (!err && stats.isDirectory()) {
             const indexFile = path.join(safePath, "index.html");
             if (fs.existsSync(indexFile)) {
@@ -77,14 +67,12 @@ const requestHandler = (req, res) => {
             }
         }
 
-        // Clean URLs fallback: /dashboard -> /dashboard.html, /login -> /login.html
         const htmlFallback = safePath + ".html";
         if (fs.existsSync(htmlFallback) && fs.statSync(htmlFallback).isFile()) {
             serveFile(htmlFallback, res);
             return;
         }
 
-        // SPA / 404 Fallback
         const notFoundPath = path.join(ROOT_DIR, "index.html");
         if (fs.existsSync(notFoundPath)) {
             serveFile(notFoundPath, res);
@@ -114,7 +102,6 @@ function serveFile(filePath, res) {
     });
 }
 
-// Start server with resilient port retry logic
 function startServer(port) {
     const srv = http.createServer(requestHandler);
 
@@ -147,4 +134,3 @@ function startServer(port) {
 const currentServer = startServer(Number(PORT));
 
 module.exports = currentServer;
-

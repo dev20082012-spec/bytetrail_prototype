@@ -1,5 +1,4 @@
-from typing import Dict, Tuple
-
+﻿from typing import Dict, Tuple
 
 def calculate_risk_score(
     fraud_score: float,
@@ -17,10 +16,8 @@ def calculate_risk_score(
     Returns:
         (final_score: float, risk_level: str, threat_summary: str)
     """
-    # 1. Content Fraud Score Contribution (0 - 60 points)
     content_points = fraud_score * 60.0
 
-    # 2. Authentication & Header Security Points (0 - 40 points)
     auth_points = 0.0
 
     if spf_result in ("fail", "softfail"):
@@ -44,16 +41,13 @@ def calculate_risk_score(
     if not header_valid and (spf_result != "pass" and dkim_result != "pass"):
         auth_points += 10.0
 
-    # 3. GeoIP Threat Intelligence Indicator
     geo_points = 0.0
     if country in ("Russia", "China", "Nigeria", "North Korea", "Iran"):
-        # Elevated scrutiny for known high-volume phishing relay hubs
         geo_points += 10.0
 
     total_score = content_points + auth_points + geo_points
     final_score = round(min(100.0, max(0.0, total_score)), 1)
 
-    # Risk level thresholding
     if final_score >= 60.0:
         risk_level = "high"
         threat_summary = "CRITICAL THREAT: Strong indicators of credential harvesting, spoofing, or fraud."

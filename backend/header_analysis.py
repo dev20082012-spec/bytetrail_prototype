@@ -1,8 +1,7 @@
-import re
+﻿import re
 import email
 from email import policy
 from typing import Dict, Optional
-
 
 def parse_authentication_results(auth_header: str) -> Dict[str, str]:
     """Extract SPF, DKIM, and DMARC results from Authentication-Results header."""
@@ -12,23 +11,19 @@ def parse_authentication_results(auth_header: str) -> Dict[str, str]:
 
     auth_lower = auth_header.lower()
 
-    # SPF match
     spf_match = re.search(r"\bspf=(pass|fail|softfail|neutral|none|temperror|permerror)\b", auth_lower)
     if spf_match:
         results["spf"] = spf_match.group(1)
 
-    # DKIM match
     dkim_match = re.search(r"\bdkim=(pass|fail|none|temperror|permerror)\b", auth_lower)
     if dkim_match:
         results["dkim"] = dkim_match.group(1)
 
-    # DMARC match
     dmarc_match = re.search(r"\bdmarc=(pass|fail|none|temperror|permerror)\b", auth_lower)
     if dmarc_match:
         results["dmarc"] = dmarc_match.group(1)
 
     return results
-
 
 def analyze_headers(raw_headers: Optional[str], sender: str = "") -> Dict:
     """
@@ -57,17 +52,14 @@ def analyze_headers(raw_headers: Optional[str], sender: str = "") -> Dict:
 
     parsed_auth = parse_authentication_results(auth_results_header)
     
-    # Fallback to Received-SPF header if not in Authentication-Results
     if parsed_auth["spf"] == "none" and received_spf_header:
         spf_match = re.search(r"^(pass|fail|softfail|neutral|none)", received_spf_header.lower().strip())
         if spf_match:
             parsed_auth["spf"] = spf_match.group(1)
 
-    # Fallback to DKIM-Signature presence
     if parsed_auth["dkim"] == "none" and dkim_sig_header:
         parsed_auth["dkim"] = "present"
 
-    # Domain mismatch check between From and Reply-To
     domain_mismatch = False
     notes = []
 
@@ -82,12 +74,10 @@ def analyze_headers(raw_headers: Optional[str], sender: str = "") -> Dict:
             domain_mismatch = True
             notes.append(f"Domain mismatch: From '@{from_domain}' differs from Reply-To '@{reply_domain}'")
 
-    # Evaluate overall header validity
     spf_pass = parsed_auth["spf"] in ("pass",)
     dkim_pass = parsed_auth["dkim"] in ("pass", "present")
     dmarc_pass = parsed_auth["dmarc"] in ("pass",)
 
-    # If any explicit fail occurs, invalid
     explicit_fail = (
         parsed_auth["spf"] in ("fail", "softfail") or
         parsed_auth["dkim"] in ("fail",) or

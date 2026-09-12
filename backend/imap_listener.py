@@ -1,4 +1,4 @@
-import imaplib
+﻿import imaplib
 import email
 import logging
 import threading
@@ -8,7 +8,6 @@ from datetime import datetime
 
 logger = logging.getLogger("bytetrail.imap")
 
-# Provider presets for instant auto-discovery
 PROVIDER_PRESETS = {
     "gmail": {
         "host": "imap.gmail.com",
@@ -40,7 +39,6 @@ PROVIDER_PRESETS = {
     },
 }
 
-
 def test_imap_credentials(host: str, port: int, username: str, password: str, use_ssl: bool = True, folder: str = "INBOX") -> Dict:
     """Test connection and login to an IMAP mailbox."""
     clean_user = username.strip()
@@ -59,7 +57,6 @@ def test_imap_credentials(host: str, port: int, username: str, password: str, us
         return {"success": True, "message": "Successfully connected and authenticated."}
     except Exception as exc:
         return {"success": False, "message": f"Connection failed: {str(exc)}"}
-
 
 class MultiMailboxManager:
     """
@@ -107,7 +104,6 @@ class MultiMailboxManager:
 
         for mb in mailboxes:
             try:
-                # Batch processing: fetch and scan 10 emails (both read and unread) per polling cycle.
                 res = self._poll_single_mailbox(mb, include_read=True, limit=10)
                 ingested = res.get("records", []) if isinstance(res, dict) else res
                 if ingested:
@@ -144,7 +140,6 @@ class MultiMailboxManager:
         folder = mb.get("folder", "INBOX")
         use_ssl = bool(mb.get("use_ssl", 1))
 
-        # If account authenticated via OAuth 2.0 (e.g. Google Gmail API)
         auth_type = mb.get("auth_type", "password")
         access_token = mb.get("access_token", "")
         if auth_type == "oauth" or (access_token and "gmail" in host.lower()):
@@ -163,8 +158,6 @@ class MultiMailboxManager:
                 except ValueError as exc:
                     if "rate limiting" in str(exc).lower():
                         raise
-                    # Google access tokens are short-lived. Retry once with the
-                    # stored refresh token so background live polling keeps working.
                     refreshed = refresh_google_access_token(mb.get("refresh_token", ""))
                     access_token = refreshed["access_token"]
                     from db import update_mailbox_tokens
@@ -215,7 +208,6 @@ class MultiMailboxManager:
         client.login(username, password)
         client.select(folder)
 
-        # If include_read is True, search ALL messages; otherwise search UNSEEN only
         search_filter = "ALL" if include_read else "UNSEEN"
         status, messages = client.search(None, search_filter)
         if status != "OK" or not messages or not messages[0]:
@@ -243,11 +235,9 @@ class MultiMailboxManager:
                 sender = str(msg.get("From", "unknown@domain.com"))
                 subject = str(msg.get("Subject", "No Subject"))
 
-                # Extract raw RFC 822 headers
                 headers_list = [f"{k}: {v}" for k, v in msg.items()]
                 raw_headers = "\n".join(headers_list)
 
-                # Extract plaintext body
                 body_text = ""
                 if msg.is_multipart():
                     for part in msg.walk():
@@ -259,14 +249,12 @@ class MultiMailboxManager:
                 else:
                     body_text = msg.get_payload(decode=True).decode("utf-8", errors="ignore")
 
-                # Evidence hash check for deduplication
                 clean_body = body_text.strip() or "(No readable text body)"
                 evidence_hash = calculate_evidence_hash(sender, subject, raw_headers, clean_body)
                 existing_id = check_email_exists_by_hash(evidence_hash, user_id=target_user_id)
                 if existing_id:
                     continue
 
-                # Trigger ByteTrail 4-vector intelligence pipeline
                 record = self._pipeline_runner(
                     sender=sender,
                     subject=subject,
@@ -277,7 +265,6 @@ class MultiMailboxManager:
                 ingested_records.append(record)
                 self._stats["total_ingested"] += 1
 
-                # Mark as seen if it was unread
                 if not include_read:
                     client.store(e_id, "+FLAGS", "\\Seen")
             except Exception as e:
@@ -294,6 +281,4 @@ class MultiMailboxManager:
             "total_scanned_in_batch": len(batch_ids),
         }
 
-
-# Global singleton instance
 mailbox_manager = MultiMailboxManager()

@@ -1,6 +1,5 @@
-from typing import Dict, Optional
+﻿from typing import Dict, Optional
 
-# Threat Intelligence ASN / ISP and Tor/VPN relay signature mapping
 KNOWN_INTEL_DB = {
     "185.220.101.5": {
         "isp_asn": "AS44146 (Tor Exit Relay Network)",
@@ -52,7 +51,6 @@ KNOWN_INTEL_DB = {
     },
 }
 
-
 def lookup_threat_intelligence(ip_address: Optional[str]) -> Dict:
     """
     Query multi-source Threat Intelligence feeds for IP reputation,
@@ -69,7 +67,6 @@ def lookup_threat_intelligence(ip_address: Optional[str]) -> Dict:
     if ip_address in KNOWN_INTEL_DB:
         return KNOWN_INTEL_DB[ip_address]
 
-    # Default heuristic check
     return {
         "isp_asn": f"AS-Relay ({ip_address.split('.')[0]}.x Network)",
         "is_vpn_tor": False,

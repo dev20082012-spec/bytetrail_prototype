@@ -1,4 +1,4 @@
-import os
+﻿import os
 import hmac
 import json
 import base64
@@ -11,7 +11,6 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dotenv import load_dotenv
 from pathlib import Path
 
-# Load environment variables
 env_path = Path(__file__).resolve().parent / ".env"
 load_dotenv(dotenv_path=env_path)
 
@@ -19,13 +18,8 @@ JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "bytetrail-soc-enterprise-sec-token
 JWT_ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_DAYS = int(os.getenv("ACCESS_TOKEN_EXPIRE_DAYS", 7))
 
-# FastAPI HTTP Bearer token dependency
 security = HTTPBearer(auto_error=False)
 
-
-# ==============================================================================
-# Password Hashing & Verification (PBKDF2-HMAC-SHA256)
-# ==============================================================================
 def hash_password(password: str) -> str:
     """
     Hash a plaintext password with a random 16-byte salt using PBKDF2-HMAC-SHA256
@@ -36,7 +30,6 @@ def hash_password(password: str) -> str:
     iterations = 100000
     derived = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, iterations)
     return f"pbkdf2_sha256${iterations}${salt.hex()}${derived.hex()}"
-
 
 def verify_password(plain_password: str, password_hash: str) -> bool:
     """
@@ -55,20 +48,14 @@ def verify_password(plain_password: str, password_hash: str) -> bool:
     except Exception:
         return False
 
-
-# ==============================================================================
-# JSON Web Token (JWT) Generation & Verification (HS256)
-# ==============================================================================
 def _base64url_encode(data: bytes) -> str:
     """Encode bytes to base64url string without padding."""
     return base64.urlsafe_b64encode(data).rstrip(b"=").decode("ascii")
-
 
 def _base64url_decode(data: str) -> bytes:
     """Decode base64url string with required padding."""
     padding = "=" * ((4 - len(data) % 4) % 4)
     return base64.urlsafe_b64decode((data + padding).encode("ascii"))
-
 
 def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
     """
@@ -83,20 +70,16 @@ def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta]
     to_encode["exp"] = int(expire.timestamp())
     to_encode["iat"] = int(datetime.utcnow().timestamp())
 
-    # Header
     header = {"alg": JWT_ALGORITHM, "typ": "JWT"}
     header_b64 = _base64url_encode(json.dumps(header, separators=(",", ":")).encode("utf-8"))
 
-    # Payload
     payload_b64 = _base64url_encode(json.dumps(to_encode, separators=(",", ":")).encode("utf-8"))
 
-    # Signature
     signing_input = f"{header_b64}.{payload_b64}".encode("ascii")
     signature = hmac.new(JWT_SECRET_KEY.encode("utf-8"), signing_input, hashlib.sha256).digest()
     signature_b64 = _base64url_encode(signature)
 
     return f"{header_b64}.{payload_b64}.{signature_b64}"
-
 
 def verify_access_token(token: str) -> Dict[str, Any]:
     """
@@ -126,7 +109,6 @@ def verify_access_token(token: str) -> Dict[str, Any]:
 
         payload = json.loads(_base64url_decode(payload_b64).decode("utf-8"))
         
-        # Expiration check
         exp = payload.get("exp")
         if exp and exp < datetime.utcnow().timestamp():
             raise HTTPException(
@@ -145,10 +127,6 @@ def verify_access_token(token: str) -> Dict[str, Any]:
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-
-# ==============================================================================
-# FastAPI Security Dependencies
-# ==============================================================================
 def get_current_user(credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)) -> Dict[str, Any]:
     """
     FastAPI dependency to authenticate and fetch current user from Bearer token.
@@ -188,7 +166,6 @@ def get_current_user(credentials: Optional[HTTPAuthorizationCredentials] = Depen
 
     return user
 
-
 def get_optional_current_user(credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)) -> Optional[Dict[str, Any]]:
     """
     FastAPI dependency returning current user if Bearer token is provided, or None.
@@ -205,4 +182,3 @@ def get_optional_current_user(credentials: Optional[HTTPAuthorizationCredentials
         return get_user_by_id(int(user_id))
     except Exception:
         return None
-

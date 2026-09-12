@@ -1,9 +1,4 @@
-/**
- * ByteTrail — Enterprise SOC Threat Intelligence App Logic
- * Problem Statement ID: 26106 | Smart India Hackathon
- */
-
-// Delegate to development server when executed via Node.js / nodemon (e.g. `nodemon app.js`)
+﻿
 if (typeof window === "undefined" && typeof process !== "undefined") {
     global.window = global;
     global.document = {
@@ -19,7 +14,6 @@ if (typeof window === "undefined" && typeof process !== "undefined") {
     };
     module.exports = require("./server.js");
 }
-
 
 const getApiBase = () => {
     if (typeof window !== "undefined") {
@@ -38,7 +32,6 @@ const getApiBase = () => {
 
 const API_BASE = getApiBase();
 
-// State
 let storedEmails = [];
 let connectedMailboxes = [];
 let activeFilter = "all";
@@ -47,7 +40,6 @@ let radarMap = null;
 let markerLayerGroup = null;
 let graphData = { nodes: [], edges: [] };
 
-// Provider instructions map
 const PROVIDER_INFO = {
     gmail: {
         host: "imap.gmail.com",
@@ -76,7 +68,6 @@ const PROVIDER_INFO = {
     }
 };
 
-// Pre-defined Realistic Attack & Benign Scenarios
 const SCENARIOS = {
     paypal: {
         sender: "security-dept@paypal-verify-user-account.com",
@@ -110,9 +101,6 @@ const SCENARIOS = {
     }
 };
 
-// ==============================================================================
-// Unified Investigation Workspace Data & Engine (SIH PS-26106 Aligned)
-// ==============================================================================
 const WORKSPACE_CASES = {
     1001: {
         id: 1001,
@@ -133,7 +121,6 @@ const WORKSPACE_CASES = {
         auditLedger: "LOG-2026-09-08-99214",
         received_at: new Date(Date.now() - 1000 * 60 * 32).toISOString(),
         
-        // Separated Dual Confidence Metrics (Section 2)
         threatScore: 94,
         threatColor: "#ef4444",
         threatSubtext: "Combined score from ML NLP features, credential harvest URLs, and SPF/DKIM/DMARC protocol failures.",
@@ -141,7 +128,6 @@ const WORKSPACE_CASES = {
         attributionColor: "#a78bfa",
         attributionSubtext: "Correlation with AS44146 Tor infrastructure cluster TC-44146. Indicates observed network patterns, not legal or nation-state certainty.",
         
-        // Content Analysis: ML vs Deterministic (Section 3)
         contentAnalysis: {
             mlSignals: {
                 phishing: "96.8%",
@@ -157,7 +143,6 @@ const WORKSPACE_CASES = {
             }
         },
 
-        // Header & Authentication Forensics (Section 4)
         authForensics: {
             spf: { status: "FAIL", color: "#ef4444", desc: "IP 185.220.101.5 unauthorized in sender domain SPF" },
             dkim: { status: "FAIL", color: "#ef4444", desc: "No cryptographic signature or body hash mismatch" },
@@ -166,7 +151,6 @@ const WORKSPACE_CASES = {
             messageId: "<992837198237@paypal-verify-user-account.com>"
         },
 
-        // Indicators of Compromise (Section 5)
         iocs: [
             { type: "IP", value: "185.220.101.5", context: "Observed Relay IP (Tor Node)", risk: "CRITICAL", riskColor: "#ef4444" },
             { type: "Domain", value: "paypal-verify-user-account.com", context: "Lookalike Phishing Domain", risk: "HIGH", riskColor: "#ef4444" },
@@ -175,7 +159,6 @@ const WORKSPACE_CASES = {
             { type: "ASN", value: "AS44146", context: "Tor Project / Exit Infrastructure", risk: "HIGH", riskColor: "#f59e0b" }
         ],
 
-        // URL & Redirect Intelligence (Section 6)
         urlAnalysis: {
             extractedUrl: "http://paypal-verify-user-account.com/secure-login/login.php",
             domainMismatch: "Claimed: paypal.com vs Target: paypal-verify-user-account.com",
@@ -186,7 +169,6 @@ const WORKSPACE_CASES = {
             ]
         },
 
-        // Attachment Intelligence (Section 7)
         attachmentAnalysis: {
             filename: "Invoice_Escrow_Auth_Doc_99182.pdf.exe",
             mismatch: "Double Extension Trap (PE Executable)",
@@ -197,7 +179,6 @@ const WORKSPACE_CASES = {
             riskColor: "#ef4444"
         },
 
-        // Domain Intelligence (Section 8)
         domainIntelligence: {
             name: "paypal-verify-user-account.com",
             age: "14 Days Old (Registered: 2026-08-25)",
@@ -211,7 +192,6 @@ const WORKSPACE_CASES = {
             repColor: "#ef4444"
         },
 
-        // Relay Trace & Infrastructure Geolocation (Section 9)
         relayTrace: {
             ip: "185.220.101.5",
             geo: "Moscow, Russia (Lat: 55.7558, Lon: 37.6176)",
@@ -222,7 +202,6 @@ const WORKSPACE_CASES = {
             ]
         },
 
-        // Threat Intelligence Correlation (Section 10)
         threatIntel: {
             cluster: "Threat Cluster TC-44146",
             similarity: "87% Pretext / Infra Match",
@@ -230,7 +209,6 @@ const WORKSPACE_CASES = {
             evidence: "Overlapping nameservers (offshore-dns-hosting.cc) + 3 prior sightings in same ASN block."
         },
 
-        // PS-26106 Origin Vector Assessment (Section 11)
         originAssessment: {
             compromised: { pct: 14, color: "#34d399", rationale: "Low likelihood. Inbound payload originated from unauthenticated external server, not internal employee token." },
             spoofed: { pct: 78, color: "#f59e0b", rationale: "High likelihood. From header mimics PayPal Support while SPF/DKIM authentication fails completely." },
@@ -238,7 +216,6 @@ const WORKSPACE_CASES = {
             directMalicious: { pct: 85, color: "#ef4444", rationale: "High likelihood. Domain was newly registered 14 days ago on bulletproof hosting with credential harvest kit." }
         },
 
-        // Timeline (Section 13)
         timeline: [
             { time: "09:17:00 UTC", text: "Inbound RFC 822 mail stream captured at edge MTA gateway (Port 25)" },
             { time: "09:17:02 UTC", text: "Pre-Delivery inspection triggered; envelope headers parsed and MIME validated" },
@@ -246,7 +223,6 @@ const WORKSPACE_CASES = {
             { time: "09:17:04 UTC", text: "Quarantine hold enforced; SHA-256 evidence integrity seal generated" }
         ],
 
-        // Backwards compatibility fields for modal & telemetry
         raw_headers: "From: PayPal Support <security-dept@paypal-verify-user-account.com>\nTo: target@victim-corp.com\nSubject: URGENT ACTION REQUIRED: Account Access Suspended Immediately\nDate: Mon, 08 Sep 2026 09:17:00 +0000\nReceived: from unknown (185.220.101.5) by mx.relay-gateway.net\nAuthentication-Results: mx.relay-gateway.net; spf=fail smtp.mailfrom=paypal-verify-user-account.com; dkim=fail; dmarc=fail\nMessage-ID: <992837198237@paypal-verify-user-account.com>",
         body_text: "Dear Customer,\n\nWe detected suspicious unauthorized login attempts on your account from IP address 185.220.101.5 (Moscow, Russia).\n\nTo prevent permanent account termination, please verify your identity and credit card details within 24 hours:\nhttp://paypal-verify-user-account.com/secure-login/login.php\n\nFailure to comply will lead to permanent account deactivation.\n\nPayPal Security Team",
         risk_level: "high",
@@ -542,14 +518,12 @@ const WORKSPACE_CASES = {
     }
 };
 
-// Backwards compatibility references for legacy functions
 const DEMO_CASE = WORKSPACE_CASES[1001];
 const DEMO_CASE_2 = WORKSPACE_CASES[1002];
 const DEMO_CASE_3 = WORKSPACE_CASES[1003];
 
 let currentWorkspaceCaseId = 1001;
 
-// Dynamic Case Converter: Transforms any ingested email record into rich Workspace Case structure
 function convertEmailToWorkspaceCase(e) {
     if (!e) return WORKSPACE_CASES[1001];
     const isCritical = (e.risk_level || "").toLowerCase() === "critical";
@@ -802,9 +776,6 @@ function updateWorkspaceCaseDropdown() {
     }
 }
 
-// ==============================================================================
-// Investigation Workspace Rendering Engine
-// ==============================================================================
 function renderInvestigationWorkspace(caseId) {
     if (caseId === "blank") {
         setWorkspaceBlankState(true);
@@ -817,14 +788,12 @@ function renderInvestigationWorkspace(caseId) {
     currentWorkspaceCaseId = Number(c.id);
     setWorkspaceBlankState(false);
 
-    // Sync select dropdown & tab badge
     const select = document.getElementById("workspace-case-select");
     if (select && select.value !== String(c.id)) select.value = String(c.id);
 
     const tabBadge = document.getElementById("badge-ws-case");
     if (tabBadge) tabBadge.textContent = `CASE #${c.id}`;
 
-    // Top Header & Status Badge
     const caseTagText = document.getElementById("ws-case-tag-text");
     if (caseTagText) caseTagText.textContent = `CASE #${c.id}: ${c.subject.substring(0, 48).toUpperCase()}...`;
 
@@ -834,7 +803,6 @@ function renderInvestigationWorkspace(caseId) {
         statusBadge.innerHTML = `<i class="fa-solid ${c.statusIcon}"></i> ${escapeHtml(c.status)}`;
     }
 
-    // Section 1: Case ID & Incident Severity
     const valCaseId = document.getElementById("ws-val-case-id");
     if (valCaseId) valCaseId.textContent = `#${c.id} (${c.threatIntel.cluster})`;
 
@@ -862,7 +830,6 @@ function renderInvestigationWorkspace(caseId) {
     const valSeal = document.getElementById("ws-val-seal");
     if (valSeal) valSeal.textContent = c.evidenceSeal;
 
-    // Section 2: Threat Risk vs Attribution Confidence (Separated Concepts)
     const scoreThreat = document.getElementById("ws-score-threat");
     if (scoreThreat) {
         scoreThreat.textContent = c.threatScore;
@@ -889,7 +856,6 @@ function renderInvestigationWorkspace(caseId) {
     const subtextAttribution = document.getElementById("ws-subtext-attribution");
     if (subtextAttribution) subtextAttribution.innerHTML = c.attributionSubtext;
 
-    // Section 3: Content Analysis (ML vs Deterministic)
     const emailSubject = document.getElementById("ws-email-subject");
     if (emailSubject) emailSubject.textContent = c.subject;
 
@@ -920,7 +886,6 @@ function renderInvestigationWorkspace(caseId) {
     const detRelay = document.getElementById("ws-det-relay");
     if (detRelay) detRelay.textContent = c.contentAnalysis.deterministic.suspiciousRelay;
 
-    // Section 3: Full Ingested Message Body & Raw Headers Preview
     const bodyPreview = document.getElementById("ws-email-body-preview");
     if (bodyPreview) {
         bodyPreview.textContent = c.body_text || "(No plaintext body found in .EML payload)";
@@ -944,7 +909,6 @@ function renderInvestigationWorkspace(caseId) {
         };
     }
 
-    // Section 4: Header & Authentication Forensics
     const authSpf = document.getElementById("ws-auth-spf");
     if (authSpf) {
         authSpf.textContent = c.authForensics.spf.status;
@@ -969,7 +933,6 @@ function renderInvestigationWorkspace(caseId) {
     const valMessageId = document.getElementById("ws-val-message-id");
     if (valMessageId) valMessageId.textContent = c.authForensics.messageId;
 
-    // Section 5: IoCs Table
     const iocsTbody = document.getElementById("ws-iocs-tbody");
     if (iocsTbody) {
         iocsTbody.innerHTML = c.iocs.map(ioc => `
@@ -982,7 +945,6 @@ function renderInvestigationWorkspace(caseId) {
         `).join("");
     }
 
-    // Section 6: URL & Redirect Intelligence
     const urlExtracted = document.getElementById("ws-url-extracted");
     if (urlExtracted) urlExtracted.textContent = c.urlAnalysis.extractedUrl;
 
@@ -1000,7 +962,6 @@ function renderInvestigationWorkspace(caseId) {
         `).join("");
     }
 
-    // Section 7: Attachment Intelligence
     const attFilename = document.getElementById("ws-att-filename");
     if (attFilename) attFilename.textContent = c.attachmentAnalysis.filename;
 
@@ -1022,7 +983,6 @@ function renderInvestigationWorkspace(caseId) {
         attRisk.style.color = c.attachmentAnalysis.riskColor;
     }
 
-    // Section 8: Domain Intelligence
     const domName = document.getElementById("ws-dom-name");
     if (domName) domName.textContent = c.domainIntelligence.name;
 
@@ -1053,7 +1013,6 @@ function renderInvestigationWorkspace(caseId) {
         domRep.style.color = c.domainIntelligence.repColor;
     }
 
-    // Section 9: Relay Trace & Infrastructure Geolocation
     const relayIp = document.getElementById("ws-relay-ip");
     if (relayIp) relayIp.textContent = c.relayTrace.ip;
 
@@ -1071,7 +1030,6 @@ function renderInvestigationWorkspace(caseId) {
         `).join("");
     }
 
-    // Section 10: Threat Intelligence Correlation
     const corrCluster = document.getElementById("ws-corr-cluster");
     if (corrCluster) corrCluster.textContent = c.threatIntel.cluster;
 
@@ -1084,7 +1042,6 @@ function renderInvestigationWorkspace(caseId) {
     const corrEvidence = document.getElementById("ws-corr-evidence");
     if (corrEvidence) corrEvidence.textContent = c.threatIntel.evidence;
 
-    // Section 11: PS-26106 Origin Vector Assessment (4 Likelihoods)
     const o = c.originAssessment;
     const compPct = document.getElementById("ws-origin-comp-pct");
     if (compPct) { compPct.textContent = `${o.compromised.pct}%`; compPct.style.color = o.compromised.color; }
@@ -1114,10 +1071,8 @@ function renderInvestigationWorkspace(caseId) {
     const malRat = document.getElementById("ws-origin-mal-rat");
     if (malRat) malRat.textContent = o.directMalicious.rationale;
 
-    // Section 12: Interactive Campaign Correlation Graph
     renderWorkspaceMiniGraph(c.id);
 
-    // Section 13: Evidence Timeline & ISO/IEC 27037 Integrity
     const timelineList = document.getElementById("ws-timeline-list");
     if (timelineList) {
         timelineList.innerHTML = c.timeline.map(step => `
@@ -1131,7 +1086,6 @@ function renderInvestigationWorkspace(caseId) {
     const evidenceHash = document.getElementById("ws-evidence-hash");
     if (evidenceHash) evidenceHash.textContent = `SHA-256: ${c.sha256_hash}`;
 
-    // Section 14: Structured Report Buttons
     const btnTopPdf = document.getElementById("btn-ws-top-pdf");
     if (btnTopPdf) btnTopPdf.onclick = () => window.downloadReport(c.id);
 
@@ -1141,7 +1095,6 @@ function renderInvestigationWorkspace(caseId) {
     showToast(`📂 Loaded Case #${c.id}: ${c.subject.substring(0, 36)}...`, "info");
 }
 
-// Render Multi-Entity Graph on Workspace Mini Canvas
 function renderWorkspaceMiniGraph(caseId) {
     const canvas = document.getElementById("ws-mini-graph-canvas");
     if (!canvas) return;
@@ -1149,7 +1102,6 @@ function renderWorkspaceMiniGraph(caseId) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Resize canvas to fit container dynamically
     const container = canvas.parentElement;
     if (container && container.offsetWidth > 0) {
         canvas.width = container.offsetWidth;
@@ -1164,12 +1116,10 @@ function renderWorkspaceMiniGraph(caseId) {
     const cx = w / 2;
     const cy = h / 2;
 
-    // Construct entity nodes based on case
     let nodes = [];
     let edges = [];
 
     if (caseId === 1001 || caseId === 1002) {
-        // Multi-entity shared campaign graph showing cross-case correlation
         nodes = [
             { id: "case1001", label: "Case #1001 (Phish)", x: cx - 180, y: cy - 45, color: "#ef4444", r: 16, type: "email" },
             { id: "case1002", label: "Case #1002 (BEC)", x: cx - 180, y: cy + 55, color: "#f59e0b", r: 15, type: "email" },
@@ -1192,7 +1142,6 @@ function renderWorkspaceMiniGraph(caseId) {
             { from: "asn", to: "cluster" }
         ];
     } else {
-        // Benign clean verified infrastructure
         nodes = [
             { id: "case1003", label: "Case #1003 (Advisory)", x: cx - 140, y: cy, color: "#10b981", r: 16, type: "email" },
             { id: "ip", label: "IP 192.30.252.204", x: cx, y: cy - 40, color: "#34d399", r: 15, type: "ip" },
@@ -1211,7 +1160,6 @@ function renderWorkspaceMiniGraph(caseId) {
     const nodeMap = {};
     nodes.forEach(n => { nodeMap[n.id] = n; });
 
-    // Draw Edges
     ctx.lineWidth = 1.6;
     edges.forEach(e => {
         const src = nodeMap[e.from];
@@ -1225,9 +1173,7 @@ function renderWorkspaceMiniGraph(caseId) {
         }
     });
 
-    // Draw Nodes
     nodes.forEach(n => {
-        // Outer halo glow for highlighted shared infrastructure
         if (n.highlight) {
             ctx.strokeStyle = "rgba(239, 68, 68, 0.4)";
             ctx.lineWidth = 3;
@@ -1245,7 +1191,6 @@ function renderWorkspaceMiniGraph(caseId) {
         ctx.lineWidth = 2;
         ctx.stroke();
 
-        // Node Label
         ctx.fillStyle = "#e2e8f0";
         ctx.font = "10px Inter, sans-serif";
         ctx.textAlign = "center";
@@ -1253,7 +1198,6 @@ function renderWorkspaceMiniGraph(caseId) {
     });
 }
 
-// Toggle Workspace Blank State vs Loaded Case
 function setWorkspaceBlankState(isBlank) {
     const loadedCaseEl = document.getElementById("workspace-loaded-case");
     const blankStateEl = document.getElementById("workspace-blank-state");
@@ -1269,7 +1213,6 @@ function setWorkspaceBlankState(isBlank) {
     }
 }
 
-// Export STIX 2.1 Threat Intelligence Bundle
 function exportStixBundle(caseId) {
     const c = getWorkspaceCase(caseId);
     const timestamp = new Date().toISOString();
@@ -1326,7 +1269,6 @@ function exportStixBundle(caseId) {
     showToast(`✅ STIX 2.1 Cyber Threat Intelligence Bundle Exported for Case #${c.id}`, "success");
 }
 
-// Export ISO/IEC 27037 Evidence Integrity JSON
 function exportEvidenceJson(caseId) {
     const c = getWorkspaceCase(caseId);
     const evidencePackage = {
@@ -1371,7 +1313,6 @@ function exportEvidenceJson(caseId) {
     showToast(`✅ ISO/IEC 27037 Forensic Evidence JSON Exported for Case #${c.id}`, "success");
 }
 
-// Fallback Print-Ready Structured Forensic Report Generator (Guaranteed offline execution)
 function fallbackPrintForensicReport(caseId) {
     const c = getWorkspaceCase(caseId);
     
@@ -1490,7 +1431,6 @@ function fallbackPrintForensicReport(caseId) {
     }
 }
 
-// Initialize Application
 if (typeof document !== "undefined") {
     document.addEventListener("DOMContentLoaded", () => {
         renderAuthUI();
@@ -1502,10 +1442,8 @@ if (typeof document !== "undefined") {
         loadConnectedMailboxes();
         initEventListeners();
 
-        // PS-26106 Mandatory: Load realistic populated Case #1001 immediately on startup
         renderInvestigationWorkspace(1001);
 
-        // Auto health check polling
         setInterval(() => {
             checkBackendStatus();
             loadEmails(false); // Silent background refresh
@@ -1513,9 +1451,6 @@ if (typeof document !== "undefined") {
     });
 }
 
-// ==============================================================================
-// View Mode Switching (Product Showcase vs Live SOC Console)
-// ==============================================================================
 function switchViewMode(mode, targetSubTab = null) {
     const landingSection = document.getElementById("landing-page");
     const socSection = document.getElementById("soc-dashboard");
@@ -1551,9 +1486,6 @@ function switchViewMode(mode, targetSubTab = null) {
     }
 }
 
-// ==============================================================================
-// Authentication & Session State Management
-// ==============================================================================
 function getAuthToken() {
     return localStorage.getItem("bytetrail_jwt_token");
 }
@@ -1618,7 +1550,6 @@ function renderAuthUI() {
     }
 }
 
-// Modal & Form Handlers
 function openAuthModal(initialTab = "signin") {
     const modal = document.getElementById("auth-modal");
     if (!modal) return;
@@ -1756,7 +1687,6 @@ async function handleDemoLogin() {
     }
 }
 
-// Setup Navigation Tabs
 function initNavTabs() {
     const tabs = document.querySelectorAll(".nav-tab");
     tabs.forEach(tab => {
@@ -1764,10 +1694,22 @@ function initNavTabs() {
             tabs.forEach(t => t.classList.remove("active"));
             tab.classList.add("active");
 
-            // Scroll tab smoothly into view on mobile
             try {
-                tab.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+                const navTabsContainer = tab.closest(".nav-tabs");
+                if (navTabsContainer && navTabsContainer.scrollWidth > navTabsContainer.clientWidth) {
+                    const tabLeft = tab.offsetLeft;
+                    const tabWidth = tab.offsetWidth;
+                    const containerWidth = navTabsContainer.clientWidth;
+                    navTabsContainer.scrollTo({
+                        left: tabLeft - (containerWidth / 2) + (tabWidth / 2),
+                        behavior: "smooth"
+                    });
+                }
             } catch (err) { }
+
+            if (window.scrollX !== 0 || document.documentElement.scrollLeft !== 0) {
+                window.scrollTo({ left: 0, top: window.scrollY });
+            }
 
             const targetTab = tab.dataset.tab;
             document.querySelectorAll(".tab-pane").forEach(pane => {
@@ -1777,7 +1719,6 @@ function initNavTabs() {
             const activePane = document.getElementById(`pane-${targetTab}`);
             if (activePane) activePane.classList.add("active");
 
-            // Leaflet map container fix on tab transition
             if (targetTab === "radar" && radarMap) {
                 setTimeout(() => {
                     radarMap.invalidateSize();
@@ -1800,7 +1741,6 @@ function initNavTabs() {
         });
     });
 
-    // Window resize handler for responsive map and canvas graphs
     let resizeTimer;
     window.addEventListener("resize", () => {
         clearTimeout(resizeTimer);
@@ -1820,9 +1760,7 @@ function initNavTabs() {
     });
 }
 
-// Setup Event Listeners
 function initEventListeners() {
-    // Workspace Controls (PS-26106 Mandatory Interactive Features)
     const wsCaseSelect = document.getElementById("workspace-case-select");
     if (wsCaseSelect) {
         wsCaseSelect.addEventListener("change", (e) => {
@@ -1901,7 +1839,6 @@ function initEventListeners() {
         });
     }
 
-    // Mode Switchers & Brand Link
     const brandHome = document.getElementById("brand-home-link");
     if (brandHome) brandHome.addEventListener("click", () => switchViewMode("landing"));
 
@@ -1911,7 +1848,6 @@ function initEventListeners() {
     const btnModeSoc = document.getElementById("btn-mode-soc");
     if (btnModeSoc) btnModeSoc.addEventListener("click", () => switchViewMode("soc"));
 
-    // Auth Triggers
     const btnQuickDemo = document.getElementById("btn-quick-demo-login");
     if (btnQuickDemo) btnQuickDemo.addEventListener("click", handleDemoLogin);
 
@@ -1938,24 +1874,20 @@ function initEventListeners() {
     if (btnCloseAuth) btnCloseAuth.addEventListener("click", closeAuthModal);
     if (authBackdrop) authBackdrop.addEventListener("click", closeAuthModal);
 
-    // Auth Mode Tabs in Modal
     const tabBtnSignin = document.getElementById("tab-btn-signin");
     const tabBtnSignup = document.getElementById("tab-btn-signup");
     if (tabBtnSignin) tabBtnSignin.addEventListener("click", () => switchAuthModalTab("signin"));
     if (tabBtnSignup) tabBtnSignup.addEventListener("click", () => switchAuthModalTab("signup"));
 
-    // Auth Forms Submit
     const formSignin = document.getElementById("form-signin");
     if (formSignin) formSignin.addEventListener("submit", handleSignInSubmit);
 
     const formSignup = document.getElementById("form-signup");
     if (formSignup) formSignup.addEventListener("submit", handleSignUpSubmit);
 
-    // User Logout
     const btnUserLogout = document.getElementById("btn-user-logout");
     if (btnUserLogout) btnUserLogout.addEventListener("click", clearAuthSession);
 
-    // Quick Detection Action Strip Buttons
     const btnQuickScan = document.getElementById("btn-quick-scan-email");
     if (btnQuickScan) {
         btnQuickScan.addEventListener("click", () => {
@@ -1981,11 +1913,9 @@ function initEventListeners() {
         });
     }
 
-    // Ingestion Form
     const form = document.getElementById("ingest-form");
     if (form) form.addEventListener("submit", handleIngestSubmit);
 
-    // Refresh & State Buttons
     const btnRefreshFeed = document.getElementById("btn-refresh-feed");
     if (btnRefreshFeed) btnRefreshFeed.addEventListener("click", () => loadEmails(true));
 
@@ -2030,7 +1960,6 @@ function initEventListeners() {
     const btnRefreshMailboxes = document.getElementById("btn-refresh-mailboxes");
     if (btnRefreshMailboxes) btnRefreshMailboxes.addEventListener("click", loadConnectedMailboxes);
 
-    // Reset Map Zoom
     const btnResetZoom = document.getElementById("btn-reset-map-zoom");
     if (btnResetZoom) {
         btnResetZoom.addEventListener("click", () => {
@@ -2038,7 +1967,6 @@ function initEventListeners() {
         });
     }
 
-    // Modal Close
     const btnCloseModal = document.getElementById("btn-close-modal");
     const modalBackdrop = document.getElementById("modal-backdrop");
     if (btnCloseModal) btnCloseModal.addEventListener("click", closeForensicModal);
@@ -2052,7 +1980,6 @@ function initEventListeners() {
     if (btnClosePipeline) btnClosePipeline.addEventListener("click", closePipelineModal);
     if (pipelineBackdrop) pipelineBackdrop.addEventListener("click", closePipelineModal);
 
-    // Global Escape Key to dismiss any open modal
     document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
             closeForensicModal();
@@ -2061,7 +1988,6 @@ function initEventListeners() {
         }
     });
 
-    // Connect Mailbox Modal Triggers
     const btnOpenConnectModal = document.getElementById("btn-open-connect-modal");
     const btnAddMailboxTab = document.getElementById("btn-add-mailbox-tab");
     const btnCloseConnectModal = document.getElementById("btn-close-connect-modal");
@@ -2081,7 +2007,6 @@ function initEventListeners() {
     if (btnCancelConnectMb) btnCancelConnectMb.addEventListener("click", closeConnectModal);
     if (connectModalBackdrop) connectModalBackdrop.addEventListener("click", closeConnectModal);
 
-    // Provider Dropdown Change
     const mbProviderSelect = document.getElementById("mb-provider");
     if (mbProviderSelect) {
         mbProviderSelect.addEventListener("change", (e) => {
@@ -2098,13 +2023,11 @@ function initEventListeners() {
         });
     }
 
-    // Connect Mailbox Form Submit
     const connectMbForm = document.getElementById("connect-mailbox-form");
     if (connectMbForm) {
         connectMbForm.addEventListener("submit", handleConnectMailboxSubmit);
     }
 
-    // Download PDF from Modal
     const modalDlBtn = document.getElementById("modal-dl-pdf-btn");
     if (modalDlBtn) {
         modalDlBtn.addEventListener("click", () => {
@@ -2112,7 +2035,6 @@ function initEventListeners() {
         });
     }
 
-    // Filter Chips
     const filterChips = document.querySelectorAll(".filter-chip");
     filterChips.forEach(chip => {
         chip.addEventListener("click", () => {
@@ -2123,7 +2045,6 @@ function initEventListeners() {
         });
     });
 
-    // Search Input
     const searchInput = document.getElementById("feed-search");
     if (searchInput) {
         searchInput.addEventListener("input", () => {
@@ -2131,7 +2052,6 @@ function initEventListeners() {
         });
     }
 
-    // Scenario Testbench Cards (Instant Execution on Trigger)
     const scenarioCards = document.querySelectorAll(".scenario-card");
     scenarioCards.forEach(card => {
         const scenarioKey = card.dataset.scenario;
@@ -2170,7 +2090,6 @@ function initEventListeners() {
         card.addEventListener("click", () => loadHandler(false));
     });
 
-    // Copy Inbound Webhook URL
     const btnCopyWebhook = document.getElementById("btn-copy-webhook");
     if (btnCopyWebhook) {
         btnCopyWebhook.addEventListener("click", () => {
@@ -2179,7 +2098,6 @@ function initEventListeners() {
         });
     }
 
-    // Scan Inbound Folder Trigger
     const btnScanFolder = document.getElementById("btn-scan-folder");
     if (btnScanFolder) {
         btnScanFolder.addEventListener("click", async () => {
@@ -2199,10 +2117,8 @@ function initEventListeners() {
         });
     }
 
-
 }
 
-// Setup EML Drag & Drop Zone
 function initEmlDropzone() {
     const dropzone = document.getElementById("eml-dropzone");
     const fileInput = document.getElementById("eml-file-input");
@@ -2293,9 +2209,6 @@ PayPal Security Team`;
     });
 }
 
-// ==============================================================================
-// Client-Side RFC 822 .EML Parser & 4-Vector Threat Intelligence Engine
-// ==============================================================================
 function parseEmlFile(emlText) {
     let headerText = "";
     let bodyText = "";
@@ -2335,7 +2248,6 @@ function parseEmlFile(emlText) {
     const date = headers["date"] || new Date().toUTCString();
     const authResults = headers["authentication-results"] || "";
 
-    // Extract body if multipart MIME
     let cleanBody = bodyText;
     if (/boundary=/i.test(headerText) || /Content-Type:\s*multipart/i.test(headerText)) {
         const textParts = bodyText.split(/--[^\r\n]+/);
@@ -2355,7 +2267,6 @@ function parseEmlFile(emlText) {
         }
     }
 
-    // Extract origin relay IP
     const receivedChain = headers["received"] || "";
     const ipMatch = receivedChain.match(/\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/);
     const relayIp = ipMatch ? ipMatch[0] : "185.220.101.5";
@@ -2390,7 +2301,6 @@ function parseEmlFile(emlText) {
 async function analyzeParsedEmailClientSide(parsed) {
     const textToScan = `${parsed.subject} ${parsed.body_text}`.toLowerCase();
     
-    // Vector 1: NLP Deceptive Urgency & Phishing heuristics
     const urgencyPatterns = ["urgent", "immediately", "immediate", "suspended", "suspension", "terminated", "freeze", "24 hours", "action required", "unauthorized", "verify", "security alert", "compromised"];
     const wirePatterns = ["wire transfer", "escrow", "payment", "invoice", "bank transfer", "confidential", "acquisition", "$", "usd", "funds", "routing number"];
     const credPatterns = ["password", "login", "credentials", "re-authenticate", "session expired", "portal", "verify your identity", "banking credentials", "sign in", "account access"];
@@ -2404,12 +2314,10 @@ async function analyzeParsedEmailClientSide(parsed) {
 
     let fraudScore = Math.min(0.98, Math.max(0.08, urgencyScore + wireScore + credScore));
 
-    // Vector 2: Header & Typo-squatting Forensics
     const senderDomain = (parsed.sender.split("@")[1] || "").replace(/>.*$/, "").trim().toLowerCase();
     const hasTypoSquat = /paypal-verify|paypal-security|m365-security|corp-secure|amazon-shipment|microsoft-auth|google-auth|apple-security|update-account/i.test(senderDomain);
     const headerValid = parsed.spf === "pass" && parsed.dkim === "pass" && !hasTypoSquat;
 
-    // Vector 3: GeoIP & Relay Threat Intel
     let geo = {
         city: "Frankfurt",
         country: "Germany",
@@ -2430,7 +2338,6 @@ async function analyzeParsedEmailClientSide(parsed) {
         geo = { city: "San Francisco", country: "United States", lat: 37.7749, lng: -122.4194, isp: "AS36459 GitHub Inc", isTor: false, actor: "Verified Enterprise Infrastructure" };
     }
 
-    // Vector 4: Composite Risk Scoring & ISO/IEC 27037 SHA-256 Hash
     let finalScore = 15;
     if (fraudScore > 0.4) finalScore += Math.round(fraudScore * 35);
     if (!headerValid || parsed.spf === "fail" || parsed.dkim === "fail") finalScore += 30;
@@ -2481,7 +2388,6 @@ async function analyzeParsedEmailClientSide(parsed) {
     };
 }
 
-// Upload & Analyze Raw EML file (Hybrid Online + Offline Forensic Engine)
 async function handleFileUpload(file) {
     showToast(`🔬 Ingesting & analyzing ${file.name}...`, "info");
 
@@ -2543,7 +2449,6 @@ async function handleFileUpload(file) {
     }
 }
 
-// Initialize Leaflet Map
 function initRadarMap() {
     try {
         radarMap = L.map("radar-map", {
@@ -2551,7 +2456,6 @@ function initRadarMap() {
             attributionControl: false
         }).setView([25.0, 10.0], 2);
 
-        // Dark Matter tiles for Cybersecurity look
         L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
             maxZoom: 18,
             subdomains: "abcd"
@@ -2563,7 +2467,6 @@ function initRadarMap() {
     }
 }
 
-// Check Backend API Connection Status
 async function checkBackendStatus() {
     const chip = document.getElementById("backend-status-chip");
     const label = document.getElementById("backend-status-label");
@@ -2581,7 +2484,6 @@ async function checkBackendStatus() {
     }
 }
 
-// Load Ingested Emails from Backend
 async function loadEmails(showFeedback = false) {
     const tbody = document.getElementById("feed-tbody");
     try {
@@ -2592,7 +2494,6 @@ async function loadEmails(showFeedback = false) {
 
         const latest = await res.json();
 
-        // Check if new emails arrived during auto-polling
         if (storedEmails.length > 0 && latest.length > storedEmails.length) {
             const newCount = latest.length - storedEmails.length;
             showToast(`🚨 ${newCount} New Inbound Email(s) Auto-Ingested & Scored!`, "success");
@@ -2601,7 +2502,6 @@ async function loadEmails(showFeedback = false) {
         if (latest && latest.length > 0) {
             storedEmails = latest;
         } else if (storedEmails.length === 0) {
-            // Evaluator Demo Mode (PS-26106): Pre-populate realistic cases so initial dashboard view is not empty
             storedEmails = [DEMO_CASE, DEMO_CASE_2, DEMO_CASE_3];
         }
 
@@ -2615,7 +2515,6 @@ async function loadEmails(showFeedback = false) {
         document.getElementById("tab-feed-count").textContent = storedEmails.length;
         if (showFeedback) showToast("Feed refreshed from MySQL.", "info");
     } catch (err) {
-        // If backend is offline and we have no stored emails, inject pre-populated demo cases
         if (storedEmails.length === 0) {
             storedEmails = [DEMO_CASE, DEMO_CASE_2, DEMO_CASE_3];
             updateTelemetryStats(storedEmails);
@@ -2634,7 +2533,6 @@ async function loadEmails(showFeedback = false) {
     }
 }
 
-// Load Connected Mailboxes List
 async function loadConnectedMailboxes() {
     const grid = document.getElementById("mailboxes-grid-list");
     const countBadge = document.getElementById("tab-mailbox-count");
@@ -2709,7 +2607,6 @@ async function loadConnectedMailboxes() {
     }
 }
 
-// Show the user's high-risk cases captured from their connected mailbox.
 window.viewMailboxThreats = async function () {
     await loadEmails(false);
     const feedTab = document.querySelector('.nav-tab[data-tab="feed"]');
@@ -2722,7 +2619,6 @@ window.viewMailboxThreats = async function () {
     showToast("Showing high-risk email threats detected for your account.", "info");
 };
 
-// Handle Connect Mailbox Form Submission
 async function handleConnectMailboxSubmit(e) {
     e.preventDefault();
 
@@ -2788,7 +2684,6 @@ async function handleConnectMailboxSubmit(e) {
     }
 }
 
-// Real Google OAuth 2.0 Login Handler
 async function handleGoogleOAuthLogin(e) {
     if (e && e.preventDefault) e.preventDefault();
     if (e && e.stopPropagation) e.stopPropagation();
@@ -2798,7 +2693,6 @@ async function handleGoogleOAuthLogin(e) {
     if (btn) btn.disabled = true;
     if (spinner) spinner.classList.remove("hidden");
 
-    // Open popup window synchronously on user click to prevent browser popup blockers
     const width = 540;
     const height = 640;
     const left = window.screenX + (window.outerWidth - width) / 2;
@@ -2828,7 +2722,6 @@ async function handleGoogleOAuthLogin(e) {
             if (popupWindow && !popupWindow.closed) {
                 popupWindow.location.href = data.url;
             } else {
-                // Fallback direct redirection if browser popup was blocked
                 window.location.href = data.url;
             }
         } else {
@@ -2844,7 +2737,6 @@ async function handleGoogleOAuthLogin(e) {
     }
 }
 
-// Trigger Deep Historical Scan for Mailbox (Read + Unread in 10-Email Sequential Batches)
 window.deepScanConnectedMailbox = async function (id) {
     showToast("🚀 Initiating sequential deep scan (10 emails per batch)...", "info");
 
@@ -2880,7 +2772,6 @@ window.deepScanConnectedMailbox = async function (id) {
             offset = data.next_offset !== undefined ? data.next_offset : (offset + 10);
             pageToken = data.next_page_token || null;
 
-            // Instantly refresh cases and radar map as each batch completes
             if (batchIngested > 0) {
                 await loadEmails(true);
                 await loadConnectedMailboxes();
@@ -2906,7 +2797,6 @@ window.deepScanConnectedMailbox = async function (id) {
     }
 };
 
-// Trigger Manual Sync for Mailbox
 window.syncConnectedMailbox = async function (id) {
     showToast("Syncing mailbox for new unread emails...", "info");
     try {
@@ -2924,7 +2814,6 @@ window.syncConnectedMailbox = async function (id) {
     }
 };
 
-// Disconnect Mailbox
 window.disconnectConnectedMailbox = async function (id) {
     if (!confirm("Are you sure you want to disconnect this mailbox?")) return;
     try {
@@ -2937,7 +2826,6 @@ window.disconnectConnectedMailbox = async function (id) {
     }
 };
 
-// Update Top Telemetry Stats Cards
 function updateTelemetryStats(emails) {
     let criticalCount = 0;
     let suspiciousCount = 0;
@@ -2965,7 +2853,6 @@ function updateTelemetryStats(emails) {
     document.getElementById("count-low").textContent = benignCount;
 }
 
-// Render Threat Alert Stream Ticker
 function renderStreamFeed(emails) {
     const streamContainer = document.getElementById("stream-feed-list");
     if (!streamContainer) return;
@@ -2998,7 +2885,6 @@ function renderStreamFeed(emails) {
     }).join("");
 }
 
-// Filter and Render Feed Table
 function applyFeedFilters() {
     const tbody = document.getElementById("feed-tbody");
     const searchQuery = (document.getElementById("feed-search")?.value || "").toLowerCase().trim();
@@ -3064,7 +2950,6 @@ function applyFeedFilters() {
     }).join("");
 }
 
-// Update Map Pins
 function updateMapMarkers(emails) {
     if (!markerLayerGroup || !radarMap) return;
 
@@ -3119,7 +3004,6 @@ function updateMapMarkers(emails) {
     }
 }
 
-// Render Interactive Campaign Attribution Graph
 async function loadAndRenderCampaignGraph() {
     const canvas = document.getElementById("campaign-graph-canvas");
     const container = document.getElementById("graph-canvas-container");
@@ -3130,7 +3014,6 @@ async function loadAndRenderCampaignGraph() {
         if (!res.ok) throw new Error();
         graphData = await res.json();
     } catch (e) {
-        // Fallback to rich SIH PS-26106 correlation graph connecting observed evidence and shared infrastructure
         graphData = null;
     }
 
@@ -3161,12 +3044,10 @@ async function loadAndRenderCampaignGraph() {
         };
     }
 
-    // Set canvas dimensions
     canvas.width = container.clientWidth || 900;
     canvas.height = container.clientHeight || 520;
     const ctx = canvas.getContext("2d");
 
-    // Layout positions around center circle
     const nodes = graphData.nodes || [];
     const edges = graphData.edges || [];
 
@@ -3192,10 +3073,8 @@ async function loadAndRenderCampaignGraph() {
         };
     });
 
-    // Clear
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw Edges
     ctx.lineWidth = 1.4;
     edges.forEach(e => {
         const src = nodePositions[e.source];
@@ -3209,7 +3088,6 @@ async function loadAndRenderCampaignGraph() {
         }
     });
 
-    // Draw Nodes
     nodes.forEach(n => {
         const pos = nodePositions[n.id];
         if (!pos) return;
@@ -3257,7 +3135,6 @@ async function loadAndRenderCampaignGraph() {
             ctx.stroke();
         }
 
-        // Node Label
         ctx.fillStyle = "#cbd5e1";
         ctx.font = "11px Inter, sans-serif";
         ctx.textAlign = "center";
@@ -3265,7 +3142,6 @@ async function loadAndRenderCampaignGraph() {
     });
 }
 
-// Update Threat Analytics Matrix
 function updateAnalyticsMatrix(emails) {
     let spfPass = 0, spfFail = 0;
     let dkimPass = 0, dkimFail = 0;
@@ -3286,7 +3162,6 @@ function updateAnalyticsMatrix(emails) {
         countryMap[c] = (countryMap[c] || 0) + 1;
     });
 
-    // Update Counts & Meters
     document.getElementById("spf-pass-count").textContent = `${spfPass} Pass`;
     document.getElementById("spf-fail-count").textContent = `${spfFail} Fail`;
     const spfTotal = spfPass + spfFail;
@@ -3305,7 +3180,6 @@ function updateAnalyticsMatrix(emails) {
     const dmarcPct = dmarcTotal > 0 ? (dmarcPass / dmarcTotal) * 100 : 50;
     document.getElementById("dmarc-meter").style.width = `${dmarcPct}%`;
 
-    // Top Countries List
     const sortedCountries = Object.entries(countryMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
     const countryContainer = document.getElementById("country-rank-list");
     if (countryContainer) {
@@ -3318,7 +3192,6 @@ function updateAnalyticsMatrix(emails) {
     }
 }
 
-// Handle Email Form Submission (Hybrid Online + Offline Forensic Engine)
 async function handleIngestSubmit(e) {
     if (e && e.preventDefault) e.preventDefault();
 
@@ -3400,7 +3273,6 @@ async function handleIngestSubmit(e) {
 
 let activePipelineId = 0;
 
-// Sequential 4-Vector Pipeline Progress HUD Visualizer (Modern Drop-Down Architecture)
 async function runSequential4VectorPipeline(emailResult) {
     const currentRunId = ++activePipelineId;
     let isCancelled = false;
@@ -3428,7 +3300,6 @@ async function runSequential4VectorPipeline(emailResult) {
     if (senderLabel) senderLabel.textContent = emailResult.sender || "Unknown Sender";
     if (caseLabel) caseLabel.textContent = `Case #${emailResult.id}`;
 
-    // Reset button display states
     if (proceedBtn) proceedBtn.style.display = "none";
     if (viewWsBtn) viewWsBtn.style.display = "none";
     if (skipBtn) {
@@ -3494,7 +3365,6 @@ async function runSequential4VectorPipeline(emailResult) {
         const riskLevel = (emailResult.risk_level || "low").toLowerCase();
         const finalScore = emailResult.final_score || 0;
 
-        // V1
         const cardV1 = document.getElementById("step-v1");
         const badgeV1 = document.getElementById("step-v1-badge");
         const detailV1 = document.getElementById("step-v1-detail");
@@ -3505,7 +3375,6 @@ async function runSequential4VectorPipeline(emailResult) {
             badgeV1.className = `badge-risk-pill ${fraudPct >= 50 ? "high" : "low"}`;
         }
 
-        // V2
         const cardV2 = document.getElementById("step-v2");
         const badgeV2 = document.getElementById("step-v2-badge");
         const detailV2 = document.getElementById("step-v2-detail");
@@ -3516,7 +3385,6 @@ async function runSequential4VectorPipeline(emailResult) {
             badgeV2.className = `badge-risk-pill ${(!headerValid || spf === "FAIL" || dkim === "FAIL") ? "high" : "low"}`;
         }
 
-        // V3
         const cardV3 = document.getElementById("step-v3");
         const badgeV3 = document.getElementById("step-v3-badge");
         const detailV3 = document.getElementById("step-v3-detail");
@@ -3527,7 +3395,6 @@ async function runSequential4VectorPipeline(emailResult) {
             badgeV3.className = `badge-risk-pill ${isTor ? "high" : "low"}`;
         }
 
-        // V4
         const cardV4 = document.getElementById("step-v4");
         const badgeV4 = document.getElementById("step-v4-badge");
         const detailV4 = document.getElementById("step-v4-detail");
@@ -3559,7 +3426,7 @@ async function runSequential4VectorPipeline(emailResult) {
             viewWsBtn.style.display = "inline-flex";
             viewWsBtn.onclick = () => {
                 modal.classList.add("hidden");
-                const wsTab = document.querySelector(`.nav-tab[data-tab="workspace"]`);
+                const wsTab = document.querySelector(`.nav-tab[data-tab="investigation"]`) || document.querySelector(`.nav-tab[data-tab="workspace"]`);
                 if (wsTab) wsTab.click();
                 renderInvestigationWorkspace(emailResult.id);
             };
@@ -3594,9 +3461,6 @@ async function runSequential4VectorPipeline(emailResult) {
         }, 40);
     });
 
-    // ==========================================
-    // STEP 1: Vector 1 - Deceptive NLP Heuristics Drop
-    // ==========================================
     const cardV1 = document.getElementById("step-v1");
     const badgeV1 = document.getElementById("step-v1-badge");
     const detailV1 = document.getElementById("step-v1-detail");
@@ -3624,9 +3488,6 @@ async function runSequential4VectorPipeline(emailResult) {
     if (pctLabel) pctLabel.textContent = "25%";
     appendLog(`[VECTOR-1 COMPLETE] Deceptive NLP Fraud Score: ${fraudPct}%`, fraudPct >= 50 ? "#f87171" : "#34d399");
 
-    // ==========================================
-    // STEP 2: Vector 2 - RFC 822 Forensic Headers Drop
-    // ==========================================
     if (!(await sleep(350))) return;
     const cardV2 = document.getElementById("step-v2");
     const badgeV2 = document.getElementById("step-v2-badge");
@@ -3659,9 +3520,6 @@ async function runSequential4VectorPipeline(emailResult) {
     if (pctLabel) pctLabel.textContent = "50%";
     appendLog(`[VECTOR-2 COMPLETE] Header Validation: SPF=${spf}, DKIM=${dkim}, DMARC=${dmarc}`, headerValid ? "#34d399" : "#f87171");
 
-    // ==========================================
-    // STEP 3: Vector 3 - Origin GeoIP & Threat Intel Drop
-    // ==========================================
     if (!(await sleep(350))) return;
     const cardV3 = document.getElementById("step-v3");
     const badgeV3 = document.getElementById("step-v3-badge");
@@ -3694,9 +3552,6 @@ async function runSequential4VectorPipeline(emailResult) {
     if (pctLabel) pctLabel.textContent = "75%";
     appendLog(`[VECTOR-3 COMPLETE] Origin GeoIP: ${geoLoc} [${ip}] | ASN: ${isp}`, isTor ? "#f87171" : "#34d399");
 
-    // ==========================================
-    // STEP 4: Vector 4 - ISO 27037 Evidence Hash & Risk Rating Drop
-    // ==========================================
     if (!(await sleep(350))) return;
     const cardV4 = document.getElementById("step-v4");
     const badgeV4 = document.getElementById("step-v4-badge");
@@ -3727,11 +3582,9 @@ async function runSequential4VectorPipeline(emailResult) {
     }
     appendLog(`[VECTOR-4 COMPLETE] SHA-256 Sealed. Aggregated Rating: ${riskLevel.toUpperCase()} (${finalScore}/100)`, "#34d399");
 
-    // Display Phase Progression Confirmation Buttons
     showFinishedButtons();
 }
 
-// Open Forensic Inspection HUD Modal
 function openForensicModal(id) {
     const email = storedEmails.find(e => e.id === id);
     if (!email) return;
@@ -3746,14 +3599,12 @@ function openForensicModal(id) {
     const isTorOrVpn = Boolean(email.is_vpn_tor || /tor|vpn|relay|proxy/i.test(email.isp_asn || ""));
     const content = document.getElementById("modal-body-content");
 
-    // ── Helper: signal-type badge ──────────────────────────────────────────────
     const signalBadge = (label, color) => `
         <span style="display:inline-flex;align-items:center;gap:0.25rem;font-size:0.62rem;font-weight:700;
             letter-spacing:0.05em;padding:0.15rem 0.45rem;border-radius:3px;
             background:${color}1a;border:1px solid ${color}55;color:${color};font-family:var(--font-mono);
             text-transform:uppercase;margin-left:0.5rem;vertical-align:middle;">${label}</span>`;
 
-    // ── Extract URLs from body text ─────────────────────────────────────────────
     const extractUrls = (text) => {
         if (!text) return [];
         const urlRegex = /https?:\/\/[^\s<>"']+/gi;
@@ -3764,7 +3615,6 @@ function openForensicModal(id) {
     const headerUrls = extractUrls(email.raw_headers || "");
     const allUrls = [...new Set([...bodyUrls, ...headerUrls])];
 
-    // Heuristic URL classification
     const classifyUrl = (url) => {
         const u = url.toLowerCase();
         if (u.includes("login") || u.includes("verify") || u.includes("auth") || u.includes("secure")) return { label: "Credential Harvest Lure", color: "#f87171" };
@@ -3773,7 +3623,6 @@ function openForensicModal(id) {
         return { label: "Suspicious Redirect", color: "#a78bfa" };
     };
 
-    // ── Attachment detection from raw headers / body ────────────────────────────
     const detectAttachments = (headers, body) => {
         const text = (headers || "") + (body || "");
         const attachments = [];
@@ -3796,7 +3645,6 @@ function openForensicModal(id) {
 
     const attachments = detectAttachments(email.raw_headers, email.body_text);
 
-    // ── Domain Intelligence ─────────────────────────────────────────────────────
     const senderDomain = (email.sender || "").split("@")[1] || "unknown";
     const knownLegitDomains = ["github.com", "google.com", "microsoft.com", "amazon.com", "paypal.com", "linkedin.com"];
     const isKnownLegit = knownLegitDomains.includes(senderDomain.toLowerCase());
@@ -4074,7 +3922,7 @@ function openForensicModal(id) {
 
         <!-- Action Row at Bottom of Modal -->
         <div style="display: flex; gap: 0.65rem; justify-content: flex-end; margin-top: 0.5rem; flex-wrap: wrap;">
-            <button type="button" class="btn btn-cyber-secondary" onclick="closeForensicModal(); const wsTab = document.querySelector('.nav-tab[data-tab=\\'workspace\\']'); if (wsTab) wsTab.click(); renderInvestigationWorkspace(${email.id});">
+            <button type="button" class="btn btn-cyber-secondary" onclick="closeForensicModal(); const wsTab = document.querySelector('.nav-tab[data-tab=\\'investigation\\']') || document.querySelector('.nav-tab[data-tab=\\'workspace\\']'); if (wsTab) wsTab.click(); renderInvestigationWorkspace(${email.id});">
                 <i class="fa-solid fa-folder-open"></i> <span>Open in Investigation Workspace</span>
             </button>
             <button type="button" class="btn btn-cyber-primary" onclick="downloadReport(${email.id});">
@@ -4094,7 +3942,6 @@ function closeForensicModal() {
     currentViewingId = null;
 }
 
-// Download Forensic Report Endpoint (Backend PDF with Guaranteed ISO/IEC 27037 Fallback)
 if (typeof window !== "undefined") {
     window.downloadReport = function (id) {
         const targetId = id || currentWorkspaceCaseId || 1001;
@@ -4119,7 +3966,6 @@ if (typeof window !== "undefined") {
     };
 }
 
-// Toast Notifications
 function showToast(message, type = "info") {
     const container = document.getElementById("toast-container");
     if (!container) return;

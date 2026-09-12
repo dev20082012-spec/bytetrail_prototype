@@ -1,7 +1,6 @@
-import email
+﻿import email
 from email import policy
 from typing import Dict, Tuple
-
 
 def parse_raw_eml(eml_bytes: bytes) -> Dict[str, str]:
     """
@@ -17,13 +16,11 @@ def parse_raw_eml(eml_bytes: bytes) -> Dict[str, str]:
     sender = msg.get("From", "unknown@domain.com")
     subject = msg.get("Subject", "No Subject")
 
-    # Extract all raw headers
     headers_list = []
     for k, v in msg.items():
         headers_list.append(f"{k}: {v}")
     raw_headers = "\n".join(headers_list)
 
-    # Extract body
     body_text = ""
     if msg.is_multipart():
         for part in msg.walk():
@@ -51,6 +48,4 @@ def parse_raw_eml(eml_bytes: bytes) -> Dict[str, str]:
         "body_text": body_text.strip() or "(No readable text body found in EML)",
     }
 
-
-# Alias
 parse_eml_bytes = parse_raw_eml

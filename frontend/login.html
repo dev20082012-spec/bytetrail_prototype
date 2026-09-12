@@ -1,27 +1,23 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Sign In — ByteTrail Threat Intelligence SOC</title>
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="assets/logo.png">
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="icon" type="image/png" href="assets/logo.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<link rel="stylesheet" href="styles.css">
 </head>
 <body class="soc-theme auth-page-body">
     <div class="auth-page-wrapper">
-        <!-- Top Nav Bar -->
+        
         <header class="auth-page-nav">
             <a href="index.html" class="brand-cluster" style="text-decoration: none;">
                 <div class="brand-logo" style="overflow: hidden; display: flex; align-items: center; justify-content: center; padding: 0;">
@@ -41,8 +37,7 @@
             </div>
         </header>
 
-        <!-- Main Auth Container -->
-        <main class="auth-card-container">
+<main class="auth-card-container">
             <div class="card auth-card">
                 <div class="auth-card-header">
                     <div class="modal-icon-badge" style="width: 48px; height: 48px; font-size: 1.35rem; margin: 0 auto 0.85rem;">
@@ -52,8 +47,7 @@
                     <p>Enter SOC Command Console directly or sign in with credentials.</p>
                 </div>
 
-                <!-- 1-Click Instant Demo Analyst Access Button -->
-                <button type="button" class="btn btn-cyber-primary" id="btn-page-demo-login" style="width: 100%; justify-content: center; padding: 0.85rem; font-size: 1rem; background: var(--primary); font-weight: 700; gap: 0.6rem; margin-bottom: 0.85rem; box-shadow: 0 0 16px rgba(59, 130, 246, 0.4);">
+<button type="button" class="btn btn-cyber-primary" id="btn-page-demo-login" style="width: 100%; justify-content: center; padding: 0.85rem; font-size: 1rem; background: var(--primary); font-weight: 700; gap: 0.6rem; margin-bottom: 0.85rem; box-shadow: 0 0 16px rgba(59, 130, 246, 0.4);">
                     <i class="fa-solid fa-bolt" style="color: #fbbf24;"></i>
                     <span>Launch Live SOC Console (Instant Access)</span>
                     <span class="spinner hidden" id="demo-login-spinner"></span>
@@ -65,8 +59,7 @@
                     <div style="flex: 1; height: 1px; background: var(--border-subtle);"></div>
                 </div>
 
-                <!-- Sign In Form -->
-                <form id="page-signin-form" class="auth-form">
+<form id="page-signin-form" class="auth-form">
                     <div class="form-field">
                         <label for="signin-email"><i class="fa-solid fa-at"></i> Email Address <span class="req">*</span></label>
                         <input type="email" id="signin-email" placeholder="e.g. analyst@company.com" required autocomplete="username">
@@ -95,8 +88,7 @@
             </div>
         </main>
 
-        <!-- Footer -->
-        <footer style="padding: 1rem 1.5rem; text-align: center; font-size: 0.78rem; color: var(--text-muted); border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+<footer style="padding: 1rem 1.5rem; text-align: center; font-size: 0.78rem; color: var(--text-muted); border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
             <div>© 2026 ByteTrail SOC • SIH PS-26106</div>
             <div style="display: flex; gap: 1rem;">
                 <a href="privacy.html" style="color: var(--text-muted); text-decoration: none;">Privacy Policy</a>
@@ -105,8 +97,7 @@
         </footer>
     </div>
 
-    <!-- Toast Notifications -->
-    <div class="toast-container" id="toast-container"></div>
+<div class="toast-container" id="toast-container"></div>
 
     <script src="config.js"></script>
     <script src="auth.js"></script>
