@@ -49,20 +49,13 @@
                         <i class="fa-solid fa-shield-halved"></i>
                     </div>
                     <h2>Platform Authentication</h2>
-                    <p>Sign in with your Google account or email credentials.</p>
+                    <p>Enter SOC Command Console directly or sign in with credentials.</p>
                 </div>
 
-                <!-- Google / Gmail 1-Click Login Button -->
-                <button type="button" class="btn btn-cyber-primary" id="btn-google-login" style="width: 100%; justify-content: center; padding: 0.8rem; font-size: 0.95rem; background: #2563eb; font-weight: 600; gap: 0.6rem; border-color: rgba(96, 165, 250, 0.4); margin-bottom: 0.75rem;">
-                    <i class="fa-brands fa-google" style="font-size: 1.1rem;"></i>
-                    <span>Sign in with Google / Gmail</span>
-                    <span class="spinner hidden" id="google-login-spinner"></span>
-                </button>
-
                 <!-- 1-Click Instant Demo Analyst Access Button -->
-                <button type="button" class="btn btn-cyber-secondary" id="btn-page-demo-login" style="width: 100%; justify-content: center; padding: 0.8rem; font-size: 0.95rem; background: rgba(99, 102, 241, 0.15); color: #818cf8; border-color: rgba(99, 102, 241, 0.4); font-weight: 600; gap: 0.6rem; margin-bottom: 0.85rem;">
+                <button type="button" class="btn btn-cyber-primary" id="btn-page-demo-login" style="width: 100%; justify-content: center; padding: 0.85rem; font-size: 1rem; background: var(--primary); font-weight: 700; gap: 0.6rem; margin-bottom: 0.85rem; box-shadow: 0 0 16px rgba(59, 130, 246, 0.4);">
                     <i class="fa-solid fa-bolt" style="color: #fbbf24;"></i>
-                    <span>1-Click Demo Analyst (Instant SOC Access)</span>
+                    <span>Launch Live SOC Console (Instant Access)</span>
                     <span class="spinner hidden" id="demo-login-spinner"></span>
                 </button>
 
@@ -124,29 +117,6 @@
             const redirect = params.get("redirect") || "dashboard.html";
             window.location.href = redirect;
         }
-
-        // Google / Gmail Sign In Button
-        document.getElementById("btn-google-login")?.addEventListener("click", async () => {
-            const spinner = document.getElementById("google-login-spinner");
-            spinner?.classList.remove("hidden");
-            showToast("🌐 Opening Google Sign-In...", "info");
-
-            try {
-                // Try official OAuth popup first
-                await openGoogleOAuthPopup("login");
-            } catch {
-                // Fallback simulation for local/testing
-                try {
-                    const data = await executeGoogleSignIn("analyst.google.account@gmail.com", "Google Analyst");
-                    showToast(`✅ Welcome, ${data.user.full_name}! Redirecting...`, "success");
-                    setTimeout(() => window.location.href = "dashboard.html", 600);
-                } catch (e) {
-                    showToast(`❌ Google Sign-In error: ${e.message}`, "error");
-                }
-            } finally {
-                setTimeout(() => spinner?.classList.add("hidden"), 1500);
-            }
-        });
 
         // 1-Click Instant Demo Analyst Login
         document.getElementById("btn-page-demo-login")?.addEventListener("click", async () => {

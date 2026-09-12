@@ -22,13 +22,8 @@
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
     
-    <!-- Inline Guard for Instant Protected Route Check -->
+    <!-- Auto-Initialized Analyst Session -->
     <script src="auth.js"></script>
-    <script>
-        if (!getAuthToken()) {
-            window.location.href = "login.html?redirect=dashboard.html";
-        }
-    </script>
 </head>
 <body class="soc-theme">
     <!-- App Container -->
@@ -244,7 +239,7 @@
                                 <i class="fa-solid fa-file-circle-plus"></i>
                                 <span>Blank State</span>
                             </button>
-                            <button class="btn btn-cyber-primary btn-sm" id="btn-ws-top-pdf" onclick="downloadReport(1001)" title="Download Structured Forensic Evidence Report">
+                            <button class="btn btn-cyber-primary btn-sm" id="btn-ws-top-pdf" onclick="downloadReport(currentWorkspaceCaseId)" title="Download Structured Forensic Evidence Report">
                                 <i class="fa-solid fa-file-pdf"></i>
                                 <span>Forensic Report</span>
                             </button>
@@ -898,7 +893,7 @@
                                             </p>
                                         </div>
                                         <div class="report-action-btns">
-                                            <button class="btn btn-cyber-primary" id="btn-ws-export-pdf" onclick="downloadReport(1001)">
+                                            <button class="btn btn-cyber-primary" id="btn-ws-export-pdf" onclick="downloadReport(currentWorkspaceCaseId)">
                                                 <i class="fa-solid fa-file-pdf"></i>
                                                 <span>Download Forensic PDF</span>
                                             </button>
@@ -1005,8 +1000,18 @@
                             <input type="file" id="eml-file-input" accept=".eml,.msg,.txt" style="display: none;">
                             <div class="dropzone-inner">
                                 <i class="fa-solid fa-cloud-arrow-up dropzone-icon"></i>
-                                <span class="dropzone-text">Drag & drop raw <strong>.EML file</strong> here, or <button type="button" class="btn-link" id="btn-browse-eml">Browse from device</button></span>
-                                <span class="dropzone-sub">Supports RFC 822 MIME standard files</span>
+                                <span class="dropzone-text">Drag &amp; drop raw <strong>.EML file</strong> here, or <button type="button" class="btn-link" id="btn-browse-eml">Browse from device</button></span>
+                                <span class="dropzone-sub">Supports RFC 822 MIME standard files (.eml)</span>
+                                <div style="margin-top: 0.85rem; display: flex; gap: 0.65rem; justify-content: center; flex-wrap: wrap;">
+                                    <button type="button" class="btn btn-sm btn-cyber-primary" id="btn-load-sample-eml" style="padding: 0.4rem 0.95rem; font-size: 0.78rem;">
+                                        <i class="fa-solid fa-bolt" style="color: #fbbf24;"></i>
+                                        <span>⚡ Load &amp; Analyze Sample Threat .EML</span>
+                                    </button>
+                                    <a href="sample_threat.eml" download="sample_threat.eml" class="btn btn-sm btn-cyber-secondary" id="btn-download-sample-eml" style="padding: 0.4rem 0.85rem; font-size: 0.78rem; text-decoration: none;">
+                                        <i class="fa-solid fa-download"></i>
+                                        <span>Download .EML Sample</span>
+                                    </a>
+                                </div>
                             </div>
                         </div>
 
@@ -1363,30 +1368,6 @@
                 <button class="btn-close-modal" id="btn-close-connect-modal">&times;</button>
             </div>
             <div style="padding: 1.5rem;">
-                <!-- Direct Google OAuth 2.0 Section -->
-                <div style="background: rgba(37, 99, 235, 0.08); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.25rem; text-align: center;">
-                    <h4 style="font-size: 0.88rem; color: var(--text-bright); margin-bottom: 0.3rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
-                        <i class="fa-brands fa-google" style="color: #60a5fa;"></i> Direct Google OAuth 2.0 Login
-                    </h4>
-                    <p style="font-size: 0.74rem; color: var(--text-muted); margin-bottom: 0.85rem;">
-                        Connect your live Gmail inbox via official Google OAuth 2.0
-                    </p>
-                    <button type="button" class="btn btn-cyber-primary" id="btn-google-oauth-login" style="width: 100%; justify-content: center; gap: 0.5rem; background: #2563eb; font-weight: 600;">
-                        <i class="fa-brands fa-google"></i>
-                        <span>Sign in with Google</span>
-                        <span class="spinner hidden" id="google-oauth-spinner"></span>
-                    </button>
-                    <div style="margin-top: 0.6rem; font-size: 0.7rem; color: var(--text-muted);">
-                        By continuing, you agree to ByteTrail's <a href="privacy.html" target="_blank" style="color: #60a5fa; text-decoration: underline;">Privacy Policy</a> & <a href="terms.html" target="_blank" style="color: #60a5fa; text-decoration: underline;">Terms of Service</a>.
-                    </div>
-                </div>
-
-                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem;">
-                    <div style="flex: 1; height: 1px; background: var(--border-subtle);"></div>
-                    <span style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 0.04em;">OR Connect via IMAP / App Password</span>
-                    <div style="flex: 1; height: 1px; background: var(--border-subtle);"></div>
-                </div>
-
                 <form id="connect-mailbox-form" style="display: flex; flex-direction: column; gap: 1rem;">
                     <div class="form-field">
                         <label for="mb-provider">Email Provider</label>
@@ -1444,9 +1425,9 @@
 
     <!-- Sequential 4-Vector Forensic Pipeline Progress Modal -->
     <div class="modal-overlay hidden" id="modal-pipeline-progress">
-        <div class="modal-backdrop"></div>
+        <div class="modal-backdrop" id="pipeline-modal-backdrop"></div>
         <div class="modal-dialog" style="max-width: 650px;">
-            <div class="modal-header-cyber" style="border-bottom: 1px solid rgba(167, 139, 250, 0.25);">
+            <div class="modal-header-cyber" style="border-bottom: 1px solid rgba(167, 139, 250, 0.25); display: flex; justify-content: space-between; align-items: center;">
                 <div class="modal-title-cluster">
                     <div class="modal-icon-badge" style="background: rgba(167, 139, 250, 0.15); color: var(--primary);">
                         <i class="fa-solid fa-microscope" id="pipeline-header-icon"></i>
@@ -1456,9 +1437,12 @@
                         <span class="modal-subtitle" id="pipeline-modal-subtitle">Real-time Cascading 4-Vector Intelligence Audit</span>
                     </div>
                 </div>
-                <div class="status-chip" style="background: rgba(167, 139, 250, 0.12); border-color: rgba(167, 139, 250, 0.3);">
-                    <span class="pulse-dot"></span>
-                    <span id="pipeline-status-badge" style="color: #c4b5fd; font-weight: 600; font-size: 0.75rem;">RUNNING SEQUENCE...</span>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div class="status-chip" style="background: rgba(167, 139, 250, 0.12); border-color: rgba(167, 139, 250, 0.3);">
+                        <span class="pulse-dot"></span>
+                        <span id="pipeline-status-badge" style="color: #c4b5fd; font-weight: 600; font-size: 0.75rem;">RUNNING SEQUENCE...</span>
+                    </div>
+                    <button type="button" class="modal-close-btn" id="btn-close-pipeline-modal" title="Close" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #e2e8f0; font-size: 1.1rem; border-radius: 0.35rem; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1;">&times;</button>
                 </div>
             </div>
 
@@ -1547,9 +1531,12 @@
                 </div>
 
                 <!-- Phase Progression Confirmation Action Button -->
-                <div style="margin-top: 0.25rem;">
-                    <button class="btn btn-cyber-primary" id="btn-pipeline-proceed" style="width: 100%; justify-content: center; font-size: 0.92rem; font-weight: 600; padding: 0.75rem 1rem; border-radius: 0.5rem; background: linear-gradient(135deg, #10b981, #059669); border-color: #34d399; color: #ffffff; display: none; box-shadow: 0 0 15px rgba(16, 185, 129, 0.35);">
-                        <span>OK: Proceed to Forensic Incident Inspection Report</span> <i class="fa-solid fa-arrow-right" style="margin-left: 0.4rem;"></i>
+                <div style="margin-top: 0.35rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <button class="btn btn-cyber-primary" id="btn-pipeline-proceed" style="flex: 1; min-width: 220px; justify-content: center; font-size: 0.88rem; font-weight: 600; padding: 0.65rem 0.9rem; border-radius: 0.5rem; background: linear-gradient(135deg, #10b981, #059669); border-color: #34d399; color: #ffffff; display: none; box-shadow: 0 0 15px rgba(16, 185, 129, 0.35);">
+                        <span>OK: View Deep Forensic Inspection</span> <i class="fa-solid fa-arrow-right" style="margin-left: 0.4rem;"></i>
+                    </button>
+                    <button class="btn btn-cyber-secondary" id="btn-pipeline-view-ws" style="justify-content: center; font-size: 0.88rem; font-weight: 600; padding: 0.65rem 0.9rem; border-radius: 0.5rem; display: none;">
+                        <i class="fa-solid fa-folder-open"></i> <span>Open in Workspace</span>
                     </button>
                 </div>
             </div>
