@@ -1,4 +1,4 @@
-﻿
+
 if (typeof window === "undefined" && typeof process !== "undefined") {
     global.window = global;
     global.document = {
@@ -1121,13 +1121,13 @@ function renderWorkspaceMiniGraph(caseId) {
 
     if (caseId === 1001 || caseId === 1002) {
         nodes = [
-            { id: "case1001", label: "Case #1001 (Phish)", x: cx - 180, y: cy - 45, color: "#ef4444", r: 16, type: "email" },
-            { id: "case1002", label: "Case #1002 (BEC)", x: cx - 180, y: cy + 55, color: "#f59e0b", r: 15, type: "email" },
-            { id: "relay", label: "IP 185.220.101.5", x: cx - 30, y: cy, color: "#dc2626", r: 18, type: "ip", highlight: true },
-            { id: "asn", label: "AS44146 Tor Relay", x: cx + 110, y: cy - 60, color: "#f59e0b", r: 15, type: "asn" },
-            { id: "cluster", label: "Cluster TC-44146", x: cx + 130, y: cy + 45, color: "#ec4899", r: 17, type: "cluster" },
-            { id: "domain", label: caseId === 1001 ? "paypal-verify-user..." : "corp-secure-fin...", x: cx - 80, y: cy - 85, color: "#8b5cf6", r: 13, type: "domain" },
-            { id: "ns", label: "offshore-dns...", x: cx + 20, y: cy + 85, color: "#06b6d4", r: 12, type: "ns" }
+            { id: "case1001", label: "Case #1001 (PayPal Phish)", x: cx - 180, y: cy - 45, color: "#ef4444", glow: "rgba(239, 68, 68, 0.5)", r: 16, icon: "✉" },
+            { id: "case1002", label: "Case #1002 (CEO BEC)", x: cx - 180, y: cy + 55, color: "#f59e0b", glow: "rgba(245, 158, 11, 0.5)", r: 15, icon: "✉" },
+            { id: "relay", label: "IP 185.220.101.5", x: cx - 30, y: cy, color: "#dc2626", glow: "rgba(220, 38, 38, 0.6)", r: 18, icon: "⌖", highlight: true },
+            { id: "asn", label: "AS44146 Tor Transit", x: cx + 110, y: cy - 60, color: "#f59e0b", glow: "rgba(245, 158, 11, 0.5)", r: 15, icon: "⬢" },
+            { id: "cluster", label: "Cluster TC-44146", x: cx + 135, y: cy + 45, color: "#ea580c", glow: "rgba(234, 88, 12, 0.6)", r: 18, icon: "☠" },
+            { id: "domain", label: caseId === 1001 ? "paypal-verify-user.com" : "corp-secure-finance.net", x: cx - 75, y: cy - 80, color: "#06b6d4", glow: "rgba(6, 182, 212, 0.5)", r: 14, icon: "🌐" },
+            { id: "ns", label: "ns1.offshore-dns.cc", x: cx + 25, y: cy + 80, color: "#8b5cf6", glow: "rgba(139, 92, 246, 0.5)", r: 13, icon: "🌐" }
         ];
 
         edges = [
@@ -1141,12 +1141,12 @@ function renderWorkspaceMiniGraph(caseId) {
             { from: "ns", to: "cluster" },
             { from: "asn", to: "cluster" }
         ];
-    } else {
+    } else if (caseId === 1003) {
         nodes = [
-            { id: "case1003", label: "Case #1003 (Advisory)", x: cx - 140, y: cy, color: "#10b981", r: 16, type: "email" },
-            { id: "ip", label: "IP 192.30.252.204", x: cx, y: cy - 40, color: "#34d399", r: 15, type: "ip" },
-            { id: "domain", label: "github.com (Aligned)", x: cx, y: cy + 45, color: "#38bdf8", r: 14, type: "domain" },
-            { id: "asn", label: "AS36459 GitHub Inc.", x: cx + 150, y: cy, color: "#10b981", r: 16, type: "asn" }
+            { id: "case1003", label: "Case #1003 (GitHub Advisory)", x: cx - 140, y: cy, color: "#10b981", glow: "rgba(16, 185, 129, 0.5)", r: 16, icon: "✉" },
+            { id: "ip", label: "192.30.252.204", x: cx, y: cy - 40, color: "#34d399", glow: "rgba(52, 211, 153, 0.5)", r: 15, icon: "⌖" },
+            { id: "domain", label: "github.com (Aligned)", x: cx, y: cy + 45, color: "#06b6d4", glow: "rgba(6, 182, 212, 0.5)", r: 14, icon: "🌐" },
+            { id: "asn", label: "AS36459 GitHub Inc", x: cx + 140, y: cy, color: "#10b981", glow: "rgba(16, 185, 129, 0.5)", r: 16, icon: "⬢" }
         ];
 
         edges = [
@@ -1155,17 +1155,38 @@ function renderWorkspaceMiniGraph(caseId) {
             { from: "ip", to: "asn" },
             { from: "domain", to: "asn" }
         ];
+    } else {
+        const caseLabel = c && c.id ? `Case #${c.id}` : `Case #${caseId}`;
+        const senderDomain = (c && c.sender && c.sender.includes("@")) ? c.sender.split("@")[1].replace(">", "").trim() : "target-domain.org";
+        const relayIp = (c && c.extracted_ips && c.extracted_ips[0]) ? c.extracted_ips[0] : "185.220.101.5";
+
+        nodes = [
+            { id: "custom_case", label: caseLabel, x: cx - 160, y: cy, color: "#ef4444", glow: "rgba(239, 68, 68, 0.5)", r: 16, icon: "✉" },
+            { id: "custom_dom", label: senderDomain, x: cx - 40, y: cy - 50, color: "#06b6d4", glow: "rgba(6, 182, 212, 0.5)", r: 14, icon: "🌐" },
+            { id: "custom_ip", label: relayIp, x: cx - 40, y: cy + 50, color: "#dc2626", glow: "rgba(220, 38, 38, 0.6)", r: 15, icon: "⌖" },
+            { id: "custom_asn", label: "AS44146 Transit", x: cx + 90, y: cy - 40, color: "#f59e0b", glow: "rgba(245, 158, 11, 0.5)", r: 14, icon: "⬢" },
+            { id: "custom_cluster", label: "TC-44146 Syndicate", x: cx + 140, y: cy + 40, color: "#ea580c", glow: "rgba(234, 88, 12, 0.6)", r: 17, icon: "☠" }
+        ];
+
+        edges = [
+            { from: "custom_case", to: "custom_dom" },
+            { from: "custom_case", to: "custom_ip" },
+            { from: "custom_dom", to: "custom_ip" },
+            { from: "custom_ip", to: "custom_asn" },
+            { from: "custom_asn", to: "custom_cluster" },
+            { from: "custom_ip", to: "custom_cluster" }
+        ];
     }
 
     const nodeMap = {};
     nodes.forEach(n => { nodeMap[n.id] = n; });
 
-    ctx.lineWidth = 1.6;
     edges.forEach(e => {
         const src = nodeMap[e.from];
         const tgt = nodeMap[e.to];
         if (src && tgt) {
-            ctx.strokeStyle = "rgba(148, 163, 184, 0.35)";
+            ctx.strokeStyle = "rgba(148, 163, 184, 0.25)";
+            ctx.lineWidth = 1.4;
             ctx.beginPath();
             ctx.moveTo(src.x, src.y);
             ctx.lineTo(tgt.x, tgt.y);
@@ -1175,26 +1196,56 @@ function renderWorkspaceMiniGraph(caseId) {
 
     nodes.forEach(n => {
         if (n.highlight) {
-            ctx.strokeStyle = "rgba(239, 68, 68, 0.4)";
+            ctx.strokeStyle = "rgba(239, 68, 68, 0.5)";
             ctx.lineWidth = 3;
             ctx.beginPath();
             ctx.arc(n.x, n.y, n.r + 5, 0, 2 * Math.PI);
             ctx.stroke();
         }
 
-        ctx.fillStyle = n.color;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r + 3, 0, 2 * Math.PI);
+        ctx.fillStyle = n.glow || "rgba(139, 92, 246, 0.4)";
+        ctx.fill();
+
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.r, 0, 2 * Math.PI);
+        ctx.fillStyle = n.color;
         ctx.fill();
 
         ctx.strokeStyle = "#090d16";
         ctx.lineWidth = 2;
         ctx.stroke();
 
-        ctx.fillStyle = "#e2e8f0";
-        ctx.font = "10px Inter, sans-serif";
+        ctx.fillStyle = "#ffffff";
+        ctx.font = `bold ${Math.round(n.r * 0.85)}px Inter, sans-serif`;
         ctx.textAlign = "center";
-        ctx.fillText(n.label, n.x, n.y + n.r + 13);
+        ctx.textBaseline = "middle";
+        ctx.fillText(n.icon || "•", n.x, n.y + 1);
+
+        const shortLabel = n.label.length > 20 ? n.label.substring(0, 18) + "…" : n.label;
+        ctx.font = "10px Inter, sans-serif";
+        const textWidth = ctx.measureText(shortLabel).width;
+        const pillW = textWidth + 8;
+        const pillH = 15;
+        const pillX = n.x - pillW / 2;
+        const pillY = n.y + n.r + 4;
+
+        ctx.fillStyle = "rgba(9, 13, 22, 0.85)";
+        ctx.strokeStyle = "rgba(148, 163, 184, 0.3)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        if (ctx.roundRect) {
+            ctx.roundRect(pillX, pillY, pillW, pillH, 3);
+        } else {
+            ctx.rect(pillX, pillY, pillW, pillH);
+        }
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = "#e2e8f0";
+        ctx.textBaseline = "alphabetic";
+        ctx.fillText(shortLabel, n.x, pillY + 11);
     });
 }
 
@@ -1732,7 +1783,9 @@ function initNavTabs() {
             }
 
             if (targetTab === "graph") {
-                loadAndRenderCampaignGraph();
+                setTimeout(() => {
+                    loadAndRenderCampaignGraph();
+                }, 50);
             }
 
             if (targetTab === "mailboxes") {
@@ -1754,7 +1807,8 @@ function initNavTabs() {
             }
             const activeGraphPane = document.getElementById("pane-graph");
             if (activeGraphPane && activeGraphPane.classList.contains("active")) {
-                loadAndRenderCampaignGraph();
+                graphListenersInitialized = false;
+                loadAndRenderCampaignGraph(true);
             }
         }, 150);
     });
@@ -3004,142 +3058,827 @@ function updateMapMarkers(emails) {
     }
 }
 
-async function loadAndRenderCampaignGraph() {
+const CAMPAIGN_DATASETS = {
+    all: {
+        id: "all",
+        title: "All Threat Campaigns (Global Landscape)",
+        clusters: 4,
+        nodes: [
+            { id: "c1_email", label: "Case #1001 (PayPal Phish)", type: "email", risk: "critical", campaign: "TC-44146", val: "service@intl.paypal.com", desc: "Urgent Suspicious Activity Security Notice" },
+            { id: "c1_dom", label: "paypal-verify-user.com", type: "domain", risk: "critical", campaign: "TC-44146", val: "Domain (Typosquat)", desc: "Offshore registrar, fast-flux DNS rotation" },
+            { id: "c1_url", label: "/secure-login/login.php", type: "url", risk: "critical", campaign: "TC-44146", val: "Credential Harvesting URI", desc: "Cloned PayPal SSO entry form with 2FA intercept" },
+            { id: "c1_hop1", label: "bit.ly/secure-pp-auth", type: "url", risk: "high", campaign: "TC-44146", val: "Shortener Gateway (Hop 1)", desc: "HTTP 301 obfuscation redirection hop" },
+            { id: "c1_relay", label: "185.220.101.5", type: "ip", risk: "critical", campaign: "TC-44146", val: "Relay IP (Exit Node)", desc: "Known Tor exit relay in Frankfurt, Germany" },
+            { id: "c1_asn", label: "AS44146 Tor Transit", type: "asn", risk: "high", campaign: "TC-44146", val: "Tor Network / Transit", desc: "Multi-jurisdiction bulletproof Tor transit" },
+            { id: "c1_att", label: "Invoice_Escrow.pdf.exe", type: "hash", risk: "critical", campaign: "TC-44146", val: "SHA256: e3b0c442...991b", desc: "PE32+ Executable disguised as escrow PDF" },
+            { id: "c1_ns", label: "ns1.offshore-dns.cc", type: "domain", risk: "high", campaign: "TC-44146", val: "Nameserver", desc: "Bulletproof privacy DNS provider" },
+            { id: "c1_cluster", label: "Threat Cluster TC-44146", type: "cluster", risk: "critical", campaign: "TC-44146", val: "Tor Credential Harvesting Ring", desc: "Active adversary cluster targeting financial fintech" },
+
+            { id: "c2_email", label: "Case #1002 (CEO Wire Fraud)", type: "email", risk: "critical", campaign: "FIN-CORP", val: "cfo-urgent@corp-secure-finance.net", desc: "CEO Impersonation Acquisition Wire Transfer" },
+            { id: "c2_dom", label: "corp-secure-finance.net", type: "domain", risk: "critical", campaign: "FIN-CORP", val: "Domain (Lookalike)", desc: "Registered 18 days prior, mimics legitimate target finance" },
+            { id: "c2_vps", label: "91.240.118.42", type: "ip", risk: "high", campaign: "FIN-CORP", val: "C2 Host IP (Moldova)", desc: "Bulletproof VPS hosting SMTP proxy & forwarders" },
+            { id: "c2_asn", label: "AS208643 Flokinet", type: "asn", risk: "high", campaign: "FIN-CORP", val: "Flokinet Iceland / Romania", desc: "Offshore bulletproof hosting sanctuary" },
+            { id: "c2_doc", label: "SWIFT_MT103_EUR.pdf", type: "hash", risk: "high", campaign: "FIN-CORP", val: "SHA256: 7fa801b9...55c2", desc: "Weaponized PDF lure with remote command template" },
+            { id: "c2_cluster", label: "FIN-CORP Wire Syndicate", type: "cluster", risk: "critical", campaign: "FIN-CORP", val: "Executive BEC Wire Fraud", desc: "Sophisticated corporate treasury wire diversion gang" },
+
+            { id: "c3_email", label: "Case #1004 (M365 ATO Lure)", type: "email", risk: "critical", campaign: "Storm-0539", val: "admin-alert@microsoft-support.net", desc: "Mandatory Session Authentication Refresh Lure" },
+            { id: "c3_dom", label: "login-msft-verify.us", type: "domain", risk: "critical", campaign: "Storm-0539", val: "AitM Reverse Proxy Domain", desc: "Reverse-proxy domain hosting Evilginx proxy" },
+            { id: "c3_url", label: "/oauth2/v2.0/token", type: "url", risk: "critical", campaign: "Storm-0539", val: "AitM Token Capture Endpoint", desc: "Steals session cookies and bypasses FIDO/SMS MFA" },
+            { id: "c3_ip", label: "45.154.255.89", type: "ip", risk: "high", campaign: "Storm-0539", val: "Relay IP (Hostinger)", desc: "Hostinger International VPS relay" },
+            { id: "c3_asn", label: "AS47583 Hostinger", type: "asn", risk: "medium", campaign: "Storm-0539", val: "AS47583 Hosting Cloud", desc: "Commercial hosting repurposed for AitM proxies" },
+            { id: "c3_token", label: "Session_PRT_Token.bin", type: "hash", risk: "critical", campaign: "Storm-0539", val: "Captured Session Cookie", desc: "Primary Refresh Token (PRT) exfiltration artifact" },
+            { id: "c3_cluster", label: "Storm-0539 ATO Broker", type: "cluster", risk: "critical", campaign: "Storm-0539", val: "Cloud Identity Theft Group", desc: "Specializes in Microsoft 365 cloud session hijack" },
+
+            { id: "c4_email", label: "Case #1005 (Amazon Urgent Hold)", type: "email", risk: "high", campaign: "SMISH-AMZ", val: "delivery-alert@amz-track-update.com", desc: "Urgent package dispatch address update notice" },
+            { id: "c4_dom", label: "amz-track-update.com", type: "domain", risk: "high", campaign: "SMISH-AMZ", val: "Domain (Brand Impersonation)", desc: "Impersonates Amazon Logistics dispatch center" },
+            { id: "c4_url", label: "/track/order-reschedule", type: "url", risk: "high", campaign: "SMISH-AMZ", val: "Phishing Gateway URL", desc: "Mobile-targeted credential harvester" },
+            { id: "c4_ip", label: "103.145.13.78", type: "ip", risk: "high", campaign: "SMISH-AMZ", val: "C2 Command IP (Panama)", desc: "PrivateLayer bulletproof upstream node" },
+            { id: "c4_asn", label: "AS51852 PrivateLayer", type: "asn", risk: "high", campaign: "SMISH-AMZ", val: "Private Layer Hosting", desc: "Offshore hosting frequently abused for mobile payloads" },
+            { id: "c4_apk", label: "Amz_Tracking_Fix.apk", type: "hash", risk: "critical", campaign: "SMISH-AMZ", val: "SHA256: 3d18e8f2...99aa", desc: "Android trojan dropper / SMS forwarder" },
+            { id: "c4_cluster", label: "SMISH-AMZ Stealer Ring", type: "cluster", risk: "high", campaign: "SMISH-AMZ", val: "Mobile / E-Commerce Scam", desc: "Automated SMS/Email dropper distribution network" },
+
+            { id: "c5_email", label: "Case #1003 (GitHub Advisory)", type: "email", risk: "benign", campaign: "Verified Base", val: "notifications@github.com", desc: "Verified GitHub Security Advisory for Dependabot" },
+            { id: "c5_dom", label: "github.com", type: "domain", risk: "benign", campaign: "Verified Base", val: "Authoritative Domain", desc: "Fully aligned SPF pass, DKIM valid, DMARC pass" },
+            { id: "c5_ip", label: "192.30.252.204", type: "ip", risk: "benign", campaign: "Verified Base", val: "GitHub Outbound MTA", desc: "Authoritative GitHub SMTP transmission node" },
+            { id: "c5_asn", label: "AS36459 GitHub Inc", type: "asn", risk: "benign", campaign: "Verified Base", val: "AS36459 GitHub Network", desc: "Verified corporate autonomous system" },
+            { id: "c5_cert", label: "DigiCert TLS Root", type: "hash", risk: "benign", campaign: "Verified Base", val: "X.509 SHA-256 Fingerprint", desc: "EV SSL Certificate with full certificate transparency" },
+            { id: "c5_cluster", label: "Verified Enterprise Cloud", type: "cluster", risk: "benign", campaign: "Verified Base", val: "Legitimate Baseline", desc: "Sanctioned enterprise SaaS cloud baseline" }
+        ],
+        edges: [
+            { source: "c1_email", target: "c1_dom" },
+            { source: "c1_email", target: "c1_hop1" },
+            { source: "c1_hop1", target: "c1_url" },
+            { source: "c1_dom", target: "c1_url" },
+            { source: "c1_dom", target: "c1_relay" },
+            { source: "c1_dom", target: "c1_ns" },
+            { source: "c1_relay", target: "c1_asn" },
+            { source: "c1_email", target: "c1_att" },
+            { source: "c1_asn", target: "c1_cluster" },
+            { source: "c1_relay", target: "c1_cluster" },
+            { source: "c1_dom", target: "c1_cluster" },
+
+            { source: "c2_email", target: "c2_dom" },
+            { source: "c2_email", target: "c2_doc" },
+            { source: "c2_dom", target: "c2_vps" },
+            { source: "c2_vps", target: "c2_asn" },
+            { source: "c2_email", target: "c1_relay" },
+            { source: "c2_dom", target: "c1_ns" },
+            { source: "c2_asn", target: "c2_cluster" },
+            { source: "c2_vps", target: "c2_cluster" },
+            { source: "c2_cluster", target: "c1_cluster" },
+
+            { source: "c3_email", target: "c3_dom" },
+            { source: "c3_dom", target: "c3_url" },
+            { source: "c3_dom", target: "c3_ip" },
+            { source: "c3_ip", target: "c3_asn" },
+            { source: "c3_url", target: "c3_token" },
+            { source: "c3_asn", target: "c3_cluster" },
+            { source: "c3_token", target: "c3_cluster" },
+            { source: "c3_email", target: "c3_cluster" },
+
+            { source: "c4_email", target: "c4_dom" },
+            { source: "c4_dom", target: "c4_url" },
+            { source: "c4_url", target: "c4_apk" },
+            { source: "c4_dom", target: "c4_ip" },
+            { source: "c4_ip", target: "c4_asn" },
+            { source: "c4_apk", target: "c4_cluster" },
+            { source: "c4_asn", target: "c4_cluster" },
+
+            { source: "c5_email", target: "c5_dom" },
+            { source: "c5_dom", target: "c5_ip" },
+            { source: "c5_ip", target: "c5_asn" },
+            { source: "c5_dom", target: "c5_cert" },
+            { source: "c5_asn", target: "c5_cluster" },
+            { source: "c5_cert", target: "c5_cluster" }
+        ]
+    },
+    paypal: {
+        id: "paypal",
+        title: "Campaign TC-44146 (Tor Phish & Credential Harvest Ring)",
+        clusters: 1,
+        nodes: [
+            { id: "c1_email", label: "Case #1001 (PayPal Phish)", type: "email", risk: "critical", campaign: "TC-44146", val: "service@intl.paypal.com", desc: "Urgent Security Verification Phish" },
+            { id: "c1_dom", label: "paypal-verify-user.com", type: "domain", risk: "critical", campaign: "TC-44146", val: "paypal-verify-user.com", desc: "Typosquat lookalike credential harvest domain" },
+            { id: "c1_url", label: "/secure-login/login.php", type: "url", risk: "critical", campaign: "TC-44146", val: "/secure-login/login.php", desc: "Credential harvesting form target" },
+            { id: "c1_hop1", label: "bit.ly/secure-pp-auth", type: "url", risk: "high", campaign: "TC-44146", val: "bit.ly/secure-pp-auth", desc: "HTTP 301 Shortener gateway hop" },
+            { id: "c1_relay", label: "185.220.101.5", type: "ip", risk: "critical", campaign: "TC-44146", val: "185.220.101.5 (Relay IP)", desc: "Known Tor exit relay in Frankfurt" },
+            { id: "c1_asn", label: "AS44146 Tor Transit", type: "asn", risk: "high", campaign: "TC-44146", val: "AS44146 Tor Network", desc: "Tor exit & transit routing provider" },
+            { id: "c1_att", label: "Invoice_Escrow.pdf.exe", type: "hash", risk: "critical", campaign: "TC-44146", val: "e3b0c44298fc1c149afbf4c8996fb924", desc: "Double-extension dropper executable" },
+            { id: "c1_ns", label: "ns1.offshore-dns.cc", type: "domain", risk: "high", campaign: "TC-44146", val: "ns1.offshore-dns-hosting.cc", desc: "Fast-flux bulletproof DNS authority" },
+            { id: "c1_cluster", label: "Cluster TC-44146", type: "cluster", risk: "critical", campaign: "TC-44146", val: "Cluster TC-44146", desc: "Core credential harvesting syndicate" }
+        ],
+        edges: [
+            { source: "c1_email", target: "c1_dom" },
+            { source: "c1_email", target: "c1_hop1" },
+            { source: "c1_hop1", target: "c1_url" },
+            { source: "c1_dom", target: "c1_url" },
+            { source: "c1_dom", target: "c1_relay" },
+            { source: "c1_dom", target: "c1_ns" },
+            { source: "c1_relay", target: "c1_asn" },
+            { source: "c1_email", target: "c1_att" },
+            { source: "c1_asn", target: "c1_cluster" },
+            { source: "c1_relay", target: "c1_cluster" },
+            { source: "c1_dom", target: "c1_cluster" },
+            { source: "c1_ns", target: "c1_cluster" }
+        ]
+    },
+    bec: {
+        id: "bec",
+        title: "Campaign FIN-CORP-WIRE (Executive BEC Wire Transfer)",
+        clusters: 1,
+        nodes: [
+            { id: "c2_email", label: "Case #1002 (CEO Wire Fraud)", type: "email", risk: "critical", campaign: "FIN-CORP", val: "cfo-alert@corp-secure-finance.net", desc: "Urgent EUR 482,000 Acquisition Transfer" },
+            { id: "c2_dom", label: "corp-secure-finance.net", type: "domain", risk: "critical", campaign: "FIN-CORP", val: "corp-secure-finance.net", desc: "Deceptive domain mimicking enterprise treasury" },
+            { id: "c2_vps", label: "91.240.118.42", type: "ip", risk: "high", campaign: "FIN-CORP", val: "91.240.118.42 (Moldova VPS)", desc: "Bulletproof C2 host running SMTP forwarder" },
+            { id: "c2_relay", label: "185.220.101.5 (Shared Relay)", type: "ip", risk: "critical", campaign: "FIN-CORP", val: "185.220.101.5", desc: "Tor exit relay shared with TC-44146" },
+            { id: "c2_asn", label: "AS208643 Flokinet", type: "asn", risk: "high", campaign: "FIN-CORP", val: "AS208643 Flokinet", desc: "Bulletproof autonomous system" },
+            { id: "c2_tor_asn", label: "AS44146 Tor Transit", type: "asn", risk: "high", campaign: "FIN-CORP", val: "AS44146 Tor Network", desc: "Anonymized inbound origin" },
+            { id: "c2_doc", label: "SWIFT_MT103_EUR.pdf", type: "hash", risk: "high", campaign: "FIN-CORP", val: "7fa801b9ca2e41e4649b", desc: "Forged SWIFT wire routing instructions" },
+            { id: "c2_ns", label: "ns1.offshore-dns.cc", type: "domain", risk: "high", campaign: "FIN-CORP", val: "ns1.offshore-dns.cc", desc: "Shared bulletproof DNS infrastructure" },
+            { id: "c2_cluster", label: "FIN-CORP Wire Syndicate", type: "cluster", risk: "critical", campaign: "FIN-CORP", val: "FIN-CORP Syndicate", desc: "Organized financial wire diversion group" }
+        ],
+        edges: [
+            { source: "c2_email", target: "c2_dom" },
+            { source: "c2_email", target: "c2_doc" },
+            { source: "c2_email", target: "c2_relay" },
+            { source: "c2_dom", target: "c2_vps" },
+            { source: "c2_dom", target: "c2_ns" },
+            { source: "c2_relay", target: "c2_tor_asn" },
+            { source: "c2_vps", target: "c2_asn" },
+            { source: "c2_asn", target: "c2_cluster" },
+            { source: "c2_tor_asn", target: "c2_cluster" },
+            { source: "c2_doc", target: "c2_cluster" },
+            { source: "c2_ns", target: "c2_cluster" },
+            { source: "c2_email", target: "c2_cluster" }
+        ]
+    },
+    m365: {
+        id: "m365",
+        title: "Campaign Storm-0539 (M365 Cloud Token AitM Syndicate)",
+        clusters: 1,
+        nodes: [
+            { id: "c3_email", label: "Case #1004 (M365 ATO Lure)", type: "email", risk: "critical", campaign: "Storm-0539", val: "admin-alert@microsoft-support.net", desc: "Urgent session token re-authentication lure" },
+            { id: "c3_dom", label: "login-msft-verify.us", type: "domain", risk: "critical", campaign: "Storm-0539", val: "login-msft-verify.us", desc: "AitM Evilginx reverse-proxy portal" },
+            { id: "c3_url", label: "/oauth2/v2.0/token", type: "url", risk: "critical", campaign: "Storm-0539", val: "/oauth2/v2.0/token", desc: "Intercepts session tokens & MFA OTP" },
+            { id: "c3_ip", label: "45.154.255.89", type: "ip", risk: "high", campaign: "Storm-0539", val: "45.154.255.89 (Hostinger)", desc: "Originating AitM proxy relay host" },
+            { id: "c3_asn", label: "AS47583 Hostinger Int", type: "asn", risk: "medium", campaign: "Storm-0539", val: "AS47583 Hostinger", desc: "Abused commercial hosting infrastructure" },
+            { id: "c3_token", label: "Session_PRT_Token.bin", type: "hash", risk: "critical", campaign: "Storm-0539", val: "PRT-Cookie-Exfil", desc: "Primary Refresh Token session hijacking payload" },
+            { id: "c3_cluster", label: "Storm-0539 ATO Broker", type: "cluster", risk: "critical", campaign: "Storm-0539", val: "Storm-0539 Group", desc: "Cloud identity theft and token harvesting ring" }
+        ],
+        edges: [
+            { source: "c3_email", target: "c3_dom" },
+            { source: "c3_dom", target: "c3_url" },
+            { source: "c3_dom", target: "c3_ip" },
+            { source: "c3_ip", target: "c3_asn" },
+            { source: "c3_url", target: "c3_token" },
+            { source: "c3_asn", target: "c3_cluster" },
+            { source: "c3_token", target: "c3_cluster" },
+            { source: "c3_email", target: "c3_cluster" }
+        ]
+    },
+    amz: {
+        id: "amz",
+        title: "Campaign SMISH-AMZ (Mobile Stealer & Logistics Dropper)",
+        clusters: 1,
+        nodes: [
+            { id: "c4_email", label: "Case #1005 (Amazon Urgent Hold)", type: "email", risk: "high", campaign: "SMISH-AMZ", val: "delivery-alert@amz-track-update.com", desc: "Reschedule pending parcel delivery lure" },
+            { id: "c4_dom", label: "amz-track-update.com", type: "domain", risk: "high", campaign: "SMISH-AMZ", val: "amz-track-update.com", desc: "Phishing portal masquerading as carrier dispatch" },
+            { id: "c4_url", label: "/track/order-reschedule", type: "url", risk: "high", campaign: "SMISH-AMZ", val: "/track/order-reschedule", desc: "Landing page prompting malicious APK install" },
+            { id: "c4_ip", label: "103.145.13.78", type: "ip", risk: "high", campaign: "SMISH-AMZ", val: "103.145.13.78 (Panama)", desc: "Offshore C2 command and control server" },
+            { id: "c4_asn", label: "AS51852 Private Layer", type: "asn", risk: "high", campaign: "SMISH-AMZ", val: "AS51852 Private Layer", desc: "Panama offshore hosting provider" },
+            { id: "c4_apk", label: "Amz_Tracking_Fix.apk", type: "hash", risk: "critical", campaign: "SMISH-AMZ", val: "3d18e8f2a991b852", desc: "Banking trojan & SMS interceptor payload" },
+            { id: "c4_cluster", label: "SMISH-AMZ Stealer Ring", type: "cluster", risk: "high", campaign: "SMISH-AMZ", val: "SMISH-AMZ Ring", desc: "Mobile banking stealer distribution operation" }
+        ],
+        edges: [
+            { source: "c4_email", target: "c4_dom" },
+            { source: "c4_dom", target: "c4_url" },
+            { source: "c4_url", target: "c4_apk" },
+            { source: "c4_dom", target: "c4_ip" },
+            { source: "c4_ip", target: "c4_asn" },
+            { source: "c4_apk", target: "c4_cluster" },
+            { source: "c4_asn", target: "c4_cluster" },
+            { source: "c4_email", target: "c4_cluster" }
+        ]
+    },
+    benign: {
+        id: "benign",
+        title: "Verified Cloud Base (Enterprise Ground Truth & Baseline)",
+        clusters: 1,
+        nodes: [
+            { id: "c5_email", label: "Case #1003 (GitHub Advisory)", type: "email", risk: "benign", campaign: "Verified Base", val: "notifications@github.com", desc: "Authentic Dependabot vulnerability notification" },
+            { id: "c5_dom", label: "github.com", type: "domain", risk: "benign", campaign: "Verified Base", val: "github.com (Aligned)", desc: "Passes strict SPF, DKIM 2048-bit, DMARC reject" },
+            { id: "c5_ip", label: "192.30.252.204", type: "ip", risk: "benign", campaign: "Verified Base", val: "192.30.252.204", desc: "Authorized GitHub outbound mail relay node" },
+            { id: "c5_asn", label: "AS36459 GitHub Inc", type: "asn", risk: "benign", campaign: "Verified Base", val: "AS36459 GitHub / Microsoft", desc: "Legitimate corporate autonomous system" },
+            { id: "c5_cert", label: "DigiCert TLS Root", type: "hash", risk: "benign", campaign: "Verified Base", val: "DigiCert Global Root G2", desc: "Valid TLS cryptographic certificate authority" },
+            { id: "c5_cluster", label: "Verified Enterprise Cloud", type: "cluster", risk: "benign", campaign: "Verified Base", val: "Verified Cloud Base", desc: "Baseline trusted enterprise infrastructure" }
+        ],
+        edges: [
+            { source: "c5_email", target: "c5_dom" },
+            { source: "c5_dom", target: "c5_ip" },
+            { source: "c5_ip", target: "c5_asn" },
+            { source: "c5_dom", target: "c5_cert" },
+            { source: "c5_asn", target: "c5_cluster" },
+            { source: "c5_cert", target: "c5_cluster" }
+        ]
+    }
+};
+
+let activeCampaignKey = "all";
+let graphNodes = [];
+let graphEdges = [];
+let graphAnimFrame = null;
+let isGraphPhysicsActive = true;
+let draggedNode = null;
+let hoveredNode = null;
+let graphSearchQuery = "";
+let edgePackets = [];
+let graphListenersInitialized = false;
+let graphPulseTick = 0;
+
+function getNodeVisualAttributes(n) {
+    let color = "#8b5cf6";
+    let glow = "rgba(139, 92, 246, 0.45)";
+    let r = 14;
+    let icon = "⬡";
+
+    if (n.type === "email") {
+        icon = "✉";
+        r = 18;
+        if (n.risk === "critical" || n.risk === "high") {
+            color = "#ef4444";
+            glow = "rgba(239, 68, 68, 0.55)";
+        } else if (n.risk === "medium") {
+            color = "#f59e0b";
+            glow = "rgba(245, 158, 11, 0.5)";
+        } else {
+            color = "#10b981";
+            glow = "rgba(16, 185, 129, 0.5)";
+        }
+    } else if (n.type === "domain") {
+        icon = "🌐";
+        color = "#06b6d4";
+        glow = "rgba(6, 182, 212, 0.5)";
+        r = 14;
+    } else if (n.type === "url") {
+        icon = "⚡";
+        color = "#ec4899";
+        glow = "rgba(236, 72, 153, 0.5)";
+        r = 12;
+    } else if (n.type === "ip") {
+        icon = "⌖";
+        color = n.risk === "critical" ? "#dc2626" : "#a855f7";
+        glow = n.risk === "critical" ? "rgba(220, 38, 38, 0.6)" : "rgba(168, 85, 247, 0.5)";
+        r = 15;
+    } else if (n.type === "asn") {
+        icon = "⬢";
+        color = "#f59e0b";
+        glow = "rgba(245, 158, 11, 0.45)";
+        r = 14;
+    } else if (n.type === "hash") {
+        icon = "☣";
+        color = "#3b82f6";
+        glow = "rgba(59, 130, 246, 0.5)";
+        r = 13;
+    } else if (n.type === "cluster") {
+        icon = "☠";
+        color = n.risk === "benign" ? "#10b981" : "#ea580c";
+        glow = n.risk === "benign" ? "rgba(16, 185, 129, 0.6)" : "rgba(234, 88, 12, 0.7)";
+        r = 20;
+    }
+    return { color, glow, r, icon };
+}
+
+function enrichDatasetsWithLiveIngested() {
+    const list = (typeof storedEmails !== "undefined" && Array.isArray(storedEmails)) ? storedEmails : [];
+    list.forEach(e => {
+        const cId = `case_${e.id}`;
+        const exists = CAMPAIGN_DATASETS.all.nodes.some(n => n.id === cId);
+        if (!exists && e.id) {
+            const risk = (e.risk_level || "high").toLowerCase();
+            const newNode = {
+                id: cId,
+                label: `Case #${e.id} (${(e.subject || 'Ingested').substring(0, 16)}…)`,
+                type: "email",
+                risk: risk === "high" ? "critical" : risk,
+                campaign: "TC-44146",
+                val: e.sender || "ingested@soc.local",
+                desc: e.subject || "Ingested Threat Telemetry"
+            };
+            CAMPAIGN_DATASETS.all.nodes.push(newNode);
+            CAMPAIGN_DATASETS.all.edges.push({ source: cId, target: "c1_relay" });
+            CAMPAIGN_DATASETS.all.edges.push({ source: cId, target: "c1_cluster" });
+        }
+    });
+}
+
+function initCampaignDataset(key, canvas) {
+    enrichDatasetsWithLiveIngested();
+    const ds = CAMPAIGN_DATASETS[key] || CAMPAIGN_DATASETS["all"];
+    const w = canvas.width || 900;
+    const h = canvas.height || 520;
+    const cx = w / 2;
+    const cy = h / 2;
+
+    const rawNodes = ds.nodes || [];
+    const count = rawNodes.length;
+
+    const clusterGroups = {};
+    rawNodes.forEach(n => {
+        const cKey = n.campaign || "default";
+        if (!clusterGroups[cKey]) clusterGroups[cKey] = [];
+        clusterGroups[cKey].push(n);
+    });
+
+    const clusterKeys = Object.keys(clusterGroups);
+    const clusterAngles = {};
+    clusterKeys.forEach((k, idx) => {
+        clusterAngles[k] = (idx / clusterKeys.length) * 2 * Math.PI - Math.PI / 2;
+    });
+
+    graphNodes = rawNodes.map((n, i) => {
+        const cKey = n.campaign || "default";
+        const baseAngle = clusterAngles[cKey] !== undefined ? clusterAngles[cKey] : (i / count) * 2 * Math.PI;
+        const subIdx = clusterGroups[cKey].indexOf(n);
+        const subTotal = clusterGroups[cKey].length;
+        const subSpread = ((subIdx - subTotal / 2) / (subTotal || 1)) * 0.9;
+        const angle = baseAngle + subSpread;
+        const dist = n.type === "cluster" ? (count > 15 ? 120 : 70) : (count > 15 ? 170 + (i % 3) * 35 : 130 + (i % 2) * 25);
+
+        const visual = getNodeVisualAttributes(n);
+        return {
+            ...n,
+            x: Math.max(30, Math.min(w - 30, cx + Math.cos(angle) * dist + (Math.random() - 0.5) * 25)),
+            y: Math.max(30, Math.min(h - 30, cy + Math.sin(angle) * dist + (Math.random() - 0.5) * 25)),
+            vx: (Math.random() - 0.5) * 1.5,
+            vy: (Math.random() - 0.5) * 1.5,
+            ...visual
+        };
+    });
+
+    const nodeMap = {};
+    graphNodes.forEach(n => { nodeMap[n.id] = n; });
+
+    graphEdges = (ds.edges || []).map(e => ({
+        source: nodeMap[e.source],
+        target: nodeMap[e.target]
+    })).filter(e => e.source && e.target);
+
+    edgePackets = graphEdges.map(() => ({
+        progress: Math.random(),
+        speed: 0.005 + Math.random() * 0.005
+    }));
+
+    updateGraphStatsChip(ds);
+}
+
+function updateGraphStatsChip(ds) {
+    const nodeEl = document.getElementById("graph-node-count");
+    const edgeEl = document.getElementById("graph-edge-count");
+    const clusterEl = document.getElementById("graph-cluster-count");
+    if (nodeEl) nodeEl.innerHTML = `<i class="fa-solid fa-circle-nodes" style="color: var(--primary);"></i> ${graphNodes.length} Nodes`;
+    if (edgeEl) edgeEl.innerHTML = `<i class="fa-solid fa-route" style="color: #38bdf8;"></i> ${graphEdges.length} Correlated Edges`;
+    if (clusterEl) clusterEl.innerHTML = `<i class="fa-solid fa-biohazard" style="color: #ef4444;"></i> ${ds.clusters || 1} Threat Cluster${(ds.clusters || 1) > 1 ? "s" : ""}`;
+}
+
+function stepGraphPhysics(canvas) {
+    if (!isGraphPhysicsActive && !draggedNode) return;
+
+    const w = canvas.width;
+    const h = canvas.height;
+    const cx = w / 2;
+    const cy = h / 2;
+
+    const kRep = graphNodes.length > 20 ? 1800 : 2500;
+    const kSpring = 0.032;
+    const springLen = graphNodes.length > 20 ? 95 : 120;
+    const damping = 0.85;
+    const centerGrav = 0.015;
+
+    for (let i = 0; i < graphNodes.length; i++) {
+        const n1 = graphNodes[i];
+        if (n1 === draggedNode) continue;
+
+        for (let j = i + 1; j < graphNodes.length; j++) {
+            const n2 = graphNodes[j];
+            let dx = n1.x - n2.x;
+            let dy = n1.y - n2.y;
+            let d = Math.sqrt(dx * dx + dy * dy);
+            if (d < 1) { dx = 1; dy = 0; d = 1; }
+
+            const sameCluster = n1.campaign && n2.campaign && n1.campaign === n2.campaign;
+            const repFactor = sameCluster ? kRep * 0.85 : kRep * 1.35;
+            const force = repFactor / (d * d + 80);
+
+            const fx = (dx / d) * force;
+            const fy = (dy / d) * force;
+
+            n1.vx += fx;
+            n1.vy += fy;
+            if (n2 !== draggedNode) {
+                n2.vx -= fx;
+                n2.vy -= fy;
+            }
+        }
+    }
+
+    graphEdges.forEach(e => {
+        const src = e.source;
+        const tgt = e.target;
+        if (!src || !tgt) return;
+
+        let dx = tgt.x - src.x;
+        let dy = tgt.y - src.y;
+        let d = Math.sqrt(dx * dx + dy * dy);
+        if (d < 1) d = 1;
+
+        const force = (d - springLen) * kSpring;
+        const fx = (dx / d) * force;
+        const fy = (dy / d) * force;
+
+        if (src !== draggedNode) {
+            src.vx += fx;
+            src.vy += fy;
+        }
+        if (tgt !== draggedNode) {
+            tgt.vx -= fx;
+            tgt.vy -= fy;
+        }
+    });
+
+    graphNodes.forEach(n => {
+        if (n === draggedNode) return;
+
+        n.vx += (cx - n.x) * centerGrav;
+        n.vy += (cy - n.y) * centerGrav;
+
+        n.vx *= damping;
+        n.vy *= damping;
+
+        const maxV = 8;
+        const curV = Math.sqrt(n.vx * n.vx + n.vy * n.vy);
+        if (curV > maxV) {
+            n.vx = (n.vx / curV) * maxV;
+            n.vy = (n.vy / curV) * maxV;
+        }
+
+        n.x += n.vx;
+        n.y += n.vy;
+
+        const pad = n.r + 20;
+        if (n.x < pad) { n.x = pad; n.vx = Math.abs(n.vx) * 0.5; }
+        if (n.x > w - pad) { n.x = w - pad; n.vx = -Math.abs(n.vx) * 0.5; }
+        if (n.y < pad) { n.y = pad; n.vy = Math.abs(n.vy) * 0.5; }
+        if (n.y > h - pad) { n.y = h - pad; n.vy = -Math.abs(n.vy) * 0.5; }
+    });
+}
+
+function renderCampaignGraphFrame(canvas) {
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    graphPulseTick++;
+    stepGraphPhysics(canvas);
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const connectedNodeIds = new Set();
+    if (hoveredNode) {
+        connectedNodeIds.add(hoveredNode.id);
+        graphEdges.forEach(e => {
+            if (e.source.id === hoveredNode.id) connectedNodeIds.add(e.target.id);
+            if (e.target.id === hoveredNode.id) connectedNodeIds.add(e.source.id);
+        });
+    }
+
+    const hasSearch = graphSearchQuery.length > 0;
+    const matchingNodeIds = new Set();
+    if (hasSearch) {
+        graphNodes.forEach(n => {
+            if (
+                n.label.toLowerCase().includes(graphSearchQuery) ||
+                (n.val && n.val.toLowerCase().includes(graphSearchQuery)) ||
+                (n.type && n.type.toLowerCase().includes(graphSearchQuery)) ||
+                (n.campaign && n.campaign.toLowerCase().includes(graphSearchQuery))
+            ) {
+                matchingNodeIds.add(n.id);
+            }
+        });
+    }
+
+    graphEdges.forEach((e, idx) => {
+        const src = e.source;
+        const tgt = e.target;
+        if (!src || !tgt) return;
+
+        const isHighlighted = hoveredNode && (src.id === hoveredNode.id || tgt.id === hoveredNode.id);
+        const isDimmed = hoveredNode && !isHighlighted;
+
+        ctx.beginPath();
+        ctx.moveTo(src.x, src.y);
+        ctx.lineTo(tgt.x, tgt.y);
+
+        if (isHighlighted) {
+            ctx.strokeStyle = "rgba(6, 182, 212, 0.9)";
+            ctx.lineWidth = 2.4;
+        } else if (isDimmed) {
+            ctx.strokeStyle = "rgba(148, 163, 184, 0.08)";
+            ctx.lineWidth = 1;
+        } else {
+            ctx.strokeStyle = "rgba(148, 163, 184, 0.22)";
+            ctx.lineWidth = 1.4;
+        }
+        ctx.stroke();
+
+        const packet = edgePackets[idx];
+        if (packet && (!isDimmed || isHighlighted)) {
+            packet.progress += packet.speed;
+            if (packet.progress > 1) packet.progress = 0;
+
+            const px = src.x + (tgt.x - src.x) * packet.progress;
+            const py = src.y + (tgt.y - src.y) * packet.progress;
+
+            ctx.beginPath();
+            ctx.arc(px, py, isHighlighted ? 3.5 : 2.5, 0, 2 * Math.PI);
+            ctx.fillStyle = isHighlighted ? "#38bdf8" : (src.color || "#38bdf8");
+            ctx.shadowColor = src.color || "#38bdf8";
+            ctx.shadowBlur = 6;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+    });
+
+    graphNodes.forEach(n => {
+        const isHov = hoveredNode && hoveredNode.id === n.id;
+        const isConn = hoveredNode && connectedNodeIds.has(n.id);
+        const isMatch = hasSearch && matchingNodeIds.has(n.id);
+        const isDim = (hoveredNode && !isHov && !isConn) || (hasSearch && !isMatch);
+
+        const alpha = isDim ? 0.22 : 1.0;
+        ctx.globalAlpha = alpha;
+
+        if (n.type === "cluster") {
+            const pulseRadius = n.r + 5 + Math.sin(graphPulseTick * 0.08) * 3;
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, pulseRadius, 0, 2 * Math.PI);
+            ctx.strokeStyle = n.glow;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        if (isMatch) {
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, n.r + 8 + Math.sin(graphPulseTick * 0.12) * 2, 0, 2 * Math.PI);
+            ctx.strokeStyle = "#38bdf8";
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+        }
+
+        if (isHov) {
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, n.r + 6, 0, 2 * Math.PI);
+            ctx.strokeStyle = "#ffffff";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r + 3, 0, 2 * Math.PI);
+        ctx.fillStyle = n.glow;
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r, 0, 2 * Math.PI);
+        ctx.fillStyle = n.color;
+        ctx.fill();
+
+        ctx.strokeStyle = "#090d16";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle = "#ffffff";
+        ctx.font = `bold ${Math.round(n.r * 0.85)}px Inter, sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(n.icon || "•", n.x, n.y + 1);
+
+        const shortLabel = n.label.length > 22 ? n.label.substring(0, 20) + "…" : n.label;
+        ctx.font = "10px Inter, sans-serif";
+        const textWidth = ctx.measureText(shortLabel).width;
+        const pillW = textWidth + 10;
+        const pillH = 16;
+        const pillX = n.x - pillW / 2;
+        const pillY = n.y + n.r + 5;
+
+        ctx.fillStyle = "rgba(9, 13, 22, 0.85)";
+        ctx.strokeStyle = isHov ? "#38bdf8" : "rgba(148, 163, 184, 0.35)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        if (ctx.roundRect) {
+            ctx.roundRect(pillX, pillY, pillW, pillH, 4);
+        } else {
+            ctx.rect(pillX, pillY, pillW, pillH);
+        }
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = isHov ? "#38bdf8" : "#e2e8f0";
+        ctx.textBaseline = "alphabetic";
+        ctx.fillText(shortLabel, n.x, pillY + 11);
+
+        ctx.globalAlpha = 1.0;
+    });
+
+    const activeGraphPane = document.getElementById("pane-graph");
+    if (activeGraphPane && activeGraphPane.classList.contains("active")) {
+        graphAnimFrame = requestAnimationFrame(() => renderCampaignGraphFrame(canvas));
+    } else {
+        graphAnimFrame = null;
+    }
+}
+
+function setupGraphInteractions(canvas, container) {
+    if (graphListenersInitialized) return;
+    graphListenersInitialized = true;
+
+    const tooltip = document.getElementById("graph-tooltip-cyber");
+
+    function getCanvasPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        return {
+            x: (e.clientX - rect.left) * (canvas.width / rect.width),
+            y: (e.clientY - rect.top) * (canvas.height / rect.height),
+            clientX: e.clientX,
+            clientY: e.clientY
+        };
+    }
+
+    function findNodeAt(x, y) {
+        for (let i = graphNodes.length - 1; i >= 0; i--) {
+            const n = graphNodes[i];
+            const dist = Math.hypot(x - n.x, y - n.y);
+            if (dist <= n.r + 8) return n;
+        }
+        return null;
+    }
+
+    canvas.addEventListener("mousedown", e => {
+        const pos = getCanvasPos(e);
+        const node = findNodeAt(pos.x, pos.y);
+        if (node) {
+            draggedNode = node;
+            canvas.style.cursor = "grabbing";
+            wakeGraphPhysics(canvas);
+        }
+    });
+
+    window.addEventListener("mousemove", e => {
+        const pos = getCanvasPos(e);
+        if (draggedNode) {
+            draggedNode.x = pos.x;
+            draggedNode.y = pos.y;
+            draggedNode.vx = 0;
+            draggedNode.vy = 0;
+            wakeGraphPhysics(canvas);
+            return;
+        }
+
+        const rect = canvas.getBoundingClientRect();
+        if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) {
+            if (hoveredNode) {
+                hoveredNode = null;
+                if (tooltip) tooltip.classList.remove("visible");
+            }
+            return;
+        }
+
+        const node = findNodeAt(pos.x, pos.y);
+        if (node !== hoveredNode) {
+            hoveredNode = node;
+            canvas.style.cursor = node ? "pointer" : "grab";
+            if (node && tooltip) {
+                const degree = graphEdges.filter(ed => (ed.source && ed.source.id === node.id) || (ed.target && ed.target.id === node.id)).length;
+                tooltip.innerHTML = `
+                    <div class="tooltip-header">
+                        <span class="tooltip-title">${escapeHtml(node.label)}</span>
+                        <span class="tooltip-badge ${node.risk || 'high'}">${(node.risk || 'info').toUpperCase()}</span>
+                    </div>
+                    <div class="tooltip-type">TYPE: ${(node.type || 'ENTITY').toUpperCase()} • CAMPAIGN: ${escapeHtml(node.campaign || 'GLOBAL')}</div>
+                    <div class="tooltip-field">
+                        <span class="tooltip-key">Observable:</span>
+                        <span class="tooltip-val">${escapeHtml(node.val || node.label)}</span>
+                    </div>
+                    <div class="tooltip-field">
+                        <span class="tooltip-key">Details:</span>
+                        <span class="tooltip-val">${escapeHtml(node.desc || 'Active correlated threat asset')}</span>
+                    </div>
+                    <div class="tooltip-field">
+                        <span class="tooltip-key">Topology:</span>
+                        <span class="tooltip-val" style="color: #38bdf8;">Connected to ${degree} threat artifact${degree !== 1 ? 's' : ''}</span>
+                    </div>
+                `;
+                const tipX = Math.min(pos.x + 18, canvas.width - 240);
+                const tipY = Math.min(pos.y + 12, canvas.height - 130);
+                tooltip.style.left = `${tipX}px`;
+                tooltip.style.top = `${tipY}px`;
+                tooltip.classList.add("visible");
+            } else if (tooltip) {
+                tooltip.classList.remove("visible");
+            }
+        }
+    });
+
+    window.addEventListener("mouseup", () => {
+        if (draggedNode) {
+            draggedNode = null;
+            canvas.style.cursor = "grab";
+            wakeGraphPhysics(canvas);
+        }
+    });
+
+    canvas.addEventListener("mouseleave", () => {
+        if (hoveredNode) {
+            hoveredNode = null;
+            if (tooltip) tooltip.classList.remove("visible");
+        }
+    });
+
+    const presetBtns = document.querySelectorAll(".graph-preset-btn");
+    presetBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            presetBtns.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            activeCampaignKey = btn.dataset.campaign || "all";
+            initCampaignDataset(activeCampaignKey, canvas);
+            wakeGraphPhysics(canvas);
+        });
+    });
+
+    const searchInput = document.getElementById("graph-search-input");
+    if (searchInput) {
+        searchInput.addEventListener("input", e => {
+            graphSearchQuery = (e.target.value || "").toLowerCase().trim();
+            wakeGraphPhysics(canvas);
+        });
+    }
+
+    const togglePhysicsBtn = document.getElementById("btn-graph-toggle-physics");
+    if (togglePhysicsBtn) {
+        togglePhysicsBtn.addEventListener("click", () => {
+            isGraphPhysicsActive = !isGraphPhysicsActive;
+            const icon = document.getElementById("icon-graph-physics");
+            const span = togglePhysicsBtn.querySelector("span");
+            if (isGraphPhysicsActive) {
+                if (icon) icon.className = "fa-solid fa-pause";
+                if (span) span.textContent = "Pause Physics";
+                wakeGraphPhysics(canvas);
+            } else {
+                if (icon) icon.className = "fa-solid fa-play";
+                if (span) span.textContent = "Resume Physics";
+            }
+        });
+    }
+
+    const recenterBtn = document.getElementById("btn-graph-recenter");
+    if (recenterBtn) {
+        recenterBtn.addEventListener("click", () => {
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            graphNodes.forEach((n, i) => {
+                const angle = (i / graphNodes.length) * 2 * Math.PI;
+                n.vx = (cx - n.x) * 0.15 + Math.cos(angle) * 3;
+                n.vy = (cy - n.y) * 0.15 + Math.sin(angle) * 3;
+            });
+            wakeGraphPhysics(canvas);
+        });
+    }
+}
+
+function wakeGraphPhysics(canvas) {
+    if (!graphAnimFrame) {
+        graphAnimFrame = requestAnimationFrame(() => renderCampaignGraphFrame(canvas));
+    }
+}
+
+async function loadAndRenderCampaignGraph(forceReload = false) {
     const canvas = document.getElementById("campaign-graph-canvas");
     const container = document.getElementById("graph-canvas-container");
     if (!canvas || !container) return;
 
-    try {
-        const res = await fetch(`${API_BASE}/campaigns/graph`);
-        if (!res.ok) throw new Error();
-        graphData = await res.json();
-    } catch (e) {
-        graphData = null;
-    }
-
-    if (!graphData || !graphData.nodes || graphData.nodes.length === 0) {
-        graphData = {
-            nodes: [
-                { id: "case_1001", label: "Case #1001 (PayPal Phish)", type: "email", risk: "high" },
-                { id: "case_1002", label: "Case #1002 (CEO Wire Fraud)", type: "email", risk: "high" },
-                { id: "dom_paypal", label: "paypal-verify-user.com", type: "domain" },
-                { id: "dom_corp", label: "corp-secure-finance.net", type: "domain" },
-                { id: "ip_relay", label: "185.220.101.5 (Relay IP)", type: "ip" },
-                { id: "asn_tor", label: "AS44146 (Tor Exit / Transit)", type: "asn" },
-                { id: "url_lure", label: "/secure-login/login.php", type: "url" },
-                { id: "alias_sec", label: "PayPal Security Dept", type: "alias" },
-                { id: "cluster_tc", label: "Threat Cluster TC-44146", type: "cluster" }
-            ],
-            edges: [
-                { source: "case_1001", target: "dom_paypal" },
-                { source: "case_1001", target: "ip_relay" },
-                { source: "case_1001", target: "url_lure" },
-                { source: "case_1001", target: "alias_sec" },
-                { source: "dom_paypal", target: "ip_relay" },
-                { source: "ip_relay", target: "asn_tor" },
-                { source: "case_1002", target: "dom_corp" },
-                { source: "case_1002", target: "ip_relay" },
-                { source: "asn_tor", target: "cluster_tc" }
-            ]
-        };
-    }
-
     canvas.width = container.clientWidth || 900;
     canvas.height = container.clientHeight || 520;
-    const ctx = canvas.getContext("2d");
 
-    const nodes = graphData.nodes || [];
-    const edges = graphData.edges || [];
-
-    if (nodes.length === 0) {
-        ctx.fillStyle = "#64748b";
-        ctx.font = "14px Inter";
-        ctx.textAlign = "center";
-        ctx.fillText("No threat campaign nodes to correlate yet.", canvas.width / 2, canvas.height / 2);
-        return;
+    if (graphAnimFrame) {
+        cancelAnimationFrame(graphAnimFrame);
+        graphAnimFrame = null;
     }
 
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    const radius = Math.min(centerX, centerY) - 80;
+    setupGraphInteractions(canvas, container);
 
-    const nodePositions = {};
-    nodes.forEach((n, idx) => {
-        const angle = (idx / nodes.length) * 2 * Math.PI;
-        nodePositions[n.id] = {
-            x: centerX + radius * Math.cos(angle),
-            y: centerY + radius * Math.sin(angle),
-            node: n
-        };
-    });
+    if (forceReload || graphNodes.length === 0) {
+        initCampaignDataset(activeCampaignKey, canvas);
+    }
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    ctx.lineWidth = 1.4;
-    edges.forEach(e => {
-        const src = nodePositions[e.source];
-        const tgt = nodePositions[e.target];
-        if (src && tgt) {
-            ctx.strokeStyle = "rgba(148, 163, 184, 0.28)";
-            ctx.beginPath();
-            ctx.moveTo(src.x, src.y);
-            ctx.lineTo(tgt.x, tgt.y);
-            ctx.stroke();
-        }
-    });
-
-    nodes.forEach(n => {
-        const pos = nodePositions[n.id];
-        if (!pos) return;
-
-        let nodeColor = "#8b5cf6";
-        let nodeRadius = 13;
-
-        if (n.type === "email") {
-            nodeColor = n.risk === "high" ? "#ef4444" : n.risk === "medium" ? "#f59e0b" : "#10b981";
-            nodeRadius = 16;
-        } else if (n.type === "domain") {
-            nodeColor = "#06b6d4";
-            nodeRadius = 13;
-        } else if (n.type === "url") {
-            nodeColor = "#ec4899";
-            nodeRadius = 11;
-        } else if (n.type === "ip") {
-            nodeColor = "#a855f7";
-            nodeRadius = 14;
-        } else if (n.type === "asn") {
-            nodeColor = "#f59e0b";
-            nodeRadius = 14;
-        } else if (n.type === "alias") {
-            nodeColor = "#3b82f6";
-            nodeRadius = 12;
-        } else if (n.type === "cluster") {
-            nodeColor = "#ea580c";
-            nodeRadius = 16;
-        }
-
-        ctx.fillStyle = nodeColor;
-        ctx.beginPath();
-        ctx.arc(pos.x, pos.y, nodeRadius, 0, 2 * Math.PI);
-        ctx.fill();
-
-        ctx.strokeStyle = "#18181b";
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        if (n.type === "cluster") {
-            ctx.strokeStyle = "rgba(234, 88, 12, 0.4)";
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.arc(pos.x, pos.y, nodeRadius + 4, 0, 2 * Math.PI);
-            ctx.stroke();
-        }
-
-        ctx.fillStyle = "#cbd5e1";
-        ctx.font = "11px Inter, sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText(n.label.substring(0, 26), pos.x, pos.y + nodeRadius + 14);
-    });
+    wakeGraphPhysics(canvas);
 }
 
 function updateAnalyticsMatrix(emails) {

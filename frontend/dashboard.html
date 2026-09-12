@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1194,21 +1194,67 @@
                     <div class="panel-header">
                         <div class="panel-title-cluster">
                             <h3><i class="fa-solid fa-diagram-project"></i> Threat Campaign Correlation Graph</h3>
-                            <span class="panel-subtitle">Graph correlation of shared relay IPs, ASN infrastructure, and domain patterns. Nodes represent <strong style="color: #34d399;">observed evidence</strong> — clusters may indicate coordinated campaigns (unconfirmed).</span>
+                            <span class="panel-subtitle">Multi-campaign relational linkage of shared relay IPs, bulletproof ASNs, domain lookalikes, and C2 endpoints. Nodes represent <strong style="color: #34d399;">observed evidence</strong> — drag nodes to explore cluster physics.</span>
                         </div>
                         <div class="graph-legend" style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
-                            <span class="legend-pill" style="border-color: rgba(239, 68, 68, 0.4);"><span class="dot" style="background: #ef4444;"></span> Case Email</span>
+                            <span class="legend-pill" style="border-color: rgba(239, 68, 68, 0.4);"><span class="dot" style="background: #ef4444;"></span> Email Case</span>
                             <span class="legend-pill" style="border-color: rgba(6, 182, 212, 0.4);"><span class="dot" style="background: #06b6d4;"></span> Domain</span>
-                            <span class="legend-pill" style="border-color: rgba(236, 72, 153, 0.4);"><span class="dot" style="background: #ec4899;"></span> URL Payload</span>
+                            <span class="legend-pill" style="border-color: rgba(236, 72, 153, 0.4);"><span class="dot" style="background: #ec4899;"></span> URL / Lure</span>
                             <span class="legend-pill" style="border-color: rgba(168, 85, 247, 0.4);"><span class="dot" style="background: #a855f7;"></span> Relay IP</span>
                             <span class="legend-pill" style="border-color: rgba(245, 158, 11, 0.4);"><span class="dot" style="background: #f59e0b;"></span> ASN / Hosting</span>
-                            <span class="legend-pill" style="border-color: rgba(59, 130, 246, 0.4);"><span class="dot" style="background: #3b82f6;"></span> Sender Alias</span>
-                            <span class="legend-pill" style="border-color: rgba(234, 88, 12, 0.4);"><span class="dot" style="background: #ea580c;"></span> Inferred Cluster</span>
-                            <button class="btn-icon" id="btn-refresh-graph" title="Rebuild Graph"><i class="fa-solid fa-rotate"></i></button>
+                            <span class="legend-pill" style="border-color: rgba(59, 130, 246, 0.4);"><span class="dot" style="background: #3b82f6;"></span> Payload / Hash</span>
+                            <span class="legend-pill" style="border-color: rgba(234, 88, 12, 0.4);"><span class="dot" style="background: #ea580c;"></span> Threat Cluster</span>
+                            <button class="btn-icon" id="btn-refresh-graph" title="Re-simulate Physics"><i class="fa-solid fa-rotate"></i></button>
                         </div>
                     </div>
+
+                    <div class="graph-controls-toolbar">
+                        <div class="graph-preset-group">
+                            <span style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono); margin-right: 0.2rem;">CAMPAIGN PRESETS:</span>
+                            <button type="button" class="graph-preset-btn active" data-campaign="all" id="btn-camp-all">
+                                <i class="fa-solid fa-globe"></i> <span>All Threat Campaigns (Landscape)</span>
+                            </button>
+                            <button type="button" class="graph-preset-btn" data-campaign="paypal" id="btn-camp-paypal">
+                                <i class="fa-solid fa-crosshairs" style="color: #ef4444;"></i> <span>TC-44146 (Tor Phish)</span>
+                            </button>
+                            <button type="button" class="graph-preset-btn" data-campaign="bec" id="btn-camp-bec">
+                                <i class="fa-solid fa-money-bill-transfer" style="color: #f59e0b;"></i> <span>FIN-CORP (CEO BEC)</span>
+                            </button>
+                            <button type="button" class="graph-preset-btn" data-campaign="m365" id="btn-camp-m365">
+                                <i class="fa-brands fa-microsoft" style="color: #a855f7;"></i> <span>Storm-0539 (M365 ATO)</span>
+                            </button>
+                            <button type="button" class="graph-preset-btn" data-campaign="amz" id="btn-camp-amz">
+                                <i class="fa-solid fa-box-open" style="color: #ec4899;"></i> <span>SMISH-AMZ (Stealer)</span>
+                            </button>
+                            <button type="button" class="graph-preset-btn" data-campaign="benign" id="btn-camp-benign">
+                                <i class="fa-solid fa-shield-check" style="color: #10b981;"></i> <span>Verified Cloud Base</span>
+                            </button>
+                        </div>
+
+                        <div class="graph-actions-group">
+                            <div class="graph-search-box">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="graph-search-input" class="graph-search-input" placeholder="Search node...">
+                            </div>
+                            <button type="button" class="btn btn-sm btn-cyber-secondary" id="btn-graph-toggle-physics" title="Pause or Resume physics simulation" style="font-size: 0.72rem; padding: 0.28rem 0.6rem;">
+                                <i class="fa-solid fa-pause" id="icon-graph-physics"></i> <span>Pause Physics</span>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-cyber-secondary" id="btn-graph-recenter" title="Re-center layout" style="font-size: 0.72rem; padding: 0.28rem 0.6rem;">
+                                <i class="fa-solid fa-arrows-to-dot"></i> <span>Re-center</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="graph-canvas-container" id="graph-canvas-container">
                         <canvas id="campaign-graph-canvas"></canvas>
+                        <div class="graph-stats-chip" id="graph-stats-chip">
+                            <span id="graph-node-count"><i class="fa-solid fa-circle-nodes" style="color: var(--primary);"></i> 32 Nodes</span>
+                            <span>•</span>
+                            <span id="graph-edge-count"><i class="fa-solid fa-route" style="color: #38bdf8;"></i> 44 Correlated Edges</span>
+                            <span>•</span>
+                            <span id="graph-cluster-count"><i class="fa-solid fa-biohazard" style="color: #ef4444;"></i> 4 Threat Syndicates</span>
+                        </div>
+                        <div class="graph-tooltip-cyber" id="graph-tooltip-cyber"></div>
                     </div>
                 </div>
             </section>
