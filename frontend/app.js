@@ -2,15 +2,15 @@
 if (typeof window === "undefined" && typeof process !== "undefined") {
     global.window = global;
     global.document = {
-        addEventListener: () => {},
-        getElementById: () => ({ classList: { add() {}, remove() {} }, style: {} }),
+        addEventListener: () => { },
+        getElementById: () => ({ classList: { add() { }, remove() { } }, style: {} }),
         querySelector: () => null,
         querySelectorAll: () => []
     };
     global.localStorage = {
         getItem: () => null,
-        setItem: () => {},
-        removeItem: () => {}
+        setItem: () => { },
+        removeItem: () => { }
     };
     module.exports = require("./server.js");
 }
@@ -120,14 +120,14 @@ const WORKSPACE_CASES = {
         sha256_hash: "a3f2c1d8e9b047fc6a2e85d1c3b94f70e2a1d9c843b56f2a97e1c08d3b24f190",
         auditLedger: "LOG-2026-09-08-99214",
         received_at: new Date(Date.now() - 1000 * 60 * 32).toISOString(),
-        
+
         threatScore: 94,
         threatColor: "#ef4444",
         threatSubtext: "Combined score from ML NLP features, credential harvest URLs, and SPF/DKIM/DMARC protocol failures.",
         attributionScore: 72,
         attributionColor: "#a78bfa",
         attributionSubtext: "Correlation with AS44146 Tor infrastructure cluster TC-44146. Indicates observed network patterns, not legal or nation-state certainty.",
-        
+
         contentAnalysis: {
             mlSignals: {
                 phishing: "96.8%",
@@ -1267,7 +1267,7 @@ function setWorkspaceBlankState(isBlank) {
 function exportStixBundle(caseId) {
     const c = getWorkspaceCase(caseId);
     const timestamp = new Date().toISOString();
-    
+
     const bundle = {
         type: "bundle",
         id: `bundle--${crypto.randomUUID ? crypto.randomUUID() : 'bytetrail-' + Date.now()}`,
@@ -1366,7 +1366,7 @@ function exportEvidenceJson(caseId) {
 
 function fallbackPrintForensicReport(caseId) {
     const c = getWorkspaceCase(caseId);
-    
+
     const reportHtml = `
 <!DOCTYPE html>
 <html>
@@ -2354,11 +2354,11 @@ function parseEmlFile(emlText) {
 
 async function analyzeParsedEmailClientSide(parsed) {
     const textToScan = `${parsed.subject} ${parsed.body_text}`.toLowerCase();
-    
+
     const urgencyPatterns = ["urgent", "immediately", "immediate", "suspended", "suspension", "terminated", "freeze", "24 hours", "action required", "unauthorized", "verify", "security alert", "compromised"];
     const wirePatterns = ["wire transfer", "escrow", "payment", "invoice", "bank transfer", "confidential", "acquisition", "$", "usd", "funds", "routing number"];
     const credPatterns = ["password", "login", "credentials", "re-authenticate", "session expired", "portal", "verify your identity", "banking credentials", "sign in", "account access"];
-    
+
     let urgencyScore = 0;
     urgencyPatterns.forEach(w => { if (textToScan.includes(w)) urgencyScore += 0.12; });
     let wireScore = 0;
@@ -2412,7 +2412,7 @@ async function analyzeParsedEmailClientSide(parsed) {
             const hashArr = Array.from(new Uint8Array(hashBuf));
             sha256_hash = hashArr.map(b => b.toString(16).padStart(2, "0")).join("");
         }
-    } catch {}
+    } catch { }
 
     const newId = storedEmails.length > 0 ? Math.max(...storedEmails.map(e => Number(e.id) || 0)) + 1 : 1004;
 
@@ -2484,7 +2484,7 @@ async function handleFileUpload(file) {
 
     if (parsedResult) {
         storedEmails = [parsedResult, ...storedEmails.filter(e => e.id !== parsedResult.id)];
-        
+
         updateTelemetryStats(storedEmails);
         renderStreamFeed(storedEmails);
         applyFeedFilters();
@@ -3991,7 +3991,7 @@ async function handleIngestSubmit(e) {
 
     if (data) {
         storedEmails = [data, ...storedEmails.filter(e => e.id !== data.id)];
-        
+
         updateTelemetryStats(storedEmails);
         renderStreamFeed(storedEmails);
         applyFeedFilters();
@@ -4618,12 +4618,12 @@ function openForensicModal(id) {
             ${allUrls.length > 0 ? `
             <div style="display:flex;flex-direction:column;gap:0.45rem;">
                 ${allUrls.map(url => {
-                    const cat = classifyUrl(url);
-                    return `<div style="background:var(--bg-input);padding:0.55rem 0.85rem;border-radius:0.4rem;border:1px solid ${cat.color}44;display:flex;align-items:center;justify-content:space-between;gap:0.5rem;flex-wrap:wrap;">
+        const cat = classifyUrl(url);
+        return `<div style="background:var(--bg-input);padding:0.55rem 0.85rem;border-radius:0.4rem;border:1px solid ${cat.color}44;display:flex;align-items:center;justify-content:space-between;gap:0.5rem;flex-wrap:wrap;">
                         <span style="font-family:var(--font-mono);font-size:0.73rem;color:#e2e8f0;word-break:break-all;flex:1;">${escapeHtml(url)}</span>
                         <span style="font-size:0.67rem;font-weight:700;color:${cat.color};background:${cat.color}18;border:1px solid ${cat.color}44;padding:0.1rem 0.4rem;border-radius:3px;white-space:nowrap;">${cat.label}</span>
                     </div>`;
-                }).join("")}
+    }).join("")}
             </div>` : `<div style="color:var(--text-muted);font-size:0.82rem;padding:0.5rem 0;"><i class="fa-solid fa-circle-check" style="color:#34d399;"></i> No suspicious URLs extracted from message body or headers.</div>`}
         </div>
 
